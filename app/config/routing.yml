@@ -1,0 +1,4 @@
+acmtool_app:
+    resource: "@AcmtoolAppBundle/Resources/config/routing.yml"
+    prefix:   /
+

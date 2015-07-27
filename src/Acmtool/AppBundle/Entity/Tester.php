@@ -3,6 +3,7 @@
 namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Acmtool\AppBundle\Entity\DevTeamMember;
 
 /**
  * Tester
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\TesterRepository")
  */
-class Tester
+class Tester extends DevTeamMember
 {
     /**
      * @var integer

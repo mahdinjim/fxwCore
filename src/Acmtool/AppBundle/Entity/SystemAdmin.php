@@ -4,14 +4,13 @@ namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Acmtool\AppBundle\Entity\DevTeamMember;
-
 /**
- * Developer
+ * SystemAdmin
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\DeveloperRepository")
+ * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\SystemAdminRepository")
  */
-class Developer extends DevTeamMember
+class SystemAdmin extends DevTeamMember
 {
     /**
      * @var integer

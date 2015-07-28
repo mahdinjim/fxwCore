@@ -4,6 +4,7 @@ namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Creds
@@ -24,14 +25,14 @@ class Creds
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="login", type="string", length=255)
      */
     private $login;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="password", type="string", length=255)
      */
     private $password;

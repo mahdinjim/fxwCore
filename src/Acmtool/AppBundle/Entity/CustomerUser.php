@@ -3,14 +3,17 @@
 namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * CustomerUser
- *
+ * @UniqueEntity("email")
  * @ORM\Table()
  * @ORM\Entity
  */
-class CustomerUser
+class CustomerUser implements UserInterface
 {
     /**
      * @var integer
@@ -30,21 +33,22 @@ class CustomerUser
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
      * @ORM\Column(name="photo", type="string", length=255)
      */
     private $photo;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="surname", type="string", length=255)
      */
     private $surname;
@@ -55,7 +59,33 @@ class CustomerUser
      * @ORM\Column(name="telnumber", type="decimal")
      */
     private $telnumber;
+     /**
+     * @Assert\NotBlank
+     * @ORM\OneToOne(targetEntity="Creds")
+     * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
+     **/
+    private $credentials;
+      /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $salt;
 
+    /**
+     * @ORM\Column(name="is_active", type="boolean")
+     */
+    private $isActive;
+    /**
+    * @Assert\NotBlank
+    * @ORM\ManyToOne(targetEntity="Customer", inversedBy="users")
+    * @ORM\JoinColumn(name="company_id",referencedColumnName="id")
+    */
+    private $company;
+
+    public function __construct()
+    {
+        $this->isActive = true;
+        $this->salt = md5(uniqid(null, true));
+    }
 
     /**
      * Get id
@@ -66,7 +96,42 @@ class CustomerUser
     {
         return $this->id;
     }
+     /**
+     * @inheritDoc
+     */
+    public function getSalt()
+    {
+        return $this->salt;
+    }
+    /**
+     * @inheritDoc
+     */
+    public function getUsername()
+    {
+        return $this->credentials->getLogin();
+    }
+    /**
+     * @inheritDoc
+     */
+    public function getPassword()
+    {
+        return $this->credentials->getPassword();
+    }
 
+    /**
+     * @inheritDoc
+     */
+    public function getRoles()
+    {
+        return array('ROLE_CUSER');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function eraseCredentials()
+    {
+    }
     /**
      * Set email
      *
@@ -180,5 +245,87 @@ class CustomerUser
     public function getTelnumber()
     {
         return $this->telnumber;
+    }
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     * @return CustomerUser
+     */
+    public function setSalt($salt)
+    {
+        $this->salt = $salt;
+    
+        return $this;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return CustomerUser
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * Set credentials
+     *
+     * @param \Acmtool\AppBundle\Entity\Creds $credentials
+     * @return CustomerUser
+     */
+    public function setCredentials(\Acmtool\AppBundle\Entity\Creds $credentials = null)
+    {
+        $this->credentials = $credentials;
+    
+        return $this;
+    }
+
+    /**
+     * Get credentials
+     *
+     * @return \Acmtool\AppBundle\Entity\Creds 
+     */
+    public function getCredentials()
+    {
+        return $this->credentials;
+    }
+
+    /**
+     * Set company
+     *
+     * @param \Acmtool\AppBundle\Entity\Customer $company
+     * @return CustomerUser
+     */
+    public function setCompany(\Acmtool\AppBundle\Entity\Customer $company = null)
+    {
+        $this->company = $company;
+    
+        return $this;
+    }
+
+    /**
+     * Get company
+     *
+     * @return \Acmtool\AppBundle\Entity\Customer 
+     */
+    public function getCompany()
+    {
+        return $this->company;
     }
 }

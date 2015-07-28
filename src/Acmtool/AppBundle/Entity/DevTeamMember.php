@@ -4,7 +4,8 @@ namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Acmtool\AppBundle\Entity\TeamMember;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * DevTeamMember
  *
@@ -15,24 +16,24 @@ class DevTeamMember extends TeamMember
 {
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="capacity", type="string", length=255)
      */
-    private $capacity;
+    protected $capacity;
 
     /**
      * @var integer
      *
      * @ORM\Column(name="rate", type="integer")
      */
-    private $rate;
+    protected $rate;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="skills", type="text")
      */
-    private $skills;
+    protected $skills;
 
     /**
      * Set capacity

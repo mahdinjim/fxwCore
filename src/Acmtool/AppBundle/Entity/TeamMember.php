@@ -3,10 +3,12 @@
 namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * TeamMember
- *
+ * @UniqueEntity("email")
  * @ORM\MappedSuperclass
  */
 class TeamMember
@@ -15,38 +17,39 @@ class TeamMember
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="description", type="string", length=2000)
      */
-    private $description;
+    protected $description;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="email", type="string", length=255)
      */
-    private $email;
+    protected $email;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
      * @ORM\Column(name="name", type="string", length=255)
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
      * @ORM\Column(name="surname", type="string", length=255)
      */
-    private $surname;
+    protected $surname;
 
     /**
      * @var string
      *
      * @ORM\Column(name="photo", type="string", length=255)
      */
-    private $photo;
+    protected $photo;
 
     /**
      * Set description

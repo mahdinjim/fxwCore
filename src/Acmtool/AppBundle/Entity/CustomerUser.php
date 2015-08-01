@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table()
  * @ORM\Entity
  */
-class CustomerUser implements UserInterface
+class CustomerUser implements UserInterface, \Serializable
 {
     /**
      * @var integer
@@ -80,6 +80,11 @@ class CustomerUser implements UserInterface
     * @ORM\JoinColumn(name="company_id",referencedColumnName="id")
     */
     private $company;
+     /**
+     * @ORM\OneToOne(targetEntity="Token")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     **/
+    private $apitoken;
 
     public function __construct()
     {
@@ -327,5 +332,47 @@ class CustomerUser implements UserInterface
     public function getCompany()
     {
         return $this->company;
+    }
+
+    /**
+     * Set apitoken
+     *
+     * @param \Acmtool\AppBundle\Entity\Token $apitoken
+     * @return CustomerUser
+     */
+    public function setApitoken(\Acmtool\AppBundle\Entity\Token $apitoken = null)
+    {
+        $this->apitoken = $apitoken;
+    
+        return $this;
+    }
+
+    /**
+     * Get apitoken
+     *
+     * @return \Acmtool\AppBundle\Entity\Token 
+     */
+    public function getApitoken()
+    {
+        return $this->apitoken;
+    }
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+        ));
+    }
+
+    /**
+     * @see \Serializable::unserialize()
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+        ) = unserialize($serialized);
     }
 }

@@ -6,9 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Token
+ * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\TokenRepository")
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\TokenRepository")
  */
 class Token
 {
@@ -28,6 +29,12 @@ class Token
      */
     private $tokendig;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="userrole", type="string", length=255)
+     */
+    private $userrole;
     /**
      * @var \DateTime
      *
@@ -337,5 +344,28 @@ class Token
     public function getTester()
     {
         return $this->tester;
+    }
+
+    /**
+     * Set userrole
+     *
+     * @param string $userrole
+     * @return Token
+     */
+    public function setUserrole($userrole)
+    {
+        $this->userrole = $userrole;
+    
+        return $this;
+    }
+
+    /**
+     * Get userrole
+     *
+     * @return string 
+     */
+    public function getUserrole()
+    {
+        return $this->userrole;
     }
 }

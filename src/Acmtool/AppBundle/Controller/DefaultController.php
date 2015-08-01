@@ -3,11 +3,13 @@
 namespace Acmtool\AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Httpfoundation\Response;
 
 class DefaultController extends Controller
 {
-    public function indexAction($name)
+    public function indexAction()
     {
-        return $this->render('AcmtoolAppBundle:Default:index.html.twig', array('name' => $name));
+        echo "hello to controller";
+        return new Response("hello");
     }
 }

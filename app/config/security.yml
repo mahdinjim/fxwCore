@@ -7,13 +7,38 @@ security:
         ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
     providers:
+        chain_provider:
+            chain:
+                providers: [in_memory,admin_provider,customer_provider,customerUser_provider,developer_provider,designer_provider,keyAccount_provider,sysAdmin_provider,teamLeader_provider,tester_provider]
         in_memory:
             memory:
                 users:
                     user:  { password: userpass, roles: [ 'ROLE_USER' ] }
                     admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+        admin_provider:
+            entity: {class: AcmtoolAppBundle:Admin}
+        customer_provider:
+            entity: {class: AcmtoolAppBundle:Customer}
+        customerUser_provider:
+            entity: {class: AcmtoolAppBundle:CustomerUser}
+        developer_provider:
+            entity: {class: AcmtoolAppBundle:Developer}
+        designer_provider:
+            entity: {class: AcmtoolAppBundle:Designer}
+        keyAccount_provider:
+            entity: {class: AcmtoolAppBundle:KeyAccount}
+        sysAdmin_provider:
+            entity: {class: AcmtoolAppBundle:SystemAdmin}
+        teamLeader_provider:
+            entity: {class: AcmtoolAppBundle:TeamLeader}
+        tester_provider:
+            entity: {class: AcmtoolAppBundle:Tester}
 
     firewalls:
+        api_secured:
+            pattern:  ^/api/private/*
+            Api_Auth: true
+            stateless:  true
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false

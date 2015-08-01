@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\DesignerRepository")
  */
-class Designer extends DevTeamMember implements UserInterface
+class Designer extends DevTeamMember implements UserInterface, \Serializable
 {
     /**
      * @var integer
@@ -40,6 +40,11 @@ class Designer extends DevTeamMember implements UserInterface
      * @ORM\Column(name="is_active", type="boolean")
      */
     private $isActive;
+     /**
+     * @ORM\OneToOne(targetEntity="Token")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     **/
+    private $apitoken;
 
     public function __construct()
     {
@@ -112,5 +117,24 @@ class Designer extends DevTeamMember implements UserInterface
     public function getCredentials()
     {
         return $this->credentials;
+    }
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+        ));
+    }
+
+    /**
+     * @see \Serializable::unserialize()
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+        ) = unserialize($serialized);
     }
 }

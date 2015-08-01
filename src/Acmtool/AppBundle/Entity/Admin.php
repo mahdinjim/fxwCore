@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\AdminRepository")
  */
 
-class Admin implements UserInterface
+class Admin implements UserInterface, \Serializable
 {
     /**
      * @var integer
@@ -53,6 +53,12 @@ class Admin implements UserInterface
      * @ORM\Column(name="is_active", type="boolean")
      */
     private $isActive;
+    
+     /**
+     * @ORM\OneToOne(targetEntity="Token")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     **/
+    private $apitoken;
 
     public function __construct()
     {
@@ -208,5 +214,47 @@ class Admin implements UserInterface
     public function getCredentials()
     {
         return $this->credentials;
+    }
+
+    /**
+     * Set apitoken
+     *
+     * @param \Acmtool\AppBundle\Entity\Token $apitoken
+     * @return Admin
+     */
+    public function setApitoken(\Acmtool\AppBundle\Entity\Token $apitoken = null)
+    {
+        $this->apitoken = $apitoken;
+    
+        return $this;
+    }
+
+    /**
+     * Get apitoken
+     *
+     * @return \Acmtool\AppBundle\Entity\Token 
+     */
+    public function getApitoken()
+    {
+        return $this->apitoken;
+    }
+    /**
+     * @see \Serializable::serialize()
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+        ));
+    }
+
+    /**
+     * @see \Serializable::unserialize()
+     */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+        ) = unserialize($serialized);
     }
 }

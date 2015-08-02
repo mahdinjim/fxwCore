@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Creds
- *@UniqueEntity("login")
+ * @UniqueEntity(fields={"login"},message="This login value is already used")
  * @ORM\Table()
  * @ORM\Entity
  */
@@ -25,7 +25,7 @@ class Creds
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="This login can't be blank")
      * @ORM\Column(name="login", type="string", length=255)
      */
     private $login;

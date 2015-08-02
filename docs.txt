@@ -1,0 +1,55 @@
+--------Test Creds----------------
+
+Admin creds in testing 
+login: admin1
+password: start123
+
+-------End of test cred-------------
+
+-----------Web service---------------
+
+Create new admin :
+Url : api/secret/once/create
+method : post
+message example:
+{
+    "email": "njimmahdi1@gmail.com",
+    "login": "admin1",
+    "password": "start123",
+    "tel":21082206
+}
+Response 200 Ok => Admin Created Successfully 
+Response 400 bad request => {"errors":[]}
+
+-----------End of web service-----------------------------
+
+--------Web service---------------------------
+
+Authentificate Admin
+Url :api/public/super/login
+method post 
+request message :
+{
+	"grant_type":"password",
+	"password":"start123",
+	"login":"admin1"
+}
+response message:
+200 ok 
+{
+	admin: {
+		username: "admin1"
+		email: "njimmahdi1@gmail.com"
+		tel: null
+	}-
+	token: {
+		token: "3ea6df5d123ccf03cce0facf5647b0853164ec35"
+		experationDate: {
+		date: "2015-08-02 14:31:50.000000"
+		timezone_type: 3
+		timezone: "UTC"
+	}-
+	}-
+}
+Response 400 bad request => {"errors":[]}
+Response 403 Forbidden => {"errors":[]}

@@ -1,3 +1,21 @@
 acmtool_app_homepage:
     path:     /api/private/test
     defaults: { _controller: AcmtoolAppBundle:Default:index }
+
+_create:
+    path:     /secret/once/create
+    defaults: { _controller: AcmtoolAppBundle:AdminController:Create }
+    requirements:
+        _method: post
+
+_authentificate:
+    path:     /public/super/login
+    defaults: { _controller: AcmtoolAppBundle:AdminController:Authentificate }
+    requirements:
+        _method: post
+
+update:
+    path:     /private/super/update
+    defaults: { _controller: AcmtoolAppBundle:AdminController:update }
+    requirements:
+        _method: put

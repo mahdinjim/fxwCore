@@ -12,4 +12,13 @@ use Doctrine\ORM\EntityRepository;
  */
 class AdminRepository extends EntityRepository
 {
+	public function findByUserName($username){
+		if($username)
+		{
+			$cred=$this->getEntityManager()->getRepository('AcmtoolAppBundle:Creds')->findOneBy(array('login' => $username));
+			return $this->getEntityManager()->getRepository('AcmtoolAppBundle:Admin')->findOneBy(array('credentials' => $cred));
+		}
+		else
+			return null;
+	}
 }

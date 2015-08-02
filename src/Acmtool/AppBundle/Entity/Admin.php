@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Admin
- * @UniqueEntity("email")
+ * @UniqueEntity(fields={"email"},message="This email is already used")
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\AdminRepository")
  */
@@ -26,7 +26,7 @@ class Admin implements UserInterface, \Serializable
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The email field is required")
      * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
      * @ORM\Column(name="email", type="string", length=255)
      */
@@ -35,17 +35,17 @@ class Admin implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="tel", type="string", length=255)
+     * @ORM\Column(name="tel", type="string", length=255,nullable=true)
      */
     private $tel;
     /**
      * @Assert\NotBlank
-     * @ORM\OneToOne(targetEntity="Creds")
-     * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="Creds",cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="cred_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $credentials;
       /**
-     * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="string", length=32,nullable=true)
      */
     private $salt;
 
@@ -56,7 +56,7 @@ class Admin implements UserInterface, \Serializable
     
      /**
      * @ORM\OneToOne(targetEntity="Token")
-     * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
 

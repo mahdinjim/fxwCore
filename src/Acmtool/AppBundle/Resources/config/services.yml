@@ -2,6 +2,7 @@ parameters:
 #    acmtool_app.example.class: Acmtool\AppBundle\Example
     acmtool_app.apiauth.provider.class: Acmtool\AppBundle\firewall\apiauth\ApiAuthProvider
     acmtool_app.apiauth.listener.class: Acmtool\AppBundle\firewall\apiauth\ApiTokenListener
+    acmtool_app.authentification.class: Acmtool\AppBundle\DependencyInjection\AuthentificationService
 
 services:
 #    acmtool_app.example:
@@ -14,3 +15,6 @@ services:
     apiauth.security.authentication.listener:
      class:  '%acmtool_app.apiauth.listener.class%'
      arguments: [@security.context, @security.authentication.manager]
+    acmtool_app.authentication:
+     class:  '%acmtool_app.authentification.class%'
+     arguments: [@doctrine, @security.encoder_factory,@form.csrf_provider]

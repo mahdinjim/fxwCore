@@ -43,9 +43,10 @@ class ApiAuthProvider implements AuthenticationProviderInterface
     {
         if($apitoken)
         {
+            date_default_timezone_set('UTC');
             $expireDate=$apitoken->getCreationdate()->add(new \DateInterval('PT'.PERIOD.'S'));
 
-            $today =new \DateTime("NOW",new \DateTimeZone('Europe/Berlin'));
+            $today =new \DateTime("NOW",new \DateTimeZone('UTC'));
             
 
             if($today<$expireDate)

@@ -23,7 +23,9 @@ class ApiTokenListener implements ListenerInterface
     public function handle(GetResponseEvent $event)
     {
         $request = $event->getRequest();
-        if($request->headers->has('x-crm-access-token'))
+        if(!$request->headers->has('x-crm-access-token'))
+            return;
+        else
         {
         	$tokenstring=$request->headers->get('x-crm-access-token');
         	$apitoken=new ApiToken();
@@ -31,29 +33,18 @@ class ApiTokenListener implements ListenerInterface
 
         	try {
             	$authToken = $this->authenticationManager->authenticate($apitoken);
-            	$this->securityContext->setToken($authToken);
+            	return $this->securityContext->setToken($authToken);
+                
 	        } catch (AuthenticationException $failed) {
-	            // ... you might log something here
-
-	            // To deny the authentication clear the token. This will redirect to the login page.
-	            // $this->securityContext->setToken(null);
-	            // return;
-
-	            // Deny authentication with a '403 Forbidden' HTTP response
                 $this->securityContext->setToken(null);
 	            $response = new Response();
 	            $response->setStatusCode(403);
 	            $event->setResponse($response);
+                return;
 
 	        }
 
         }
-        else
-            {
-                $response = new Response();
-                $response->setStatusCode(403);
-                $event->setResponse($response);
-            }
    
         
        

@@ -12,6 +12,7 @@ use Acmtool\AppBundle\Entity\Creds;
 Const PERIOD=3600;
 Const INVALIDREQUEST="invalid_request";
 Const ADMINCREATED="Admin created successfully";
+Const ADMINUPDATED="Admin updated successfully";
 Const REASONWRONG="Wrong password/Username";
 class AdminControllerController extends Controller
 {
@@ -25,13 +26,13 @@ class AdminControllerController extends Controller
             return $result['response'];
         else
         {
-            if(!isset($json->{'password'}) ||!isset($json->{'login'}) || !isset($json->{'email'}))
+            $json=$result['json'];
+            if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'})))
             {
                 $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
-            $json=$result['json'];
             $admin=new Admin();
             $admin->setEmail($json->{"email"});
             $creds=new Creds();
@@ -82,13 +83,14 @@ class AdminControllerController extends Controller
             return $result['response'];
         else
         {
-            /*if(!(isset($json->{"grant_type"})) || !(isset($json->{"login"})) || !(isset($json->{"password"})))
+            $json=$result['json'];
+            if(!(isset($json->{"grant_type"}) && isset($json->{"login"}) && isset($json->{"password"})))
             {
                 $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
-            }*/
-            $json=$result['json'];
+            }
+            
             $grantype=isset($json->{"grant_type"});
             if($grantype=="password")
             {
@@ -136,9 +138,58 @@ class AdminControllerController extends Controller
 
     public function updateAction()
     {
-        return $this->render('AcmtoolAppBundle:AdminController:update.html.twig', array(
-                // ...
-            ));    }
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->verifyJson($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            $admin=$usr= $this->get('security.context')->getToken()->getUser();
+            if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'})))
+            {
+                $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+            else
+            {
+                $admin->setEmail($json->{'email'});
+                $admin->getCredentials()->setLogin($json->{"login"});
+                $factory = $this->get('security.encoder_factory');
+                $encoder = $factory->getEncoder($admin->getCredentials());
+                $password = $encoder->encodePassword($json->{'password'}, $admin->getSalt());
+                $admin->getCredentials()->setPassword($password);
+                $validator = $this->get('validator');
+                $errorList = $validator->validate($admin);
+                $crederrorlist=$validator->validate($admin->getCredentials());
+                if (count($errorList) > 0 || count($crederrorlist)>0) {
+                    $response= new Response();
+                    $response->setStatusCode(400);
+                    $errosmsg=array();
+                    foreach ($errorList as $error) {
+                        array_push($errosmsg, $error->getMessage());
+                    }
+                    foreach ($crederrorlist as $error) {
+                         array_push($errosmsg, $error->getMessage());
+                    }
+                    $response->setContent(json_encode(array("errors"=>$errosmsg)));
+                    return $response;
+                } else {
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ADMINUPDATED);
+                    return $res;
+                }
+
+                
+            }
+            
+        }
+    }
     private function verifyJson($message)
     {
         $json = json_decode($message);

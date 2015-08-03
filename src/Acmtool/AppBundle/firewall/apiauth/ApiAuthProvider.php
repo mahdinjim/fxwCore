@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Acmtool\AppBundle\firewall\apiauth\ApiToken;
 Const PERIOD=3600;
+Const TIMEZONE="Europe/Berlin";
 class ApiAuthProvider implements AuthenticationProviderInterface
 {
     private $doctrine;
@@ -21,14 +22,14 @@ class ApiAuthProvider implements AuthenticationProviderInterface
         $em=$this->doctrine->getEntityManager();
         $apitoken = $em->getRepository('AcmtoolAppBundle:Token')->findOneBy(array('tokendig' => $token->getTokenDig() ));
         
-        if(!$apitoken)
-            throw new AuthenticationException('The API authentication failed.');
+       
         if($apitoken && $this->validToken($apitoken))
         {
+
             $user=$em->getRepository('AcmtoolAppBundle:Token')->findUserByToken($apitoken);
             if($user)
             {
-                $authenticatedToken=new ApiToken();
+                $authenticatedToken=new ApiToken($user->getRoles());
                 $authenticatedToken->setUser($user);
                 return $authenticatedToken;
             }
@@ -43,14 +44,14 @@ class ApiAuthProvider implements AuthenticationProviderInterface
     {
         if($apitoken)
         {
-            date_default_timezone_set('UTC');
+            date_default_timezone_set(TIMEZONE);
             $expireDate=$apitoken->getCreationdate()->add(new \DateInterval('PT'.PERIOD.'S'));
 
-            $today =new \DateTime("NOW",new \DateTimeZone('UTC'));
-            
-
+            $today =new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
             if($today<$expireDate)
+            {
                 return true;
+            }
             else
             {
                 return false;

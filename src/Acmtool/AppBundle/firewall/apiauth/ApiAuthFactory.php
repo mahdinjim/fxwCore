@@ -11,11 +11,11 @@ class ApiAuthFactory implements SecurityFactoryInterface
 {
 	public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
     {
-        $providerId = 'security.authentication.provider.apiauth.'.$id;
+        $providerId = 'security.authentication.provider.Api_Auth.'.$id;
         $container
             ->setDefinition($providerId, new DefinitionDecorator('apiauth.security.authentication.provider'));
 
-        $listenerId = 'security.authentication.listener.apiauth.'.$id;
+        $listenerId = 'security.authentication.listener.Api_Auth.'.$id;
         $listener = $container->setDefinition($listenerId, new DefinitionDecorator('apiauth.security.authentication.listener'));
 
         return array($providerId, $listenerId, $defaultEntryPoint);

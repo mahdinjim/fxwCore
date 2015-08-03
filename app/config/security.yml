@@ -37,9 +37,9 @@ security:
 
     firewalls:
         api_secured:
-            pattern:  ^/api/private/*
-            Api_Auth: true
+            pattern:  ^/api/private/
             stateless:  true
+            Api_Auth: true
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -61,5 +61,5 @@ security:
             #    realm: "Secured Demo Area"
 
     access_control:
-        - { path: ^/api/private/super/admin/, roles: ROLE_ADMIN }
+        - { path: ^/api/private/super/, roles: [ROLE_ADMIN] }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

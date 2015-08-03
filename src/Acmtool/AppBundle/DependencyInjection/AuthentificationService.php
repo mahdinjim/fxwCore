@@ -5,6 +5,7 @@ use Acmtool\AppBundle\Entity\Token;
 Const PERIOD=3600;
 Const REASONWRONG="Wrong password/Username";
 Const REASONMISSING="Missing password/Username";
+Const TIMEZONE="Europe/Berlin";
 class AuthentificationService
 {
 	private $doctrine;
@@ -36,7 +37,7 @@ class AuthentificationService
             	else
             	{
             		$token=new Token();
-                    $today =new \DateTime("NOW",  new \DateTimeZone('UTC'));
+                    $today =new \DateTime("NOW",  new \DateTimeZone(TIMEZONE));
                     $token->setCreationdate($today);
                     $token->setTokendig($this->generateToken($user,$today));
                     $userroles=$user->getRoles();
@@ -67,9 +68,9 @@ class AuthentificationService
 	private function istokenExpired($token)
 	{
 		if($token){
-                date_default_timezone_set('UTC');
+                date_default_timezone_set(TIMEZONE);
                 $expireDate=$token->getCreationdate()->add(new \DateInterval('PT'.PERIOD.'S'));
-                $today =new \DateTime("NOW",  new \DateTimeZone('UTC'));
+                $today =new \DateTime("NOW",  new \DateTimeZone(TIMEZONE));
                 if($today<$expireDate)
                     return false;
                 else
@@ -87,7 +88,7 @@ class AuthentificationService
 	}
 	private function generateToken($User,$creationdate)
 	{
-		$tmp=$User->getUsername().$creationdate->format('UTC');
+		$tmp=$User->getUsername().$creationdate->format(TIMEZONE);
         $csrfToken = $this->crfProvider->generateCsrfToken($tmp);
         return $csrfToken;
 

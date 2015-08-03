@@ -15,7 +15,7 @@ _authentificate:
         _method: post
 
 update:
-    path:     /private/super/update
+    path:     /private/super/admin/update
     defaults: { _controller: AcmtoolAppBundle:AdminController:update }
     requirements:
         _method: put

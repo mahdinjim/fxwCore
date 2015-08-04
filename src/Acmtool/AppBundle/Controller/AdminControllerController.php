@@ -8,12 +8,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Httpfoundation\Response;
 use Acmtool\AppBundle\Entity\Admin;
 use Acmtool\AppBundle\Entity\Creds;
+use Acmtool\AppBundle\Entity\Titles;
 
 Const PERIOD=3600;
 Const INVALIDREQUEST="invalid_request";
 Const ADMINCREATED="Admin created successfully";
 Const ADMINUPDATED="Admin updated successfully";
 Const REASONWRONG="Wrong password/Username";
+
 class AdminControllerController extends Controller
 {
     public function CreateAction()
@@ -21,7 +23,7 @@ class AdminControllerController extends Controller
         $request = $this->get('request');
         $message = $request->getContent();
         $em = $this->getDoctrine()->getManager();
-        $result = $this->verifyJson($message);
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
         if(!$result["valid"])
             return $result['response'];
         else
@@ -41,6 +43,7 @@ class AdminControllerController extends Controller
             $encoder = $factory->getEncoder($creds);
             $password = $encoder->encodePassword($json->{'password'}, $admin->getSalt());
             $creds->setPassword($password);
+            $creds->setTitle(Titles::Admin);
             $admin->setCredentials($creds);
             if(isset($json->{"tel"}))
                 $admin->setTel($json->{"tel"});
@@ -72,76 +75,12 @@ class AdminControllerController extends Controller
         }
         
     }
-
-    public function AuthentificateAction()
-    {
-        $request = $this->get('request');
-        $message = $request->getContent();
-        $em = $this->getDoctrine()->getManager();
-        $result = $this->verifyJson($message);
-        if(!$result["valid"])
-            return $result['response'];
-        else
-        {
-            $json=$result['json'];
-            if(!(isset($json->{"grant_type"}) && isset($json->{"login"}) && isset($json->{"password"})))
-            {
-                $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
-                $response->headers->set('Content-Type', 'application/json');
-                return $response;
-            }
-            
-            $grantype=isset($json->{"grant_type"});
-            if($grantype=="password")
-            {
-                $username=$json->{"login"};
-                $user = $em->getRepository('AcmtoolAppBundle:Admin')->findByUserName($username);
-                if($user)
-                {
-                    $authservice=$this->get('acmtool_app.authentication');
-                    $password=$json->{"password"};
-                    $result=$authservice->Authentificate($user,$password);
-                    if($result["auth"])
-                    {
-                        $token=$result["token"];
-                        $UserInfo = array('username' =>$user->getUsername(),'email'=>$user->getEmail(),'tel'=>$user->getTel() );
-                        $tokenInfo = array('token' => $token->getTokendig(),'experationDate'=>$token->getCreationdate()->add(new \DateInterval('PT'.PERIOD.'S')) );
-                        $mess = array('admin' => $UserInfo, 'token'=>$tokenInfo);
-                        $response = new Response(json_encode($mess), 200);
-                        $response->headers->set('Content-Type', 'application/json');
-                        return $response;
-                    }
-                    else
-                    {
-                        $response=new Response('{"errors":"'.$result["reason"].'"}',403);
-                        $response->headers->set('Content-Type', 'application/json');
-                        return $response;
-                    }
-
-                }
-                else
-                {
-                    $response=new Response('{"errors":"'.REASONWRONG.'"}',403);
-                    $response->headers->set('Content-Type', 'application/json');
-                    return $response;
-                }
-                
-            }
-            else
-            {
-                $response=new Response('{"errors":"'.INVALIDREQUEST.'"}',400);
-                $response->headers->set('Content-Type', 'application/json');
-                return $response;
-            }
-        }
-    }
-
     public function updateAction()
     {
         $request = $this->get('request');
         $message = $request->getContent();
         $em = $this->getDoctrine()->getManager();
-        $result = $this->verifyJson($message);
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
         if(!$result["valid"])
             return $result['response'];
         else
@@ -190,40 +129,5 @@ class AdminControllerController extends Controller
             
         }
     }
-    private function verifyJson($message)
-    {
-        $json = json_decode($message);
-        if(json_last_error()){
-            $response = new Response();
-            $response->setStatusCode(400);
-            switch (json_last_error()) {
-                case JSON_ERROR_NONE:
-                    $erro_message =  ' - No errors';
-                break;
-                case JSON_ERROR_DEPTH:
-                    $erro_message = ' - Maximum stack depth exceeded';
-                break;
-                case JSON_ERROR_STATE_MISMATCH:
-                    $erro_message = ' - Underflow or the modes mismatch';
-                break;
-                case JSON_ERROR_CTRL_CHAR:
-                    $erro_message = ' - Unexpected control character found';
-                break;
-                case JSON_ERROR_SYNTAX:
-                    $erro_message = ' - Syntax error, malformed JSON';
-                break;
-                case JSON_ERROR_UTF8:
-                    $erro_message = ' - Malformed UTF-8 characters, possibly incorrectly encoded';
-                break;
-                default:
-                    $erro_message = ' - Unknown error';
-                break;
-
-            }
-            $response->setContent(array('errors' => $erro_message));
-            return array('valid' => false,'response'=>$response );
-        }
-        else
-            return array('valid' => true,'json'=>$json );
-    }
+   
 }

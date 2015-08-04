@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Creds
  * @UniqueEntity(fields={"login"},message="This login value is already used")
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\CredsRepository")
  */
 class Creds implements \Serializable
 {
@@ -36,8 +36,12 @@ class Creds implements \Serializable
      * @ORM\Column(name="password", type="string", length=255)
      */
     private $password;
-
-
+    /**
+     * @var string
+     * @Assert\NotBlank
+     * @ORM\Column(name="title", type="string", length=255)
+     */
+    private $title;
     /**
      * Get id
      *
@@ -92,6 +96,28 @@ class Creds implements \Serializable
     public function getPassword()
     {
         return $this->password;
+    }
+      /**
+     * Set Title
+     *
+     * @param string $tile
+     * @return Creds
+     */
+    public function setTitle($title)
+    {
+        $this->title= $title;
+    
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string 
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
      /**
      * @see \Serializable::serialize()

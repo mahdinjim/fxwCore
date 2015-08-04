@@ -25,7 +25,7 @@ class TeamLeader extends DevTeamMember implements UserInterface, \Serializable
     private $id;
      /**
      * @Assert\NotBlank
-     * @ORM\OneToOne(targetEntity="Creds")
+     * @ORM\OneToOne(targetEntity="Creds",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
      **/
     private $credentials;
@@ -134,5 +134,27 @@ class TeamLeader extends DevTeamMember implements UserInterface, \Serializable
         list (
             $this->id,
         ) = unserialize($serialized);
+    }
+    /**
+     * Set apitoken
+     *
+     * @param \Acmtool\AppBundle\Entity\Token $apitoken
+     * @return TeamLeader
+     */
+    public function setApitoken(\Acmtool\AppBundle\Entity\Token $apitoken = null)
+    {
+        $this->apitoken = $apitoken;
+    
+        return $this;
+    }
+
+    /**
+     * Get apitoken
+     *
+     * @return \Acmtool\AppBundle\Entity\Token 
+     */
+    public function getApitoken()
+    {
+        return $this->apitoken;
     }
 }

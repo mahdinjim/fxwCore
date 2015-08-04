@@ -24,6 +24,7 @@ class Admin implements UserInterface, \Serializable
      */
     private $id;
 
+    
     /**
      * @var string
      * @Assert\NotBlank(message="The email field is required")

@@ -3,6 +3,7 @@ parameters:
     acmtool_app.apiauth.provider.class: Acmtool\AppBundle\firewall\apiauth\ApiAuthProvider
     acmtool_app.apiauth.listener.class: Acmtool\AppBundle\firewall\apiauth\ApiTokenListener
     acmtool_app.authentification.class: Acmtool\AppBundle\DependencyInjection\AuthentificationService
+    acmtool_app.validation.json.class: Acmtool\AppBundle\DependencyInjection\JsonValidatorService
 
 services:
 #    acmtool_app.example:
@@ -18,3 +19,5 @@ services:
     acmtool_app.authentication:
      class:  '%acmtool_app.authentification.class%'
      arguments: [@doctrine, @security.encoder_factory,@form.csrf_provider]
+    acmtool_app.validation.json:
+     class:  '%acmtool_app.validation.json.class%'

@@ -137,4 +137,26 @@ class Tester extends DevTeamMember implements UserInterface, \Serializable
             $this->id,
         ) = unserialize($serialized);
     }
+     /**
+     * Set apitoken
+     *
+     * @param \Acmtool\AppBundle\Entity\Token $apitoken
+     * @return Tester
+     */
+    public function setApitoken(\Acmtool\AppBundle\Entity\Token $apitoken = null)
+    {
+        $this->apitoken = $apitoken;
+    
+        return $this;
+    }
+
+    /**
+     * Get apitoken
+     *
+     * @return \Acmtool\AppBundle\Entity\Token 
+     */
+    public function getApitoken()
+    {
+        return $this->apitoken;
+    }
 }

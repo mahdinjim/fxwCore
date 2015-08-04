@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * TeamMember
- * @UniqueEntity("email")
+ * @UniqueEntity(fields={"email"},message="This email is already used")
  * @ORM\MappedSuperclass
  */
 class TeamMember
@@ -17,29 +17,30 @@ class TeamMember
 
     /**
      * @var string
-     * @Assert\NotBlank
-     * @ORM\Column(name="description", type="string", length=2000)
+     * 
+     * @ORM\Column(name="description", type="string", length=2000,nullable=true)
      */
     protected $description;
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The email field is required")
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
      * @ORM\Column(name="email", type="string", length=255)
      */
     protected $email;
 
     /**
      * @var string
-     * @Assert\NotBlank
-     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
+     * @Assert\NotBlank(message="The name field is required")
+     * 
      * @ORM\Column(name="name", type="string", length=255)
      */
     protected $name;
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The surname field is required")
      * @ORM\Column(name="surname", type="string", length=255)
      */
     protected $surname;
@@ -47,7 +48,7 @@ class TeamMember
     /**
      * @var string
      *
-     * @ORM\Column(name="photo", type="string", length=255)
+     * @ORM\Column(name="photo", type="string", length=255,nullable=true)
      */
     protected $photo;
 

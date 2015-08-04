@@ -25,8 +25,8 @@ Response 400 bad request => {"errors":[]}
 
 --------Web service---------------------------
 
-Authentificate Admin
-Url :api/public/super/login
+Authentificate 
+Url :api/public/login
 method post 
 request message :
 {
@@ -55,3 +55,56 @@ Response 400 bad request => {"errors":[]}
 Response 403 Forbidden => {"errors":[]}
 
 -------End Webservice----------------------------------
+
+--------Web service---------------------------
+Update admin :
+Url : api/private/super/admin/update
+method : put
+message example:
+{
+    "email": "njimmahdi1@gmail.com",
+    "login": "admin1",
+    "password": "start123",
+    "tel":21082206
+}
+Response 200 Ok => Admin Updated Successfully 
+Response 400 bad request => {"errors":[]}
+--------End service---------------------------
+
+--------Web service---------------------------
+Create TeamLeader:
+Url : api/private/super/teamleader/create
+method : post
+message example:
+{
+    "email": "njimmahdi2@gmail.com",
+    "password": "start123",
+    "login": "admin2",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile"
+}
+Response 200 Ok => TeamLeader created successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Update TeamLeader:
+Url : api/private/teamleader/update
+method : put
+message example:
+{
+	"id":1,
+    "email": "njimmahdi2@gmail.com",
+    "password": "start123",
+    "login": "teamleader",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile",
+	"description":"this is a nice leader"
+}
+Response 200 Ok => TeamLeader updated successfully
+Response 400 bad request => {"errors":[]}
+--------End service---------------------------

@@ -8,14 +8,42 @@ _create:
     requirements:
         _method: post
 
-_authentificate:
-    path:     /public/super/login
-    defaults: { _controller: AcmtoolAppBundle:AdminController:Authentificate }
-    requirements:
-        _method: post
-
 update:
     path:     /private/super/admin/update
     defaults: { _controller: AcmtoolAppBundle:AdminController:update }
     requirements:
         _method: put
+
+_api_authentification:
+    path:     /public/login
+    defaults: { _controller: AcmtoolAppBundle:Authentification:ApiAuthentification }
+    requirements:
+        _method: post
+
+_createTeamleader:
+    path:     /private/super/teamleader/create
+    defaults: { _controller: AcmtoolAppBundle:TeamLeader:Create }
+
+_updateTeamleader:
+    path:     /private/teamleader/update
+    defaults: { _controller: AcmtoolAppBundle:TeamLeader:Update }
+    requirements:
+        _method: put
+
+_deleteTeamleader:
+    path:     /private/super/teamleader/{id}
+    defaults: { _controller: AcmtoolAppBundle:TeamLeader:Delete }
+    requirements:
+        _method: delete
+
+_listTeamleader:
+    path:     /private/super/teamleader/all
+    defaults: { _controller: AcmtoolAppBundle:TeamLeader:List }
+    requirements:
+        _method: get
+
+_detailsTeamleader:
+    path:     /private/teamleader/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:TeamLeader:Details }
+    requirements:
+        _method: get

@@ -16,7 +16,7 @@ class DevTeamMember extends TeamMember
 {
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The capacity field is required")
      * @ORM\Column(name="capacity", type="string", length=255)
      */
     protected $capacity;
@@ -24,13 +24,13 @@ class DevTeamMember extends TeamMember
     /**
      * @var integer
      *
-     * @ORM\Column(name="rate", type="integer")
+     * @ORM\Column(name="rate", type="integer",nullable=true)
      */
     protected $rate;
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The skills field is required")
      * @ORM\Column(name="skills", type="text")
      */
     protected $skills;

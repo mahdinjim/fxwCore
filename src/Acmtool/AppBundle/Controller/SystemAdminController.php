@@ -6,13 +6,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Httpfoundation\Response;
-use Acmtool\AppBundle\Entity\Developer;
+use Acmtool\AppBundle\Entity\SystemAdmin;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
 
 
-class DeveloperController extends Controller
+class SystemAdminController extends Controller
 {
     public function CreateAction()
     {
@@ -33,14 +33,14 @@ class DeveloperController extends Controller
             }
             else
             {
-                $user=new Developer();
+                $user=new SystemAdmin();
                 $creds=new Creds();
                 $creds->setLogin($json->{"login"});
                 $factory = $this->get('security.encoder_factory');
                 $encoder = $factory->getEncoder($creds);
                 $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
                 $creds->setPassword($password);
-                $creds->setTitle(Titles::Developer);
+                $creds->setTitle(Titles::SystemAdmin);
                 $user->setCredentials($creds);
                 $user->setEmail($json->{'email'});
                 $user->setName($json->{'name'});
@@ -67,7 +67,7 @@ class DeveloperController extends Controller
                     $em->flush();
                     $res=new Response();
                     $res->setStatusCode(200);
-                    $res->setContent(ConstValues::DEVCREATED);
+                    $res->setContent(ConstValues::SYSACREATED);
                     return $res;
                 }
 
@@ -94,7 +94,7 @@ class DeveloperController extends Controller
             }
             else
             {
-                if ($this->get('security.context')->isGranted('ROLE_DEVELOPER') && $this->get('security.context')->getToken()->getUser()->getId()!=$json->{'id'})  {
+                if ($this->get('security.context')->isGranted('ROLE_SYSADMIN') && $this->get('security.context')->getToken()->getUser()->getId()!=$json->{'id'})  {
                         $response=new Response();
                         $response->setStatusCode(403);
                         $response->headers->set('Content-Type', 'application/json');
@@ -102,8 +102,8 @@ class DeveloperController extends Controller
                 }
                 else
                 {
-                    $user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{'id'});
-                    if($user instanceOf Developer){
+                    $user=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($json->{'id'});
+                    if($user instanceOf SystemAdmin){
                         $user->getCredentials()->setLogin($json->{"login"});
                         $factory = $this->get('security.encoder_factory');
                         $encoder = $factory->getEncoder($user->getCredentials());
@@ -137,7 +137,7 @@ class DeveloperController extends Controller
                             $em->flush();
                             $res=new Response();
                             $res->setStatusCode(200);
-                            $res->setContent(ConstValues::DEVUPDATED);
+                            $res->setContent(ConstValues::SYSAUPDATED);
                             return $res;
                         }
                     }
@@ -156,13 +156,13 @@ class DeveloperController extends Controller
     public function DeleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($id);
+        $user=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($id);
         if($user){
             $em->remove($user);
             $em->flush();
             $res=new Response();
             $res->setStatusCode(200);
-            $res->setContent(ConstValues::DEVDELETED);
+            $res->setContent(ConstValues::SYSADELETED);
             return $res;
         }
         else
@@ -176,11 +176,11 @@ class DeveloperController extends Controller
     public function ListAction($page)
     {
         $em = $this->getDoctrine()->getManager();
-        $totalpages=ceil($em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:Developer t")
+        $totalpages=ceil($em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:SystemAdmin t")
         ->getSingleScalarResult()/10);
         $start=ConstValues::COUNT*($page-1);
         $End=ConstValues::COUNT*$page;
-        $result=$em->createQuery('select d from AcmtoolAppBundle:Developer d')
+        $result=$em->createQuery('select d from AcmtoolAppBundle:SystemAdmin d')
                     ->setMaxResults(ConstValues::COUNT)
                     ->setFirstResult($start)
                     ->getResult();
@@ -210,7 +210,7 @@ class DeveloperController extends Controller
     public function DetailsAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-       if ($this->get('security.context')->isGranted('ROLE_DEVELOPER') && $this->get('security.context')->getToken()->getUser()->getId()!=$id)  {
+       if ($this->get('security.context')->isGranted('ROLE_SYSADMIN') && $this->get('security.context')->getToken()->getUser()->getId()!=$id)  {
             $response=new Response();
             $response->setStatusCode(403);
             $response->headers->set('Content-Type', 'application/json');
@@ -219,7 +219,7 @@ class DeveloperController extends Controller
         else
         {
 
-            $user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($id);
+            $user=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($id);
             if($user)
             {
                 $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"capacity"=>$user->getCapacity(),"skills"=>$user->getSkills(),"description"=>$user->getDescription());

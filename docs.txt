@@ -261,3 +261,129 @@ url:api/private/super/tester/delete/1
 Response 200 Ok => tester deleted successfully
 Response 400 bad request 
 --------End service---------------------------
+--------Web service---------------------------
+Create Designer:
+Url : api/private/super/designer/create
+method : post
+message example:
+{
+    "email": "njimmahdi2@gmail.com",
+    "password": "start123",
+    "login": "designer",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile"
+}
+Response 200 Ok => designer created successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Update designer:
+Url : api/private/designer/update
+method : put
+message example:
+{
+    "id":1,
+    "email": "njimmahdidev@gmail.com",
+    "password": "start123",
+    "login": "designer",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile",
+    "description":"this is a nice dev"
+}
+Response 200 Ok => designer updated successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+
+--------Web service---------------------------
+Get the list of all designer
+method get
+url api/private/super/designer/all/1
+Response 200 ok 
+{"totalpages":1,"current_page":"1","users":[{"id":2,"username":"developer","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}]}
+Response 400 bad request
+--------End service---------------------------
+--------Web service---------------------------
+Get designer details
+method get
+url: /api/private/designer/profile/1
+Response 200 ok
+{"id":2,"username":"tester","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}
+Response 400 bad request
+--------End service---------------------------
+
+--------Web service---------------------------
+Delete designer
+method delete 
+url:api/private/super/designer/delete/1
+Response 200 Ok => designer deleted successfully
+Response 400 bad request 
+--------End service---------------------------
+--------Web service---------------------------
+Create sysadmin:
+Url : api/private/super/sysadmin/create
+method : post
+message example:
+{
+    "email": "njimmahdi2@gmail.com",
+    "password": "start123",
+    "login": "sysadmin",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile"
+}
+Response 200 Ok => sysadmin created successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Update SystemAdmin:
+Url : api/private/sysadmin/update
+method : put
+message example:
+{
+    "id":1,
+    "email": "njimmahdidev@gmail.com",
+    "password": "start123",
+    "login": "sysadmin",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile",
+    "description":"this is a nice dev"
+}
+Response 200 Ok => sysadmin updated successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+
+--------Web service---------------------------
+Get the list of all sysadmin
+method get
+url api/private/super/sysadmin/all/1
+Response 200 ok 
+{"totalpages":1,"current_page":"1","users":[{"id":2,"username":"developer","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}]}
+Response 400 bad request
+--------End service---------------------------
+--------Web service---------------------------
+Get sysadmin details
+method get
+url: /api/private/sysadmin/profile/1
+Response 200 ok
+{"id":2,"username":"tester","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}
+Response 400 bad request
+--------End service---------------------------
+
+--------Web service---------------------------
+Delete sysadmin
+method delete 
+url:api/private/super/sysadmin/delete/1
+Response 200 Ok => sysadmin deleted successfully
+Response 400 bad request 
+--------End service---------------------------

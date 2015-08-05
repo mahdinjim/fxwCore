@@ -23,6 +23,9 @@ abstract class ConstValues
 	const DESUPDATED="Designer updated successfully";
 	const DESDELETED="Designer deleted successfully";
 	const TIMEZONE="Europe/Berlin";
+	const SYSACREATED="SystemAdmin created successfully";
+	const SYSAUPDATED="SystemAdmin updated successfully";
+	const SYSADELETED="SystemAdmin deleted successfully";
 
 
 

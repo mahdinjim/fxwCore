@@ -135,3 +135,32 @@ _detailsdesigner:
     defaults: { _controller: AcmtoolAppBundle:Designer:Details }
     requirements:
         _method: get
+_createsysadmin:
+    path:     /private/super/sysadmin/create
+    defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Create }
+    requirements:
+        _method: post
+
+_updatesysadmin:
+    path:     /private/sysadmin/update
+    defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Update }
+    requirements:
+        _method: put
+
+_deletesysadmin:
+    path:     /private/super/sysadmin/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Delete }
+    requirements:
+        _method: delete
+
+_listsysadmin:
+    path:     /private/super/sysadmin/all/{page}
+    defaults: { _controller: AcmtoolAppBundle:SystemAdmin:List }
+    requirements:
+        _method: get
+
+_detailssysadmin:
+    path:     /private/sysadmin/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Details }
+    requirements:
+        _method: get

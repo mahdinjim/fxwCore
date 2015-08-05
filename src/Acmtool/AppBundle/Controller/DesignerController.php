@@ -210,7 +210,7 @@ class DesignerController extends Controller
     public function DetailsAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-       if ($this->get('security.context')->isGranted('ROLE_TEAMLEADER') && $this->get('security.context')->getToken()->getUser()->getId()!=$id)  {
+       if ($this->get('security.context')->isGranted('ROLE_DESIGNER') && $this->get('security.context')->getToken()->getUser()->getId()!=$id)  {
             $response=new Response();
             $response->setStatusCode(403);
             $response->headers->set('Content-Type', 'application/json');

@@ -34,7 +34,7 @@ class AuthentificationService
             	else
             	{
             		$token=new Token();
-                    $today =new \DateTime("NOW",  new \DateTimeZone(TIMEZONE));
+                    $today =new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE));
                     $token->setCreationdate($today);
                     $token->setTokendig($this->generateToken($user,$today));
                     $userroles=$user->getRoles();

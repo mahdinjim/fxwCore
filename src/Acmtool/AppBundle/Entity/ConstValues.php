@@ -26,6 +26,9 @@ abstract class ConstValues
 	const SYSACREATED="SystemAdmin created successfully";
 	const SYSAUPDATED="SystemAdmin updated successfully";
 	const SYSADELETED="SystemAdmin deleted successfully";
+	const KEYACREATED="KeyAccount created successfully";
+	const KEYAUPDATED="KeyAccount updated successfully";
+	const KEYADELETED="KeyAccount deleted successfully";
 
 
 

@@ -387,3 +387,62 @@ url:api/private/super/sysadmin/delete/1
 Response 200 Ok => sysadmin deleted successfully
 Response 400 bad request 
 --------End service---------------------------
+--------Web service---------------------------
+Create KeyAccount:
+Url : api/private/super/keyaccount/create
+method : post
+message example:
+{
+    "email": "njimmahdi2@gmail.com",
+    "password": "start123",
+    "login": "keyaccount",
+    "name": "M",
+    "surname": "N"
+}
+Response 200 Ok => sysadmin created successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Update keyaccount:
+Url : api/private/keyaccount/update
+method : put
+message example:
+{
+    "id":1,
+    "email": "njimmahdidev@gmail.com",
+    "password": "start123",
+    "login": "keyaccount",
+    "name": "M",
+    "surname": "N",
+    "description":"this is a nice dev"
+}
+Response 200 Ok => keyaccount updated successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+
+--------Web service---------------------------
+Get the list of all keyaccount
+method get
+url api/private/super/keyaccount/all/1
+Response 200 ok 
+{"totalpages":1,"current_page":"1","users":[{"id":2,"username":"developer","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","description":null}]}
+Response 400 bad request
+--------End service---------------------------
+--------Web service---------------------------
+Get keyaccount details
+method get
+url: /api/private/keyaccount/profile/1
+Response 200 ok
+{"id":2,"username":"tester","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","description":null}
+Response 400 bad request
+--------End service---------------------------
+
+--------Web service---------------------------
+Delete keyaccount
+method delete 
+url:api/private/super/keyaccountkeyaccount/delete/1
+Response 200 Ok => keyaccount deleted successfully
+Response 400 bad request 
+--------End service---------------------------

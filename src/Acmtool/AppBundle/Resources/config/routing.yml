@@ -164,3 +164,32 @@ _detailssysadmin:
     defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Details }
     requirements:
         _method: get
+_createkeyaccount:
+    path:     /private/super/keyaccount/create
+    defaults: { _controller: AcmtoolAppBundle:KeyAccount:Create }
+    requirements:
+        _method: post
+
+_updatekeyaccount:
+    path:     /private/keyaccount/update
+    defaults: { _controller: AcmtoolAppBundle:KeyAccount:Update }
+    requirements:
+        _method: put
+
+_deletekeyaccount:
+    path:     /private/super/keyaccount/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:KeyAccount:Delete }
+    requirements:
+        _method: delete
+
+_listkeyaccount:
+    path:     /private/super/keyaccount/all/{page}
+    defaults: { _controller: AcmtoolAppBundle:KeyAccount:List }
+    requirements:
+        _method: get
+
+_detailskeyaccount:
+    path:     /private/keyaccount/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:KeyAccount:Details }
+    requirements:
+        _method: get

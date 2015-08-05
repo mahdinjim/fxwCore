@@ -47,3 +47,33 @@ _detailsTeamleader:
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:Details }
     requirements:
         _method: get
+
+_createdeveloper:
+    path:     /private/super/developer/create
+    defaults: { _controller: AcmtoolAppBundle:Developer:Create }
+    requirements:
+        _method: post
+
+_updatedeveloper:
+    path:     /private/developer/update
+    defaults: { _controller: AcmtoolAppBundle:Developer:Update }
+    requirements:
+        _method: put
+
+_deletedeveloper:
+    path:     /private/super/developer/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:Developer:Delete }
+    requirements:
+        _method: delete
+
+_listdeveloper:
+    path:     /private/super/developer/all/{page}
+    defaults: { _controller: AcmtoolAppBundle:Developer:List }
+    requirements:
+        _method: get
+
+_detailsdeveloper:
+    path:     /private/developer/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:Developer:Details }
+    requirements:
+        _method: get

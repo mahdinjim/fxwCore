@@ -62,5 +62,6 @@ security:
 
     access_control:
         - { path: ^/api/private/super/, roles: [ROLE_ADMIN] }
-        - { path: ^/api/private/super/, roles: [ROLE_ADMIN,ROLE_TEAMLEADER] }
+        - { path: ^/api/private/teamleader/, roles: [ROLE_ADMIN,ROLE_TEAMLEADER] }
+        - { path: ^/api/private/developer/, roles: [ROLE_ADMIN,ROLE_DEVELOPER] }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

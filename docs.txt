@@ -119,7 +119,10 @@ Response 400 bad request
 --------Web service---------------------------
 Get Team leader details
 method get
-url:
+url: /api/private/teamleader/profile/2
+Response 200 ok
+{"id":2,"username":"teamleader","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}
+Response 400 bad request
 --------End service---------------------------
 --------Web service---------------------------
 Get the list of all team leaders
@@ -127,5 +130,51 @@ method get
 url api/private/super/teamleader/all/1
 Response 200 ok 
 {"totalpages":1,"current_page":"1","users":[{"id":2,"username":"teamleader","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}]}
+Response 400 bad request
+--------End service---------------------------
+--------Web service---------------------------
+Create Developer:
+Url : api/private/super/developer/create
+method : post
+message example:
+{
+    "email": "njimmahdi2@gmail.com",
+    "password": "start123",
+    "login": "developer",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile"
+}
+Response 200 Ok => Developer created successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Update Developer:
+Url : api/private/teamleader/update
+method : put
+message example:
+{
+    "id":1,
+    "email": "njimmahdidev@gmail.com",
+    "password": "start123",
+    "login": "developer",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile",
+    "description":"this is a nice dev"
+}
+Response 200 Ok => Developer updated successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Get the list of all developers
+method get
+url api/private/super/developer/all/1
+Response 200 ok 
+{"totalpages":1,"current_page":"1","users":[{"id":2,"username":"developer","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}]}
 Response 400 bad request
 --------End service---------------------------

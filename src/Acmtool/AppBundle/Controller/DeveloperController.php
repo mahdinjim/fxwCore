@@ -6,15 +6,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Httpfoundation\Response;
-use Acmtool\AppBundle\Entity\TeamLeader;
+use Acmtool\AppBundle\Entity\Developer;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
 
 
-class TeamLeaderController extends Controller
+class DeveloperController extends Controller
 {
-
     public function CreateAction()
     {
         $request = $this->get('request');
@@ -34,14 +33,14 @@ class TeamLeaderController extends Controller
             }
             else
             {
-                $user=new TeamLeader();
+                $user=new Developer();
                 $creds=new Creds();
                 $creds->setLogin($json->{"login"});
                 $factory = $this->get('security.encoder_factory');
                 $encoder = $factory->getEncoder($creds);
                 $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
                 $creds->setPassword($password);
-                $creds->setTitle(Titles::TeamLeader);
+                $creds->setTitle(Titles::Developer);
                 $user->setCredentials($creds);
                 $user->setEmail($json->{'email'});
                 $user->setName($json->{'name'});
@@ -68,7 +67,7 @@ class TeamLeaderController extends Controller
                     $em->flush();
                     $res=new Response();
                     $res->setStatusCode(200);
-                    $res->setContent(ConstValues::TLCREATED);
+                    $res->setContent(ConstValues::DEVCREATED);
                     return $res;
                 }
 
@@ -95,7 +94,7 @@ class TeamLeaderController extends Controller
             }
             else
             {
-                if ($this->get('security.context')->isGranted('ROLE_TEAMLEADER') && $this->get('security.context')->getToken()->getUser()->getId()!=$json->{'id'})  {
+                if ($this->get('security.context')->isGranted('ROLE_DEVELOPER') && $this->get('security.context')->getToken()->getUser()->getId()!=$json->{'id'})  {
                         $response=new Response();
                         $response->setStatusCode(403);
                         $response->headers->set('Content-Type', 'application/json');
@@ -103,8 +102,8 @@ class TeamLeaderController extends Controller
                 }
                 else
                 {
-                    $user=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($json->{'id'});
-                    if($user instanceOf TeamLeader){
+                    $user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{'id'});
+                    if($user instanceOf Developer){
                         $user->getCredentials()->setLogin($json->{"login"});
                         $factory = $this->get('security.encoder_factory');
                         $encoder = $factory->getEncoder($user->getCredentials());
@@ -138,7 +137,7 @@ class TeamLeaderController extends Controller
                             $em->flush();
                             $res=new Response();
                             $res->setStatusCode(200);
-                            $res->setContent(ConstValues::TLUPDATED);
+                            $res->setContent(ConstValues::DEVUPDATED);
                             return $res;
                         }
                     }
@@ -157,13 +156,13 @@ class TeamLeaderController extends Controller
     public function DeleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $user=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($id);
+        $user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($id);
         if($user){
             $em->remove($user);
             $em->flush();
             $res=new Response();
             $res->setStatusCode(200);
-            $res->setContent(ConstValues::TLDELETED);
+            $res->setContent(ConstValues::DEVDELETED);
             return $res;
         }
         else
@@ -172,17 +171,16 @@ class TeamLeaderController extends Controller
             $response->headers->set('Content-Type', 'application/json');
             return $response;
         }
-
     }
 
     public function ListAction($page)
     {
         $em = $this->getDoctrine()->getManager();
-        $totalpages=ceil($em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:TeamLeader t")
+        $totalpages=ceil($em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:Developer t")
         ->getSingleScalarResult()/10);
         $start=ConstValues::COUNT*($page-1);
         $End=ConstValues::COUNT*$page;
-        $result=$em->createQuery('select t from AcmtoolAppBundle:TeamLeader t')
+        $result=$em->createQuery('select d from AcmtoolAppBundle:Developer d')
                     ->setMaxResults(ConstValues::COUNT)
                     ->setFirstResult($start)
                     ->getResult();
@@ -220,9 +218,10 @@ class TeamLeaderController extends Controller
         }
         else
         {
-             if($user)
+
+            $user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($id);
+            if($user)
             {
-                $user=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($id);
                 $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"capacity"=>$user->getCapacity(),"skills"=>$user->getSkills(),"description"=>$user->getDescription());
                 $res=new Response();
                 $res->setStatusCode(200);
@@ -237,9 +236,7 @@ class TeamLeaderController extends Controller
             }
 
 
-
         }
-
     }
 
 }

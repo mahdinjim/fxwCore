@@ -9,12 +9,9 @@ use Symfony\Component\Httpfoundation\Response;
 use Acmtool\AppBundle\Entity\Admin;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
+use Acmtool\AppBundle\Entity\ConstValues;
 
 
-Const INVALIDREQUEST="invalid_request";
-Const ADMINCREATED="Admin created successfully";
-Const ADMINUPDATED="Admin updated successfully";
-Const REASONWRONG="Wrong password/Username";
 
 class AdminControllerController extends Controller
 {
@@ -31,7 +28,7 @@ class AdminControllerController extends Controller
             $json=$result['json'];
             if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'})))
             {
-                $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -67,7 +64,7 @@ class AdminControllerController extends Controller
                 $em->flush();
                 $res=new Response();
                 $res->setStatusCode(200);
-                $res->setContent(ADMINCREATED);
+                $res->setContent(ConstValues::ADMINCREATED);
                 return $res;
             }
 
@@ -89,7 +86,7 @@ class AdminControllerController extends Controller
             $admin=$usr= $this->get('security.context')->getToken()->getUser();
             if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'})))
             {
-                $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -120,7 +117,7 @@ class AdminControllerController extends Controller
                     $em->flush();
                     $res=new Response();
                     $res->setStatusCode(200);
-                    $res->setContent(ADMINUPDATED);
+                    $res->setContent(ConstValues::ADMINUPDATED);
                     return $res;
                 }
 

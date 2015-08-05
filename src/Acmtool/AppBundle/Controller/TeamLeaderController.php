@@ -12,7 +12,9 @@ use Acmtool\AppBundle\Entity\Titles;
 
 Const TLCREATED="TeamLeader created successfully";
 Const TLUPDATED="TeamLeader updated successfully";
-Const INVALIDREQUEST="invalid_request";
+Const TLDELETED="TeamLeader deleted successfully";
+Const COUNT=10;
+
 class TeamLeaderController extends Controller
 {
 
@@ -96,7 +98,7 @@ class TeamLeaderController extends Controller
             }
             else
             {
-                if ($this->get('security.context')->isGranted('ROLE_TEAMLEADER') && $this->get('security.context')->getToken()->getUser()->getId()!=$json->{'id'})  {
+                if (!$this->get('security.context')->isGranted('ROLE_TEAMLEADER') && $this->get('security.context')->getToken()->getUser()->getId()!=$json->{'id'})  {
                         $response=new Response();
                         $response->setStatusCode(403);
                         $response->headers->set('Content-Type', 'application/json');
@@ -157,14 +159,80 @@ class TeamLeaderController extends Controller
 
     public function DeleteAction($id)
     {
+        $em = $this->getDoctrine()->getManager();
+        $user=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($id);
+        if($user){
+            $em->remove($user);
+            $em->flush();
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(TLDELETED);
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+
     }
 
-    public function ListAction($id)
+    public function ListAction($page)
     {
+        $em = $this->getDoctrine()->getManager();
+        $totalpages=ceil($em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:TeamLeader t")
+        ->getSingleScalarResult()/10);
+        $start=COUNT*($page-1);
+        $End=COUNT*$page;
+        $result=$em->createQuery('select t from AcmtoolAppBundle:TeamLeader t')
+                    ->setMaxResults(COUNT)
+                    ->setFirstResult($start)
+                    ->getResult();
+        if(count($result)>0)
+        {
+            $users=array();
+            $i=0;
+            foreach ($result as $user) {
+                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"capacity"=>$user->getCapacity(),"skills"=>$user->getSkills(),"description"=>$user->getDescription());
+                $i++;
+
+            }
+            $messag = array('totalpages' => $totalpages,'current_page'=>$page,'users'=>$users);
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($messag));
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
     }
 
-    public function DetailsAction()
+    public function DetailsAction($id)
     {
+        $em = $this->getDoctrine()->getManager();
+       if (!$this->get('security.context')->isGranted('ROLE_TEAMLEADER') && $this->get('security.context')->getToken()->getUser()->getId()!=$id)  {
+            $response=new Response();
+            $response->setStatusCode(403);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+        else
+        {
+            $user=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($id);
+            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"capacity"=>$user->getCapacity(),"skills"=>$user->getSkills(),"description"=>$user->getDescription());
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($UserInfo));
+            return $res;
+
+
+        }
+
     }
 
 }

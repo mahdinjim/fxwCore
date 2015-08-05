@@ -107,4 +107,25 @@ message example:
 }
 Response 200 Ok => TeamLeader updated successfully
 Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Delete TeamLeader
+method delete 
+url:api/private/super/teamleader/delete/1
+Response 200 Ok => TeamLeader deleted successfully
+Response 400 bad request 
+--------End service---------------------------
+--------Web service---------------------------
+Get Team leader details
+method get
+url:
+--------End service---------------------------
+--------Web service---------------------------
+Get the list of all team leaders
+method get
+url api/private/super/teamleader/all/1
+Response 200 ok 
+{"totalpages":1,"current_page":"1","users":[{"id":2,"username":"teamleader","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}]}
+Response 400 bad request
 --------End service---------------------------

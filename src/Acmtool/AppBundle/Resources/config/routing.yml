@@ -31,13 +31,13 @@ _updateTeamleader:
         _method: put
 
 _deleteTeamleader:
-    path:     /private/super/teamleader/{id}
+    path:     /private/super/teamleader/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:Delete }
     requirements:
         _method: delete
 
 _listTeamleader:
-    path:     /private/super/teamleader/all
+    path:     /private/super/teamleader/all/{page}
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:List }
     requirements:
         _method: get

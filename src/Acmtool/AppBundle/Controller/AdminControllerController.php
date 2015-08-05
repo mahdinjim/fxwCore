@@ -10,7 +10,7 @@ use Acmtool\AppBundle\Entity\Admin;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 
-Const PERIOD=3600;
+
 Const INVALIDREQUEST="invalid_request";
 Const ADMINCREATED="Admin created successfully";
 Const ADMINUPDATED="Admin updated successfully";

@@ -106,3 +106,32 @@ _detailstester:
     defaults: { _controller: AcmtoolAppBundle:Tester:Details }
     requirements:
         _method: get
+_createdesigner:
+    path:     /private/super/designer/create
+    defaults: { _controller: AcmtoolAppBundle:Designer:Create }
+    requirements:
+        _method: post
+
+_updatedesigner:
+    path:     /private/designer/update
+    defaults: { _controller: AcmtoolAppBundle:Designer:Update }
+    requirements:
+        _method: put
+
+_deletedesigner:
+    path:     /private/super/designer/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:Designer:Delete }
+    requirements:
+        _method: delete
+
+_listdesigner:
+    path:     /private/super/designer/all/{page}
+    defaults: { _controller: AcmtoolAppBundle:Designer:List }
+    requirements:
+        _method: get
+
+_detailsdesigner:
+    path:     /private/designer/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:Designer:Details }
+    requirements:
+        _method: get

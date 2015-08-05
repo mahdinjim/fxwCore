@@ -7,6 +7,7 @@ abstract class ConstValues
 	const ADMINCREATED="Admin created successfully";
 	const ADMINUPDATED="Admin updated successfully";
 	const REASONWRONG="Wrong password/Username";
+	const REASONMISSING="Missing password/Username";
 	const TLCREATED="TeamLeader created successfully";
 	const TLUPDATED="TeamLeader updated successfully";
 	const TLDELETED="TeamLeader deleted successfully";
@@ -18,4 +19,11 @@ abstract class ConstValues
 	const TSTUPDATED="Tester updated successfully";
 	const TSTDELETED="Tester deleted successfully";
 	const PERIOD=3600;
+	const DESCREATED="Designer created successfully";
+	const DESUPDATED="Designer updated successfully";
+	const DESDELETED="Designer deleted successfully";
+	const TIMEZONE="Europe/Berlin";
+
+
+
 }

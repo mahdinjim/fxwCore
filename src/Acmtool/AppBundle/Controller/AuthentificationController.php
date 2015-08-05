@@ -57,7 +57,7 @@ class AuthentificationController extends Controller
                         elseif ($user instanceOf TeamMember) {
                             $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles());
                         }
-                        $tokenInfo = array('token' => $token->getTokendig(),'experationDate'=>$token->getCreationdate()->add(new \DateInterval('PT'.PERIOD.'S')) );
+                        $tokenInfo = array('token' => $token->getTokendig(),'experationDate'=>$token->getCreationdate()->add(new \DateInterval('PT'.ConstValues::PERIOD.'S')) );
                         $mess = array('user' => $UserInfo, 'token'=>$tokenInfo);
                         $response = new Response(json_encode($mess), 200);
                         $response->headers->set('Content-Type', 'application/json');

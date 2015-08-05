@@ -1,11 +1,8 @@
 <?php
 namespace Acmtool\AppBundle\DependencyInjection;
 use Acmtool\AppBundle\Entity\Token;
+use Acmtool\AppBundle\Entity\ConstValues;
 
-Const PERIOD=3600;
-Const REASONWRONG="Wrong password/Username";
-Const REASONMISSING="Missing password/Username";
-Const TIMEZONE="Europe/Berlin";
 class AuthentificationService
 {
 	private $doctrine;
@@ -54,23 +51,23 @@ class AuthentificationService
             else
             {
             	$result["auth"]=false;
-				$result["reason"]=REASONWRONG;
+				$result["reason"]=ConstValues::REASONWRONG;
 				return $result;
             }
     	}
     	else
 		{
 			$result["auth"]=false;
-			$result["reason"]=REASONMISSING;
+			$result["reason"]=ConstValues::REASONMISSING;
 			return $result;
 		}
 	}
 	private function istokenExpired($token)
 	{
 		if($token){
-                date_default_timezone_set(TIMEZONE);
-                $expireDate=$token->getCreationdate()->add(new \DateInterval('PT'.PERIOD.'S'));
-                $today =new \DateTime("NOW",  new \DateTimeZone(TIMEZONE));
+                date_default_timezone_set(ConstValues::TIMEZONE);
+                $expireDate=$token->getCreationdate()->add(new \DateInterval('PT'.ConstValues::PERIOD.'S'));
+                $today =new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE));
                 if($today<$expireDate)
                     return false;
                 else
@@ -88,7 +85,7 @@ class AuthentificationService
 	}
 	private function generateToken($User,$creationdate)
 	{
-		$tmp=$User->getUsername().$creationdate->format(TIMEZONE);
+		$tmp=$User->getUsername().$creationdate->format(ConstValues::TIMEZONE);
         $csrfToken = $this->crfProvider->generateCsrfToken($tmp);
         return $csrfToken;
 

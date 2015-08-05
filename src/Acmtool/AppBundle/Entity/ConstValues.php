@@ -17,4 +17,5 @@ abstract class ConstValues
 	const TSTCREATED="Tester created successfully";
 	const TSTUPDATED="Tester updated successfully";
 	const TSTDELETED="Tester deleted successfully";
+	const PERIOD=3600;
 }

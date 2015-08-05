@@ -9,8 +9,9 @@ use Symfony\Component\Httpfoundation\Response;
 use Acmtool\AppBundle\Entity\Admin;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\TeamMember;
+use Acmtool\AppBundle\Entity\ConstValues;
 
-Const PERIOD=3600;
+
 class AuthentificationController extends Controller
 {
     public function ApiAuthentificationAction()
@@ -26,7 +27,7 @@ class AuthentificationController extends Controller
             $json=$result['json'];
             if(!(isset($json->{"grant_type"}) && isset($json->{"login"}) && isset($json->{"password"})))
             {
-                $response=new Response('{"err":"'.INVALIDREQUEST.'"}',400);
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -72,7 +73,7 @@ class AuthentificationController extends Controller
                 }
                 else
                 {
-                    $response=new Response('{"errors":"'.REASONWRONG.'"}',403);
+                    $response=new Response('{"errors":"'.ConstValues::REASONWRONG.'"}',403);
                     $response->headers->set('Content-Type', 'application/json');
                     return $response;
                 }
@@ -80,7 +81,7 @@ class AuthentificationController extends Controller
             }
             else
             {
-                $response=new Response('{"errors":"'.INVALIDREQUEST.'"}',400);
+                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }

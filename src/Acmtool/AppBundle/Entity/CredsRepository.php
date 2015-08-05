@@ -16,6 +16,7 @@ class CredsRepository extends EntityRepository
 	public function getUserByUsername($username)
 	{
 		$creds=$this->findOneBy(array('login' => $username ));
+		if($creds)
 		switch ($creds->getTitle()) {
 			case Titles::Admin:
 				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:Admin")->findOneBy(array("credentials"=>$creds));
@@ -48,7 +49,8 @@ class CredsRepository extends EntityRepository
 				return false;
 				break;
 		}
-
+		else
+			return false;
 
 	}
 }

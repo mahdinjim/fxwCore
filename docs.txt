@@ -89,6 +89,7 @@ Response 200 Ok => TeamLeader created successfully
 Response 400 bad request => {"errors":[]}
 
 --------End service---------------------------
+
 --------Web service---------------------------
 Update TeamLeader:
 Url : api/private/teamleader/update
@@ -116,6 +117,7 @@ url:api/private/super/teamleader/delete/1
 Response 200 Ok => TeamLeader deleted successfully
 Response 400 bad request 
 --------End service---------------------------
+
 --------Web service---------------------------
 Get Team leader details
 method get
@@ -124,6 +126,7 @@ Response 200 ok
 {"id":2,"username":"teamleader","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}
 Response 400 bad request
 --------End service---------------------------
+
 --------Web service---------------------------
 Get the list of all team leaders
 method get
@@ -170,6 +173,7 @@ Response 200 Ok => Developer updated successfully
 Response 400 bad request => {"errors":[]}
 
 --------End service---------------------------
+
 --------Web service---------------------------
 Get the list of all developers
 method get
@@ -177,4 +181,83 @@ url api/private/super/developer/all/1
 Response 200 ok 
 {"totalpages":1,"current_page":"1","users":[{"id":2,"username":"developer","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}]}
 Response 400 bad request
+--------End service---------------------------
+--------Web service---------------------------
+Get Developer details
+method get
+url: /api/private/developer/profile/1
+Response 200 ok
+{"id":2,"username":"teamleader","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}
+Response 400 bad request
+--------End service---------------------------
+
+--------Web service---------------------------
+Delete TeamLeader
+method delete 
+url:api/private/super/developer/delete/1
+Response 200 Ok => developer deleted successfully
+Response 400 bad request 
+--------End service---------------------------
+--------Web service---------------------------
+Create Tester:
+Url : api/private/super/tester/create
+method : post
+message example:
+{
+    "email": "njimmahdi2@gmail.com",
+    "password": "start123",
+    "login": "tester",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile"
+}
+Response 200 Ok => Developer created successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Update tester:
+Url : api/private/tester/update
+method : put
+message example:
+{
+    "id":1,
+    "email": "njimmahdidev@gmail.com",
+    "password": "start123",
+    "login": "tester",
+    "name": "M",
+    "surname": "N",
+    "capacity": "fulltime",
+    "skills": "java,php,agile",
+    "description":"this is a nice dev"
+}
+Response 200 Ok => tester updated successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+
+--------Web service---------------------------
+Get the list of all testers
+method get
+url api/private/super/tester/all/1
+Response 200 ok 
+{"totalpages":1,"current_page":"1","users":[{"id":2,"username":"developer","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}]}
+Response 400 bad request
+--------End service---------------------------
+--------Web service---------------------------
+Get Developer details
+method get
+url: /api/private/tester/profile/1
+Response 200 ok
+{"id":2,"username":"tester","email":"njimmahdi2@gmail.com","photo":null,"name":"M","surname":"N","capacity":"fulltime","skills":"java,php,agile","description":null}
+Response 400 bad request
+--------End service---------------------------
+
+--------Web service---------------------------
+Delete tester
+method delete 
+url:api/private/super/tester/delete/1
+Response 200 Ok => tester deleted successfully
+Response 400 bad request 
 --------End service---------------------------

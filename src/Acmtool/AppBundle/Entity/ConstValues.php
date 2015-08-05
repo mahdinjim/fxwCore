@@ -14,5 +14,7 @@ abstract class ConstValues
 	const DEVCREATED="Developer created successfully";
 	const DEVUPDATED="Developer updated successfully";
 	const DEVDELETED="Developer deleted successfully";
-
+	const TSTCREATED="Tester created successfully";
+	const TSTUPDATED="Tester updated successfully";
+	const TSTDELETED="Tester deleted successfully";
 }

@@ -77,3 +77,32 @@ _detailsdeveloper:
     defaults: { _controller: AcmtoolAppBundle:Developer:Details }
     requirements:
         _method: get
+_createtester:
+    path:     /private/super/tester/create
+    defaults: { _controller: AcmtoolAppBundle:Tester:Create }
+    requirements:
+        _method: post
+
+_updatetester:
+    path:     /private/tester/update
+    defaults: { _controller: AcmtoolAppBundle:Tester:Update }
+    requirements:
+        _method: put
+
+_deletetester:
+    path:     /private/super/tester/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:Tester:Delete }
+    requirements:
+        _method: delete
+
+_listtester:
+    path:     /private/super/tester/all/{page}
+    defaults: { _controller: AcmtoolAppBundle:Tester:List }
+    requirements:
+        _method: get
+
+_detailstester:
+    path:     /private/tester/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:Tester:Details }
+    requirements:
+        _method: get

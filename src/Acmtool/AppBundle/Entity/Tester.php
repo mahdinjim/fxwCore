@@ -27,7 +27,7 @@ class Tester extends DevTeamMember implements UserInterface, \Serializable
 
     /**
      * @Assert\NotBlank
-     * @ORM\OneToOne(targetEntity="Creds")
+     * @ORM\OneToOne(targetEntity="Creds",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
      **/
     private $credentials;
@@ -42,7 +42,7 @@ class Tester extends DevTeamMember implements UserInterface, \Serializable
     private $isActive;
      /**
      * @ORM\OneToOne(targetEntity="Token")
-     * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
 

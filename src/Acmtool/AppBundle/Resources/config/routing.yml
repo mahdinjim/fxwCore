@@ -213,8 +213,33 @@ _listcustomer:
     defaults: { _controller: AcmtoolAppBundle:Customer:List }
     requirements:
         _method: get
-_detailskeyaccount:
+_detailscustomer:
     path:     /private/customer/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:Customer:Details }
+    requirements:
+        _method: get
+_createcustomeruser:
+    path:     /private/customer/users/create
+    defaults: { _controller: AcmtoolAppBundle:CustomerUser:Create }
+    requirements:
+        _method: post
+_updatecustomeruser:
+    path:     /private/customer/users/update
+    defaults: { _controller: AcmtoolAppBundle:CustomerUser:Update }
+    requirements:
+        _method: put
+_deletecustomeruser:
+    path:     /private/customer/users/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:CustomerUser:Delete }
+    requirements:
+        _method: delete
+_listcustomeruser:
+    path:     /private/customer/users/all/{page}
+    defaults: { _controller: AcmtoolAppBundle:Customer:List }
+    requirements:
+        _method: get
+_detailscustomeruser:
+    path:     /private/customer/users/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:Customer:Details }
     requirements:
         _method: get

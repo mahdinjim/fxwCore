@@ -9,9 +9,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * CustomerUser
- * @UniqueEntity("email")
+ * @UniqueEntity(fields={"email"},message="This email is already used")
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\CustomerUserRepository")
  */
 class CustomerUser implements UserInterface, \Serializable
 {
@@ -26,7 +26,7 @@ class CustomerUser implements UserInterface, \Serializable
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="the email filed is required")
      * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
      * @ORM\Column(name="email", type="string", length=255)
      */
@@ -41,14 +41,14 @@ class CustomerUser implements UserInterface, \Serializable
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="the name field is required")
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="the surname field is required")
      * @ORM\Column(name="surname", type="string", length=255)
      */
     private $surname;
@@ -56,7 +56,7 @@ class CustomerUser implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="telnumber", type="decimal")
+     * @ORM\Column(name="telnumber", type="decimal",nullable=true)
      */
     private $telnumber;
      /**

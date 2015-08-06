@@ -48,12 +48,17 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
     * @ORM\OneToMany(targetEntity="Customer", mappedBy="keyaccount",cascade={"remove"})
     */
     private $customers;
+    /**
+    * @ORM\OneToMany(targetEntity="Project", mappedBy="keyaccount")
+    */
+    private $projects;
 
     public function __construct()
     {
         $this->isActive = true;
         $this->salt = md5(uniqid(null, true));
         $this->customers = new ArrayCollection();
+        $this->projects=new ArrayCollection();
     }
     /**
      * Get id
@@ -162,5 +167,37 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
     public function getApitoken()
     {
         return $this->apitoken;
+    }
+    /**
+     * Add projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     * @return KeyAccount
+     */
+    public function addProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects[] = $projects;
+    
+        return $this;
+    }
+
+    /**
+     * Remove projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     */
+    public function removeProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects->removeElement($projects);
+    }
+
+    /**
+     * Get projects
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getProjects()
+    {
+        return $this->projects;
     }
 }

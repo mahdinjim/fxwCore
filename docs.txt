@@ -544,3 +544,6 @@ Delete Customer
 URL :api/private/keyaccount/customer/delete/1
 Response 200 ok : customer deleted successfully 
 --------End service---------------------------
+--------Web service---------------------------
+Create,Update,list,details delete CustomerUser created but not tested and finalized
+--------End service---------------------------

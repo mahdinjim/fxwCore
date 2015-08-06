@@ -45,11 +45,16 @@ class Designer extends DevTeamMember implements UserInterface, \Serializable
      * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
+    /**
+    * @ORM\ManyToMany(targetEntity="Project",inversedBy="developers")
+    */
+    private $projects;
 
     public function __construct()
     {
         $this->isActive = true;
         $this->salt = md5(uniqid(null, true));
+        $this->projects=new ArrayCollection();
     }
     /**
      * Get id
@@ -158,5 +163,37 @@ class Designer extends DevTeamMember implements UserInterface, \Serializable
     public function getApitoken()
     {
         return $this->apitoken;
+    }
+    /**
+     * Add projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     * @return Designer
+     */
+    public function addProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects[] = $projects;
+    
+        return $this;
+    }
+
+    /**
+     * Remove projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     */
+    public function removeProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects->removeElement($projects);
+    }
+
+    /**
+     * Get projects
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getProjects()
+    {
+        return $this->projects;
     }
 }

@@ -7,6 +7,7 @@ use Acmtool\AppBundle\Entity\DevTeamMember;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Developer
@@ -45,11 +46,15 @@ class Developer extends DevTeamMember implements UserInterface, \Serializable
      * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
-
+    /**
+    * @ORM\ManyToMany(targetEntity="Project",inversedBy="developers")
+    */
+    private $projects;
     public function __construct()
     {
         $this->isActive = true;
         $this->salt = md5(uniqid(null, true));
+        $this->projects=new ArrayCollection();
     }
     /**
      * Get id
@@ -160,4 +165,73 @@ class Developer extends DevTeamMember implements UserInterface, \Serializable
         return $this->apitoken;
     }
    
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     * @return Developer
+     */
+    public function setSalt($salt)
+    {
+        $this->salt = $salt;
+    
+        return $this;
+    }
+
+    /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Developer
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * Add projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     * @return Developer
+     */
+    public function addProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects[] = $projects;
+    
+        return $this;
+    }
+
+    /**
+     * Remove projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     */
+    public function removeProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects->removeElement($projects);
+    }
+
+    /**
+     * Get projects
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getProjects()
+    {
+        return $this->projects;
+    }
 }

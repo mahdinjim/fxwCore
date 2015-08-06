@@ -108,12 +108,18 @@ class Customer implements UserInterface, \Serializable
     * @ORM\JoinColumn(name="keyaccount_id",referencedColumnName="id")
     */
     private $KeyAccount;
+    /**
+    * @ORM\OneToMany(targetEntity="Project", mappedBy="owner")
+    */
+    private $projects;
     public function __construct()
     {
         $this->isActive = true;
         $this->salt = md5(uniqid(null, true));
         $this->users = new ArrayCollection();
+        $this->projects=new ArrayCollection();
     }
+
     /**
      * Get id
      *
@@ -493,5 +499,38 @@ class Customer implements UserInterface, \Serializable
     public function getKeyAccount()
     {
         return $this->KeyAccount;
+    }
+
+    /**
+     * Add projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     * @return Customer
+     */
+    public function addProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects[] = $projects;
+    
+        return $this;
+    }
+
+    /**
+     * Remove projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     */
+    public function removeProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects->removeElement($projects);
+    }
+
+    /**
+     * Get projects
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getProjects()
+    {
+        return $this->projects;
     }
 }

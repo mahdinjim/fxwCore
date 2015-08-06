@@ -29,7 +29,9 @@ abstract class ConstValues
 	const KEYACREATED="KeyAccount created successfully";
 	const KEYAUPDATED="KeyAccount updated successfully";
 	const KEYADELETED="KeyAccount deleted successfully";
-
+	const CUSCREATED="Customer created successfully";
+	const CUSUPDATED="Customer updated successfully";
+	const CUSDELETED="Customer deleted successfully";
 
 
 }

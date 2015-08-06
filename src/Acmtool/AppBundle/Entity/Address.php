@@ -3,7 +3,7 @@
 namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Address
  *
@@ -23,35 +23,35 @@ class Address
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank(message="The address field is required")
      * @ORM\Column(name="Address", type="string", length=255)
      */
     private $address;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank(message="The city field is required")
      * @ORM\Column(name="City", type="string", length=255)
      */
     private $city;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank(message="The city field is required")
      * @ORM\Column(name="Country", type="string", length=255)
      */
     private $country;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="State", type="string", length=255)
+     * 
+     * @ORM\Column(name="State", type="string", length=255,nullable=true)
      */
     private $state;
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank(message="The email field is required")
      * @ORM\Column(name="ZipCode", type="string", length=255)
      */
     private $zipCode;

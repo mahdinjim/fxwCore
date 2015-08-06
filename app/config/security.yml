@@ -68,4 +68,5 @@ security:
         - { path: ^/api/private/designer/, roles: [ROLE_ADMIN,ROLE_DESIGNER] }
         - { path: ^/api/private/sysadmin/, roles: [ROLE_ADMIN,ROLE_SYSADMIN] }
         - { path: ^/api/private/keyaccount/, roles: [ROLE_ADMIN,ROLE_KEYACCOUNT] }
+        - { path: ^/api/private/customer/, roles: [ROLE_ADMIN,ROLE_KEYACCOUNT,ROLE_COSTUMER] }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

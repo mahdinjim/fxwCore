@@ -193,3 +193,28 @@ _detailskeyaccount:
     defaults: { _controller: AcmtoolAppBundle:KeyAccount:Details }
     requirements:
         _method: get
+_createcustomer:
+    path:     /private/keyaccount/customer/create
+    defaults: { _controller: AcmtoolAppBundle:Customer:Create }
+    requirements:
+        _method: post
+_updatecustomer:
+    path:     /private/customer/update
+    defaults: { _controller: AcmtoolAppBundle:Customer:Update }
+    requirements:
+        _method: put
+_deletecustomer:
+    path:     /private/keyaccount/customer/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:Customer:Delete }
+    requirements:
+        _method: delete
+_listcustomer:
+    path:     /private/keyaccount/customer/all/{page}
+    defaults: { _controller: AcmtoolAppBundle:Customer:List }
+    requirements:
+        _method: get
+_detailskeyaccount:
+    path:     /private/customer/profile/{id}
+    defaults: { _controller: AcmtoolAppBundle:Customer:Details }
+    requirements:
+        _method: get

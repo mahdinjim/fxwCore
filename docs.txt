@@ -446,3 +446,101 @@ url:api/private/super/keyaccountkeyaccount/delete/1
 Response 200 Ok => keyaccount deleted successfully
 Response 400 bad request 
 --------End service---------------------------
+
+--------Web service---------------------------
+Create Customer:
+Url : api/private/keyaccount/customer/create
+method : post
+message example:
+{
+    "email": "njimmahdi@disycs.com",
+    "password": "start123",
+    "login": "customer",
+    "name": "M",
+    "surname": "N",
+    "tel":21082206,
+    "companyname":"Disycs",
+    "vat":18,
+    "address":{
+        "address":"afran center",
+        "zipcode":"3000",
+        "city":"Sfax",
+        "country":"Tunisia",
+        "state":"Sfax"
+    }
+}
+Response 200 Ok => customer created successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+--------Web service---------------------------
+Update Customer:
+Url : api/private/customer/update
+method : put
+message example:
+{
+    "id":1,
+    "keyaccount_id":2,
+    "email": "njimmahdi@disycs.com",
+    "password": "start123",
+    "login": "customer",
+    "tel":21082206,
+    "name": "M",
+    "surname": "N",
+    "companyname":"Disycs",
+    "vat":18,
+    "address":{
+        "address":"afran center",
+        "zipcode":"3000",
+        "city":"Sfax",
+        "country":"Tunisia",
+        "state":"Sfax"
+    }
+}
+Response 200 Ok => customer updated successfully
+Response 400 bad request => {"errors":[]}
+
+--------End service---------------------------
+
+--------Web service---------------------------
+List of  Customers:
+Url : api/private/keyaccount/customer/all/1
+method : get
+response example:
+{"totalpages":1,"current_page":"1","users":[{"id":2,"username":"customer","email":"njimmahdi@disycs.com","logo":null,"name":"M","surname":"N","companyname":"Disycs","vat":18,"tel":null,"address":{"address":"afran center","zipcode":"3000","city":"Sfax","country":"Tunisia","state":"Sfax"},"keyaccount":{"id":2,"name":"M","surname":"N"}},{"id":3,"username":"customer1","email":"njimmahdi1@disycs.com","logo":null,"name":"M","surname":"N","companyname":"Disycs","vat":18,"tel":null,"address":{"address":"afran center","zipcode":"3000","city":"Sfax","country":"Tunisia","state":"Sfax"},"keyaccount":{"id":2,"name":"M","surname":"N"}}]}
+--------End service---------------------------
+--------Web service---------------------------
+Details of a customer
+Url:api/private/customer/profile/2
+method:Get
+response example
+{
+id: 2
+username: "customer"
+email: "njimmahdi@disycs.com"
+logo: null
+name: "M"
+surname: "N"
+companyname: "Disycs"
+vat: 18
+tel: null
+address: {
+address: "afran center"
+zipcode: "3000"
+city: "Sfax"
+country: "Tunisia"
+state: "Sfax"
+}-
+keyaccount: {
+id: 2
+name: "M"
+surname: "N"
+}-
+}
+--------End service---------------------------
+
+--------Web service---------------------------
+Delete Customer
+URL :api/private/keyaccount/customer/delete/1
+Response 200 ok : customer deleted successfully 
+--------End service---------------------------

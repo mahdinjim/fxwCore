@@ -6,12 +6,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Customer
- * @UniqueEntity("email")
+ * @UniqueEntity(fields={"email"},message="This email is already used")
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\CustomerRepository")
  */
 class Customer implements UserInterface, \Serializable
 {
@@ -23,10 +24,30 @@ class Customer implements UserInterface, \Serializable
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+     /**
+     * @var string
+     * @Assert\NotBlank(message="The name field is required")
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    private $name;
 
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The surname field is required")
+     * @ORM\Column(name="surname", type="string", length=255)
+     */
+    private $surname;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="telnumber", type="decimal",nullable=true)
+     */
+    private $telnumber;
+
+    /**
+     * @var string
+     * @Assert\NotBlank(message="The companyname field is required")
      * @ORM\Column(name="companyname", type="string", length=255)
      */
     private $companyname;
@@ -34,25 +55,31 @@ class Customer implements UserInterface, \Serializable
     /**
      * @var integer
      *
-     * @ORM\Column(name="vat", type="integer")
+     * @ORM\Column(name="vat", type="integer",nullable=true)
      */
     private $vat;
     /**
      * @var string
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The email field is required")
      * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
      * @ORM\Column(name="email", type="string", length=255)
      */
     private $email;
     /**
+     * @var string
+     * @ORM\Column(name="logo", type="string", length=255,nullable=true)
+     */
+    private $logo;
+
+    /**
      * @Assert\NotBlank
-     * @ORM\OneToOne(targetEntity="Creds")
+     * @ORM\OneToOne(targetEntity="Creds",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
      **/
     private $credentials;
     /**
      * @Assert\NotBlank
-     * @ORM\OneToOne(targetEntity="Address")
+     * @ORM\OneToOne(targetEntity="Address",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
      **/
 
@@ -67,14 +94,20 @@ class Customer implements UserInterface, \Serializable
      */
     private $isActive;
     /**
-    * @ORM\OneToMany(targetEntity="CustomerUser", mappedBy="company")
+    * @ORM\OneToMany(targetEntity="Customer", mappedBy="company")
     */
     private $users;
     /**
      * @ORM\OneToOne(targetEntity="Token")
-     * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
+    /**
+    * @Assert\NotBlank
+    * @ORM\ManyToOne(targetEntity="KeyAccount", inversedBy="cutomers")
+    * @ORM\JoinColumn(name="keyaccount_id",referencedColumnName="id")
+    */
+    private $KeyAccount;
     public function __construct()
     {
         $this->isActive = true;
@@ -209,7 +242,7 @@ class Customer implements UserInterface, \Serializable
      *
      * @return Address
      */
-    public function getAddress($address)
+    public function getAddress()
     {
         return $this->address;
     }
@@ -346,5 +379,119 @@ class Customer implements UserInterface, \Serializable
         list (
             $this->id,
         ) = unserialize($serialized);
+    }
+     /**
+     * Set name
+     *
+     * @param string $name
+     * @return Customer
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set surname
+     *
+     * @param string $surname
+     * @return Customer
+     */
+    public function setSurname($surname)
+    {
+        $this->surname = $surname;
+    
+        return $this;
+    }
+
+    /**
+     * Get surname
+     *
+     * @return string 
+     */
+    public function getSurname()
+    {
+        return $this->surname;
+    }
+
+    /**
+     * Set telnumber
+     *
+     * @param string $telnumber
+     * @return Customer
+     */
+    public function setTelnumber($telnumber)
+    {
+        $this->telnumber = $telnumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get telnumber
+     *
+     * @return string 
+     */
+    public function getTelnumber()
+    {
+        return $this->telnumber;
+    }
+
+    /**
+     * Set logo
+     *
+     * @param string $logo
+     * @return Customer
+     */
+    public function setLogo($logo)
+    {
+        $this->logo = $logo;
+    
+        return $this;
+    }
+
+    /**
+     * Get logo
+     *
+     * @return string 
+     */
+    public function getLogo()
+    {
+        return $this->logo;
+    }
+
+    /**
+     * Set KeyAccount
+     *
+     * @param \Acmtool\AppBundle\Entity\KeyAccount $keyAccount
+     * @return Customer
+     */
+    public function setKeyAccount(\Acmtool\AppBundle\Entity\KeyAccount $keyAccount = null)
+    {
+        $this->KeyAccount = $keyAccount;
+    
+        return $this;
+    }
+
+    /**
+     * Get KeyAccount
+     *
+     * @return \Acmtool\AppBundle\Entity\KeyAccount 
+     */
+    public function getKeyAccount()
+    {
+        return $this->KeyAccount;
     }
 }

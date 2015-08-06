@@ -44,11 +44,16 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
      * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
+    /**
+    * @ORM\OneToMany(targetEntity="Customer", mappedBy="keyaccount",cascade={"remove"})
+    */
+    private $customers;
 
     public function __construct()
     {
         $this->isActive = true;
         $this->salt = md5(uniqid(null, true));
+        $this->customers = new ArrayCollection();
     }
     /**
      * Get id
@@ -99,7 +104,7 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
      * Set credentials
      *
      * @param \Acmtool\AppBundle\Entity\Creds $credentials
-     * @return Customer
+     * @return KeyAccount
      */
     public function setCredentials(\Acmtool\AppBundle\Entity\Creds $credentials = null)
     {

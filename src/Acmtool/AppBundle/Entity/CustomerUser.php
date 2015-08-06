@@ -26,16 +26,16 @@ class CustomerUser implements UserInterface, \Serializable
 
     /**
      * @var string
-     *
+     * @Assert\NotBlank
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
      * @ORM\Column(name="email", type="string", length=255)
      */
     private $email;
 
     /**
      * @var string
-     * @Assert\NotBlank
-     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
-     * @ORM\Column(name="photo", type="string", length=255)
+     * 
+     * @ORM\Column(name="photo", type="string", length=255,nullable=true)
      */
     private $photo;
 
@@ -76,7 +76,7 @@ class CustomerUser implements UserInterface, \Serializable
     private $isActive;
     /**
     * @Assert\NotBlank
-    * @ORM\ManyToOne(targetEntity="Customer", inversedBy="users")
+    * @ORM\ManyToOne(targetEntity="Customer", inversedBy="customers")
     * @ORM\JoinColumn(name="company_id",referencedColumnName="id")
     */
     private $company;

@@ -179,4 +179,24 @@ class ProjectController extends Controller
         }
               
     }
+    public function deleteAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($id);
+        if($project){
+            $em->remove($project);
+            $em->flush();
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(ConstValues::PROJECTDELETED);
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+
 }

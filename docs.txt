@@ -563,3 +563,16 @@ message example:
 "sysadmins":[{"id":2}]
 }
 --------End service---------------------------
+--------Web service---------------------------
+Update project
+URL:api/private/project/restricted/update
+message example:
+{
+"project_id":1,
+    "name":"project name updated",
+    "customer_id":2,
+    "description":"this is my first project",
+"startingdate":"2015-12-01"
+
+}
+--------End service---------------------------

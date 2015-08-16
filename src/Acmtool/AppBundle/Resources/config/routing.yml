@@ -253,3 +253,8 @@ _updateproject:
     defaults: { _controller: AcmtoolAppBundle:Project:update }
     requirements:
         _method: put
+_deleteproject:
+    path:     /private/project/restricted/delete/{id}
+    defaults: { _controller: AcmtoolAppBundle:Project:delete }
+    requirements:
+        _method: delete

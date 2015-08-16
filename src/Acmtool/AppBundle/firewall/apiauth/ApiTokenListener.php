@@ -24,7 +24,13 @@ class ApiTokenListener implements ListenerInterface
     {
         $request = $event->getRequest();
         if(!$request->headers->has('x-crm-access-token'))
-            return;
+            {
+                $this->securityContext->setToken(null);
+                $response = new Response();
+                $response->setStatusCode(403);
+                $event->setResponse($response);
+                return;
+            }
         else
         {
         	$tokenstring=$request->headers->get('x-crm-access-token');

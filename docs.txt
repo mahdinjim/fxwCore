@@ -547,3 +547,19 @@ Response 200 ok : customer deleted successfully
 --------Web service---------------------------
 Create,Update,list,details delete CustomerUser created but not tested and finalized
 --------End service---------------------------
+--------Web service---------------------------
+Create project
+URL:api/private/project/restricted/create
+message example:
+{
+    "name":"project with team leader and developer",
+    "customer_id":2,
+    "description":"this is my first project",
+"startingdate":"2015-12-01",
+"teamleader_id":2,
+"developers":[{"id":1}],
+"designers":[{"id":1}],
+"testers":[{"id":1}],
+"sysadmins":[{"id":2}]
+}
+--------End service---------------------------

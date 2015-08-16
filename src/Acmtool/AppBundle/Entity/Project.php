@@ -165,4 +165,205 @@ class Project
     {
         return $this->startingdate;
     }
+
+    /**
+     * Add developers
+     *
+     * @param \Acmtool\AppBundle\Entity\Developer $developers
+     * @return Project
+     */
+    public function addDeveloper(\Acmtool\AppBundle\Entity\Developer $developers)
+    {
+        $this->developers[] = $developers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove developers
+     *
+     * @param \Acmtool\AppBundle\Entity\Developer $developers
+     */
+    public function removeDeveloper(\Acmtool\AppBundle\Entity\Developer $developers)
+    {
+        $this->developers->removeElement($developers);
+    }
+
+    /**
+     * Get developers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDevelopers()
+    {
+        return $this->developers;
+    }
+
+    /**
+     * Add designers
+     *
+     * @param \Acmtool\AppBundle\Entity\Designer $designers
+     * @return Project
+     */
+    public function addDesigner(\Acmtool\AppBundle\Entity\Designer $designers)
+    {
+        $this->designers[] = $designers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove designers
+     *
+     * @param \Acmtool\AppBundle\Entity\Designer $designers
+     */
+    public function removeDesigner(\Acmtool\AppBundle\Entity\Designer $designers)
+    {
+        $this->designers->removeElement($designers);
+    }
+
+    /**
+     * Get designers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDesigners()
+    {
+        return $this->designers;
+    }
+
+    /**
+     * Add testers
+     *
+     * @param \Acmtool\AppBundle\Entity\Tester $testers
+     * @return Project
+     */
+    public function addTester(\Acmtool\AppBundle\Entity\Tester $testers)
+    {
+        $this->testers[] = $testers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove testers
+     *
+     * @param \Acmtool\AppBundle\Entity\Tester $testers
+     */
+    public function removeTester(\Acmtool\AppBundle\Entity\Tester $testers)
+    {
+        $this->testers->removeElement($testers);
+    }
+
+    /**
+     * Get testers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTesters()
+    {
+        return $this->testers;
+    }
+
+    /**
+     * Add sysadmins
+     *
+     * @param \Acmtool\AppBundle\Entity\SystemAdmin $sysadmins
+     * @return Project
+     */
+    public function addSysadmin(\Acmtool\AppBundle\Entity\SystemAdmin $sysadmins)
+    {
+        $this->sysadmins[] = $sysadmins;
+    
+        return $this;
+    }
+
+    /**
+     * Remove sysadmins
+     *
+     * @param \Acmtool\AppBundle\Entity\SystemAdmin $sysadmins
+     */
+    public function removeSysadmin(\Acmtool\AppBundle\Entity\SystemAdmin $sysadmins)
+    {
+        $this->sysadmins->removeElement($sysadmins);
+    }
+
+    /**
+     * Get sysadmins
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getSysadmins()
+    {
+        return $this->sysadmins;
+    }
+
+    /**
+     * Set owner
+     *
+     * @param \Acmtool\AppBundle\Entity\Customer $owner
+     * @return Project
+     */
+    public function setOwner(\Acmtool\AppBundle\Entity\Customer $owner = null)
+    {
+        $this->owner = $owner;
+    
+        return $this;
+    }
+
+    /**
+     * Get owner
+     *
+     * @return \Acmtool\AppBundle\Entity\Customer 
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * Set keyaccount
+     *
+     * @param \Acmtool\AppBundle\Entity\KeyAccount $keyaccount
+     * @return Project
+     */
+    public function setKeyaccount(\Acmtool\AppBundle\Entity\KeyAccount $keyaccount = null)
+    {
+        $this->keyaccount = $keyaccount;
+    
+        return $this;
+    }
+
+    /**
+     * Get keyaccount
+     *
+     * @return \Acmtool\AppBundle\Entity\KeyAccount 
+     */
+    public function getKeyaccount()
+    {
+        return $this->keyaccount;
+    }
+
+    /**
+     * Set teamleader
+     *
+     * @param \Acmtool\AppBundle\Entity\TeamLeader $teamleader
+     * @return Project
+     */
+    public function setTeamleader(\Acmtool\AppBundle\Entity\TeamLeader $teamleader = null)
+    {
+        $this->teamleader = $teamleader;
+    
+        return $this;
+    }
+
+    /**
+     * Get teamleader
+     *
+     * @return \Acmtool\AppBundle\Entity\TeamLeader 
+     */
+    public function getTeamleader()
+    {
+        return $this->teamleader;
+    }
 }

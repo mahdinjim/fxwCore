@@ -243,3 +243,8 @@ _detailscustomeruser:
     defaults: { _controller: AcmtoolAppBundle:Customer:Details }
     requirements:
         _method: get
+_createproject:
+    path:     /private/project/restricted/create
+    defaults: { _controller: AcmtoolAppBundle:Project:create }
+    requirements:
+        _method: post

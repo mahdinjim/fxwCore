@@ -69,5 +69,6 @@ security:
         - { path: ^/api/private/sysadmin/, roles: [ROLE_ADMIN,ROLE_SYSADMIN] }
         - { path: ^/api/private/keyaccount/, roles: [ROLE_ADMIN,ROLE_KEYACCOUNT] }
         - { path: ^/api/private/customer/, roles: [ROLE_ADMIN,ROLE_KEYACCOUNT,ROLE_COSTUMER] }
-        - { path: ^/api/private/customer/users/, roles: [ROLE_COSTUMER,ROLE_CUSER] }
+        - { path: ^/api/private/customer/users/, roles: [ROLE_COSTUMER,ROLE_CUSER,ROLE_KEYACCOUNT] }
+        - { path: ^/api/private/project/restricted/, roles: [ROLE_COSTUMER,ROLE_CUSER,ROLE_KEYACCOUNT,ROLE_ADMIN] }
         #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Acmtool\AppBundle\Entity\DevTeamMember;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Tester

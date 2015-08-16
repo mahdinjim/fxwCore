@@ -32,6 +32,8 @@ abstract class ConstValues
 	const CUSCREATED="Customer created successfully";
 	const CUSUPDATED="Customer updated successfully";
 	const CUSDELETED="Customer deleted successfully";
+	const INVALIDDATE="The Date format is invalid dateformat must be yyyy-mm-dd";
+	const PROJECTCREATED="The project was created successfully";
 
 
 }

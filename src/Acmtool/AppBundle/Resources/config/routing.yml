@@ -248,3 +248,8 @@ _createproject:
     defaults: { _controller: AcmtoolAppBundle:Project:create }
     requirements:
         _method: post
+_updateproject:
+    path:     /private/project/restricted/update
+    defaults: { _controller: AcmtoolAppBundle:Project:update }
+    requirements:
+        _method: put

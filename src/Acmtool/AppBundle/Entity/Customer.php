@@ -94,7 +94,7 @@ class Customer implements UserInterface, \Serializable
      */
     private $isActive;
     /**
-    * @ORM\OneToMany(targetEntity="Customer", mappedBy="company")
+    * @ORM\OneToMany(targetEntity="CustomerUser", mappedBy="company")
     */
     private $users;
     /**
@@ -315,10 +315,10 @@ class Customer implements UserInterface, \Serializable
     /**
      * Add users
      *
-     * @param \Acmtool\AppBundle\Entity\CustumerUser $users
+     * @param \Acmtool\AppBundle\Entity\CustomerUser $users
      * @return Customer
      */
-    public function addUser(\Acmtool\AppBundle\Entity\CustumerUser $users)
+    public function addUser(\Acmtool\AppBundle\Entity\CustomerUser $users)
     {
         $this->users[] = $users;
     
@@ -328,9 +328,9 @@ class Customer implements UserInterface, \Serializable
     /**
      * Remove users
      *
-     * @param \Acmtool\AppBundle\Entity\CustumerUser $users
+     * @param \Acmtool\AppBundle\Entity\CustpmerUser $users
      */
-    public function removeUser(\Acmtool\AppBundle\Entity\CustumerUser $users)
+    public function removeUser(\Acmtool\AppBundle\Entity\CustomerUser $users)
     {
         $this->users->removeElement($users);
     }

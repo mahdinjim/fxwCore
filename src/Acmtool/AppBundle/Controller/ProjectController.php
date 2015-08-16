@@ -128,6 +128,55 @@ class ProjectController extends Controller
 	}
     public function updateAction()
     {
-        
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            $project=null;
+            if(!isset($json->{"project_id"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if((isset($json->{'name'})))
+                {
+                    $project->setName($json->{'name'});
+                }
+                if(isset($json->{"description"}))
+                {
+                    $project->setDescription($json->{"description"});
+                }
+                if(isset($json->{'startingdate'}))
+                {
+                    if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$json->{'startingdate'}))
+                    {
+                        $format = 'Y-m-d';
+                        $startingdate = new \DateTime($json->{'startingdate'});
+                        $project->setStartingdate($startingdate);
+                        
+                    }
+                    else{
+                        $response=new Response('{"err":"'.ConstValues::INVALIDDATE.'"}',400);
+                        $response->headers->set('Content-Type', 'application/json');
+                        return $response;
+                    }
+                }
+                $em->flush();
+                $res=new Response();
+                $res->setStatusCode(200);
+                $res->setContent(ConstValues::PROJECTUPDATED);
+                return $res;
+            }
+        }
+              
     }
 }

@@ -12,4 +12,77 @@ use Doctrine\ORM\EntityRepository;
  */
 class ProjectRepository extends EntityRepository
 {
+	public function getProjectsCountbyKeyAccount($keyaccount,$state)
+	{
+		$em=$this->getEntityManager();
+		$totalcount=0;
+		if($state==ProjectStates::ALL)
+			$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Project c WHERE c.keyaccount = :keyaccount")
+				->setParameter("keyaccount",$keyaccount)
+	            ->getSingleScalarResult();
+	    else
+	    	$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Project c WHERE c.keyaccount = :keyaccount and c.state= :state")
+				->setParameter("keyaccount",$keyaccount)
+				->setParameter("state",$state)
+	            ->getSingleScalarResult();
+        return $totalcount;
+	}
+	public function getProjectsByKeyAccount($keyaccount,$start,$state)
+	{
+		$result=null;
+		$em=$this->getEntityManager();
+		if($state==ProjectStates::ALL)
+			$result=$em->createQuery('select c from AcmtoolAppBundle:Project c
+								WHERE c.keyaccount = :keyaccount')
+						->setParameter("keyaccount",$keyaccount)
+                        ->setMaxResults(ConstValues::COUNT)
+                        ->setFirstResult($start)
+                        ->getResult();
+        else
+        	$result=$em->createQuery('select c from AcmtoolAppBundle:Project c
+								WHERE c.keyaccount = :keyaccount and c.state= :state')
+						->setParameter("keyaccount",$keyaccount)
+						->setParameter("state",$state)
+                        ->setMaxResults(ConstValues::COUNT)
+                        ->setFirstResult($start)
+                        ->getResult();
+
+        return $result;
+	}
+	public function getProjectCountByCustomer($customer,$state)
+	{
+		$em=$this->getEntityManager();
+		$totalcount=0;
+		if($state==ProjectStates::ALL)
+			$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Project c WHERE c.owner = :customer")
+				->setParameter("customer",$customer)
+	            ->getSingleScalarResult();
+	    else
+	    	$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Project c WHERE c.owner = :customer AND c.state= :state")
+				->setParameter("customer",$customer)
+				->setParameter("state",$state)
+	            ->getSingleScalarResult();
+        return $totalcount;
+	}
+	public function getProjectsByCustomer($customer,$start,$state)
+	{
+		$em=$this->getEntityManager();
+		$result=null;
+		if($state==ProjectStates::ALL)
+			$result=$em->createQuery('select c from AcmtoolAppBundle:Project c
+									WHERE c.owner = :customer')
+							->setParameter("customer",$customer)
+	                        ->setMaxResults(ConstValues::COUNT)
+	                        ->setFirstResult($start)
+	                        ->getResult();
+	    else
+	    	$result=$em->createQuery('select c from AcmtoolAppBundle:Project c
+									WHERE c.owner = :customer and c.state= :state')
+							->setParameter("customer",$customer)
+							->setParameter("state",$state)
+	                        ->setMaxResults(ConstValues::COUNT)
+	                        ->setFirstResult($start)
+	                        ->getResult();
+        return $result;	
+	}
 }

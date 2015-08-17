@@ -36,7 +36,12 @@ class Project
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
-
+     /**
+     * @var string
+     * @Assert\NotBlank(message="The state field is required")
+     * @ORM\Column(name="state", type="string", length=255)
+     */
+    private $state;
     /**
      * @var \DateTime
      *
@@ -365,5 +370,28 @@ class Project
     public function getTeamleader()
     {
         return $this->teamleader;
+    }
+
+    /**
+     * Set state
+     *
+     * @param string $state
+     * @return Project
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+    
+        return $this;
+    }
+
+    /**
+     * Get state
+     *
+     * @return string 
+     */
+    public function getState()
+    {
+        return $this->state;
     }
 }

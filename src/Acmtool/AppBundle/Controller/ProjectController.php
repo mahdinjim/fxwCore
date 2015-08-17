@@ -16,7 +16,7 @@ use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Project;
-
+use Acmtool\AppBundle\Entity\ProjectStates;
 
 class ProjectController extends Controller
 {
@@ -57,6 +57,7 @@ class ProjectController extends Controller
                 return $response;
             }
             $project=new Project();
+            $project->setState(ProjectStates::ACTIVE);
             $project->setOwner($customer);
             $project->setKeyaccount($customer->getKeyAccount());
             $project->setName($json->{'name'});
@@ -190,6 +191,86 @@ class ProjectController extends Controller
             $res->setStatusCode(200);
             $res->setContent(ConstValues::PROJECTDELETED);
             return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+    public function listAction($page,$state)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $result=null;
+        $totalpages=null;
+        if($this->get('security.context')->isGranted("ROLE_ADMIN"))
+        {
+            if($state==ProjectStates::ALL)
+            {
+                $totalpages=ceil($em->createQuery("SELECT COUNT(p) FROM AcmtoolAppBundle:Project p")
+                ->getSingleScalarResult()/ConstValues::COUNT);
+                $start=ConstValues::COUNT*($page-1);
+                $result=$em->createQuery('select p from AcmtoolAppBundle:Project p')
+                            ->setMaxResults(ConstValues::COUNT)
+                            ->setFirstResult($start)
+                            ->getResult();
+            }
+            else
+            {
+                $totalpages=ceil($em->createQuery("SELECT COUNT(p) FROM AcmtoolAppBundle:Project p WHERE p.state= :state")
+                ->setParameter("state",$state)
+                ->getSingleScalarResult()/ConstValues::COUNT);
+                $start=ConstValues::COUNT*($page-1);
+                $result=$em->createQuery('select p from AcmtoolAppBundle:Project p WHERE p.state= :state')
+                            ->setParameter("state",$state)
+                            ->setMaxResults(ConstValues::COUNT)
+                            ->setFirstResult($start)
+                            ->getResult();
+            }
+        }
+        elseif ($this->get('security.context')->isGranted("ROLE_KEYACCOUNT")) {
+            $keyaccount=$this->get("security.context")->getToken()->getUser();
+            $totalpages=ceil($em->getRepository("AcmtoolAppBundle:Project")->getProjectsCountbyKeyAccount($keyaccount,$state)/ConstValues::COUNT);
+            $start=ConstValues::COUNT*($page-1);
+            $result=$em->getRepository("AcmtoolAppBundle:Project")->getProjectsByKeyAccount($keyaccount,$start,$state);
+        }
+        elseif($this->get('security.context')->isGranted("ROLE_CUSTOMER")) {
+            $customer=$this->get("security.context")->getToken()->getUser();
+            $totalpages=ceil($em->getRepository("AcmtoolAppBundle:Project")->getProjectCountByCustomer($customer,$state)/ConstValues::COUNT);
+            $start=ConstValues::COUNT*($page-1);
+            $result=$em->getRepository("AcmtoolAppBundle:Project")->getProjectsByCustomer($customer,$start,$state);
+        }
+        elseif($this->get('security.context')->isGranted("ROLE_CUSER"))
+        {
+            $customer=$this->get("security.context")->getToken()->getUser()->getCompany();
+            $totalpages=ceil($em->getRepository("AcmtoolAppBundle:Project")->getProjectCountByCustomer($customer,$state)/ConstValues::COUNT);
+            $start=ConstValues::COUNT*($page-1);
+            $result=$em->getRepository("AcmtoolAppBundle:Project")->getProjectsByCustomer($customer,$start,$state);
+        }
+        else
+        {
+            $response=new Response(403);
+            return $response;
+        }
+        if($result && $totalpages)
+        {
+            $mess=array();
+            $mess['totalpages']=$totalpages;
+            $projects=array();
+            $i=0;
+            foreach ($result as $key) {
+                $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"description"=>$key->getDescription(),"customer"=>$key->getOwner()->getCompanyname(),"startingdate"=>$key->getStartingdate(),"state"=>$key->getState());
+                $i++;
+            }
+            $mess["current_page"]=$page;
+            $mess["projects"]=$projects;
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($mess));
+            return $res;
+
+
         }
         else
         {

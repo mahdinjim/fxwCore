@@ -258,3 +258,8 @@ _deleteproject:
     defaults: { _controller: AcmtoolAppBundle:Project:delete }
     requirements:
         _method: delete
+_listprojects:
+    path:     /private/project/restricted/list/{page}/{state}
+    defaults: { _controller: AcmtoolAppBundle:Project:list }
+    requirements:
+        _method: get

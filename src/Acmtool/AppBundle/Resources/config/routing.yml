@@ -263,3 +263,8 @@ _listprojects:
     defaults: { _controller: AcmtoolAppBundle:Project:list }
     requirements:
         _method: get
+_detailscustomeruser:
+    path:     /private/project/restricted/details/{id}
+    defaults: { _controller: AcmtoolAppBundle:Project:details }
+    requirements:
+        _method: get

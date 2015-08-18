@@ -279,5 +279,57 @@ class ProjectController extends Controller
             return $response;
         }
     }
+    public function detailsAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($id);
+        if($project)
+        {
+            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"startingdate"=>$project->getStartingdate(),"state"=>$project->getState());
+            $mess["keyaccount"]=array("id"=>$project->getKeyAccount()->getId(),"surname"=>$project->getKeyAccount()->getSurname(),"name"=>$project->getKeyAccount()->getName(),"email"=>$project->getKeyAccount()->getEmail(),"photo"=>$project->getKeyAccount()->getPhoto());
+            if($project->getTeamleader())
+                $mess["teamleader"]=array("id"=>$project->getTeamleader()->getId(),"surname"=>$project->getTeamleader()->getSurname(),"name"=>$project->getTeamleader()->getName(),"email"=>$project->getTeamleader()->getEmail(),"photo"=>$project->getTeamleader()->getPhoto());
+            $i=0;
+            $developers=array();
+            foreach ($project->getDevelopers() as $key) {
+                $developers[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $i++;
+            }           
+            $mess["developers"]=$developers;
+            $i=0;
+            $testers=array();
+            foreach ($project->getTesters() as $key) {
+                $testers[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $i++;
+            }  
+            $mess["testers"]=$testers;
+            $designers=array();
+            $i=0;
+            foreach ($project->getDesigners() as $key) {
+                $designers[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $i++;
+            }  
+            $mess["designers"]=$designers;
+            $sysadmins=array();
+            $i=0;
+            foreach ($project->getSysadmins() as $key) {
+                $sysadmins[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $i++;
+            }  
+            $mess["sysadmins"]=$sysadmins;
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($mess));
+            $res->headers->set('Content-Type', 'application/json');
+            return $res;
+
+        }
+        else
+        {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
 
 }

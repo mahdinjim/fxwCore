@@ -331,5 +331,45 @@ class ProjectController extends Controller
             return $response;
         }
     }
+    public function assignTeamLeaderAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"teamleader_id"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $TeamLeader=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($json->{"teamleader_id"});
+                if($project && $TeamLeader)
+                {
+                    $project->setTeamleader($TeamLeader);
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::TEAMLEADERASSIGNED);
+                    return $res;
+                }
+                else
+                {
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+
+            }
+        }
+    }
 
 }

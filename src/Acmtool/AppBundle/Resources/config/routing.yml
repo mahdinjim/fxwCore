@@ -268,3 +268,8 @@ _detailscustomeruser:
     defaults: { _controller: AcmtoolAppBundle:Project:details }
     requirements:
         _method: get
+_assignteamleadertoproject:
+    path:     /private/super/project/teamleader/assign
+    defaults: { _controller: AcmtoolAppBundle:Project:assignTeamLeader }
+    requirements:
+        _method: post

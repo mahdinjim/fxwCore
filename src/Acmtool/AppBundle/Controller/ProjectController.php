@@ -57,7 +57,7 @@ class ProjectController extends Controller
                 return $response;
             }
             $project=new Project();
-            $project->setState(ProjectStates::ACTIVE);
+            $project->setState(ProjectStates::TLASSIGN);
             $project->setOwner($customer);
             $project->setKeyaccount($customer->getKeyAccount());
             $project->setName($json->{'name'});
@@ -355,6 +355,7 @@ class ProjectController extends Controller
                 if($project && $TeamLeader)
                 {
                     $project->setTeamleader($TeamLeader);
+                    $project->setState(ProjectStates::TEAMASSIGN);
                     $em->flush();
                     $res=new Response();
                     $res->setStatusCode(200);
@@ -368,6 +369,378 @@ class ProjectController extends Controller
                     return $response;  
                 }
 
+            }
+        }
+    }
+    public function addDeveloperAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"developers"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+                    foreach ($json->{"developers"} as $key) {
+                       $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                            $project->addDeveloper($member);
+                            $member->addProject($project);
+                       }
+                    }
+                    
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERADDED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+
+        }
+    }
+    public function addDesignerAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"designers"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+                    foreach ($json->{"designers"} as $key) {
+                       $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                            $project->addDesigner($member);
+                            $member->addProject($project);
+                       }
+                    }
+                    
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERADDED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+
+        }
+    }
+    public function addTesterAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"testers"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+                    foreach ($json->{"testers"} as $key) {
+                       $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                            $project->addTester($member);
+                            $member->addProject($project);
+                       }
+                    }
+                    
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERADDED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+
+        }
+    }
+    public function addSysadminAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"sysadmins"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+                    foreach ($json->{"sysadmins"} as $key) {
+                       $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                            $project->addSysAdmin($member);
+                            $member->addProject($project);
+                       }
+                    }
+                    
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERADDED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+
+        }
+    }
+    public function deleteDeveloperAction()
+    {
+         $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"developers"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+
+                    foreach ($json->{"developers"} as $key) {
+                        $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                        $project->removeDeveloper($member);
+                        $member->removeProject($project);
+                       }
+                    }
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERDELETED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+        }
+    }
+    public function deleteDesignerAction()
+    {
+         $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"designers"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+
+                    foreach ($json->{"designers"} as $key) {
+                        $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                        $project->removeDesigner($member);
+                        $member->removeProject($project);
+                       }
+                    }
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERDELETED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+        }
+    }
+    public function deleteTesterAction()
+    {
+         $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"testers"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+
+                    foreach ($json->{"testers"} as $key) {
+                        $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                        $project->removeTester($member);
+                        $member->removeProject($project);
+                       }
+                    }
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERDELETED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+        }
+    }
+    public function deleteSysadminAction()
+    {
+         $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"sysadmins"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+
+                    foreach ($json->{"sysadmins"} as $key) {
+                        $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key->{"id"});
+                       if($member)
+                       {
+                        $project->removeSysadmin($member);
+                        $member->removeProject($project);
+                       }
+                    }
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERDELETED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
             }
         }
     }

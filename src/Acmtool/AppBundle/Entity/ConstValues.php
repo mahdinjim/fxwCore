@@ -37,6 +37,7 @@ abstract class ConstValues
 	const PROJECTUPDATED="The project was updated successfully";
 	const PROJECTDELETED="The project was deleted successfully";
 	const TEAMLEADERASSIGNED="TeamLeader assigned successfully";
-
+	const MEMBERADDED="Members added successfully";
+	const MEMBERDELETED="Members deleted successfully";
 
 }

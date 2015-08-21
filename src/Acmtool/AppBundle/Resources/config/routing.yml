@@ -273,3 +273,43 @@ _assignteamleadertoproject:
     defaults: { _controller: AcmtoolAppBundle:Project:assignTeamLeader }
     requirements:
         _method: post
+_adddevelopertoproject:
+    path:     /private/teamleader/project/developer/add
+    defaults: { _controller: AcmtoolAppBundle:Project:addDeveloper }
+    requirements:
+        _method: post
+_adddesigneroproject:
+    path:     /private/teamleader/project/designer/add
+    defaults: { _controller: AcmtoolAppBundle:Project:addDesigner }
+    requirements:
+        _method: post
+_addtesteroproject:
+    path:     /private/teamleader/project/tester/add
+    defaults: { _controller: AcmtoolAppBundle:Project:addTester }
+    requirements:
+        _method: post
+_addsysadminoproject:
+    path:     /private/teamleader/project/sysadmin/add
+    defaults: { _controller: AcmtoolAppBundle:Project:addSysadmin }
+    requirements:
+        _method: post
+_deletedeveloperfromproject:
+    path:     /private/teamleader/project/developer/delete
+    defaults: { _controller: AcmtoolAppBundle:Project:deleteDeveloper }
+    requirements:
+        _method: post
+_deletedesignerfromproject:
+    path:     /private/teamleader/project/designer/delete
+    defaults: { _controller: AcmtoolAppBundle:Project:deleteDesigner }
+    requirements:
+        _method: post
+_deletetesterfromproject:
+    path:     /private/teamleader/project/tester/delete
+    defaults: { _controller: AcmtoolAppBundle:Project:deleteTester }
+    requirements:
+        _method: post
+_deletesysadminfromproject:
+    path:     /private/teamleader/project/sysadmin/delete
+    defaults: { _controller: AcmtoolAppBundle:Project:deleteSysadmin }
+    requirements:
+        _method: post

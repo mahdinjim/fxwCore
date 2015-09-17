@@ -86,6 +86,12 @@ class Project
     * @ORM\JoinColumn(name="teamleader_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $teamleader;
+     /**
+    * @Assert\NotBlank
+    * @ORM\ManyToOne(targetEntity="ProjectConfig", inversedBy="projects")
+    * @ORM\JoinColumn(name="config_id",referencedColumnName="id",onDelete="SET NULL")
+    */
+    private $config;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -393,5 +399,28 @@ class Project
     public function getState()
     {
         return $this->state;
+    }
+
+    /**
+     * Set config
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectConfig $config
+     * @return Project
+     */
+    public function setConfig(\Acmtool\AppBundle\Entity\ProjectConfig $config = null)
+    {
+        $this->config = $config;
+    
+        return $this;
+    }
+
+    /**
+     * Get config
+     *
+     * @return \Acmtool\AppBundle\Entity\ProjectConfig 
+     */
+    public function getConfig()
+    {
+        return $this->config;
     }
 }

@@ -313,3 +313,28 @@ _deletesysadminfromproject:
     defaults: { _controller: AcmtoolAppBundle:Project:deleteSysadmin }
     requirements:
         _method: post
+_addprojectconfig:
+    path:     /private/project/restricted/config/create
+    defaults: { _controller: AcmtoolAppBundle:ProjectConfig:create }
+    requirements:
+        _method: post
+_updateprojectconfig:
+    path:     /private/project/restricted/config/update
+    defaults: { _controller: AcmtoolAppBundle:ProjectConfig:update }
+    requirements:
+        _method: put
+_projectconfigdetails:
+    path:     /private/project/restricted/config/detail/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:ProjectConfig:getProjectConfig }
+    requirements:
+        _method: get
+_deleteprojectconfig:
+    path:     /private/project/restricted/config/delete
+    defaults: { _controller: AcmtoolAppBundle:ProjectConfig:delete }
+    requirements:
+        _method: delete
+_allteammemebrs:
+    path:     /private/team/all
+    defaults: { _controller: AcmtoolAppBundle:Team:getAllTeamMmebers }
+    requirements:
+        _method: get

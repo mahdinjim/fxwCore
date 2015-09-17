@@ -32,7 +32,26 @@ class Admin implements UserInterface, \Serializable
      * @ORM\Column(name="email", type="string", length=255)
      */
     private $email;
+    /**
+     * @var string
+     * @Assert\NotBlank(message="The name field is required")
+     * 
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    protected $name;
 
+    /**
+     * @var string
+     * @Assert\NotBlank(message="The surname field is required")
+     * @ORM\Column(name="surname", type="string", length=255)
+     */
+    protected $surname;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="photo", type="string", length=255,nullable=true)
+     */
     /**
      * @var string
      *
@@ -257,5 +276,51 @@ class Admin implements UserInterface, \Serializable
         list (
             $this->id,
         ) = unserialize($serialized);
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return Admin
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set surname
+     *
+     * @param string $surname
+     * @return Admin
+     */
+    public function setSurname($surname)
+    {
+        $this->surname = $surname;
+    
+        return $this;
+    }
+
+    /**
+     * Get surname
+     *
+     * @return string 
+     */
+    public function getSurname()
+    {
+        return $this->surname;
     }
 }

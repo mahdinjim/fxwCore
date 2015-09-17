@@ -48,7 +48,7 @@ class AuthentificationController extends Controller
                     {
                         $token=$result["token"];
                         if($user instanceOf Admin)
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'tel'=>$user->getTel(),"roles"=>$user->getRoles());
+                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'tel'=>$user->getTel(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles());
                         elseif ($user instanceOf Customer) {
                             $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"roles"=>$user->getRoles());
                         }

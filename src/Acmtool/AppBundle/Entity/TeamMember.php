@@ -51,7 +51,25 @@ class TeamMember
      * @ORM\Column(name="photo", type="string", length=255,nullable=true)
      */
     protected $photo;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="state", type="string", length=255,nullable=true)
+     */
+    protected $state;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="country", type="string", length=255,nullable=true)
+     */
+    protected $country;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="city", type="string", length=255,nullable=true)
+     */
+    protected $city;
     /**
      * Set description
      *
@@ -165,6 +183,71 @@ class TeamMember
     public function getPhoto()
     {
         return $this->photo;
+    }
+    /**
+     * Set State
+     *
+     * @param string $statecountry * @return TeamMember
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+    
+        return $this;
+    }
+
+    /**
+     * Get state
+     *
+     * @return string 
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+    /**
+     * Set Country
+     *
+     * @param string $country
+     * @return TeamMember
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+    
+        return $this;
+    }
+
+    /**
+     * Get country
+     *
+     * @return string 
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+    /**
+     * Set city
+     *
+     * @param string $city
+     * @return TeamMember
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+    
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return string 
+     */
+    public function getCity()
+    {
+        return $this->city;
     }
     
 }

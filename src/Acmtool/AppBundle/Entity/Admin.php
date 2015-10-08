@@ -79,6 +79,12 @@ class Admin implements UserInterface, \Serializable
      * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255,nullable=true)
+     */
+    protected $title;
 
     public function __construct()
     {
@@ -322,5 +328,27 @@ class Admin implements UserInterface, \Serializable
     public function getSurname()
     {
         return $this->surname;
+    }
+    /**
+     * Set title
+     *
+     * @param string $title
+     * @return Admin
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string 
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 }

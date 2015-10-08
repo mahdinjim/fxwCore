@@ -71,11 +71,18 @@ class TeamMember
      */
     protected $city;
     /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255,nullable=true)
+     */
+    protected $title;
+    /**
      * Set description
      *
      * @param string $description
      * @return TeamMember
      */
+    
     public function setDescription($description)
     {
         $this->description = $description;
@@ -249,5 +256,26 @@ class TeamMember
     {
         return $this->city;
     }
+    /**
+     * Set title
+     *
+     * @param string $title
+     * @return TeamMember
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string 
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 }

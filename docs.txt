@@ -16,7 +16,8 @@ message example:
     "email": "njimmahdi1@gmail.com",
     "login": "admin1",
     "password": "start123",
-    "tel":21082206
+    "tel":21082206,
+    "title":"CTO"
 }
 Response 200 Ok => Admin Created Successfully 
 Response 400 bad request => {"errors":[]}
@@ -40,7 +41,8 @@ response message:
 	admin: {
 		username: "admin1"
 		email: "njimmahdi1@gmail.com"
-		tel: null
+		tel: null,
+        'title':"CTO"
 	}-
 	token: {
 		token: "3ea6df5d123ccf03cce0facf5647b0853164ec35"
@@ -83,7 +85,8 @@ message example:
     "name": "M",
     "surname": "N",
     "capacity": "fulltime",
-    "skills": "java,php,agile"
+    "skills": "java,php,agile",
+    "phone":"21621082206"
 }
 Response 200 Ok => TeamLeader created successfully
 Response 400 bad request => {"errors":[]}

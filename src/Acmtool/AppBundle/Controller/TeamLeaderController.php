@@ -28,7 +28,7 @@ class TeamLeaderController extends Controller
             $json=$result['json'];
             if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'capacity'}) && isset($json->{'skills'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -48,6 +48,10 @@ class TeamLeaderController extends Controller
                 $user->setSurname($json->{'surname'});
                 $user->setCapacity($json->{'capacity'});
                 $user->setSkills($json->{'skills'});
+                $user->setState($json->{"status"});
+                $user->setTitle($json->{'title'});
+                $user->setCity($json->{'city'});
+                $user->setCountry($json->{'country'});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -89,7 +93,7 @@ class TeamLeaderController extends Controller
             $json=$result['json'];
             if(!(isset($json->{'id'}) && isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'capacity'}) && isset($json->{'skills'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -115,6 +119,9 @@ class TeamLeaderController extends Controller
                         $user->setSurname($json->{'surname'});
                         $user->setCapacity($json->{'capacity'});
                         $user->setSkills($json->{'skills'});
+                        $user->setTitle($json->{'title'});
+                        $user->setCity($json->{'city'});
+                        $user->setCountry($json->{'country'});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});
@@ -144,7 +151,7 @@ class TeamLeaderController extends Controller
                     }
                     else
                     {
-                        $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                        $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                         $response->headers->set('Content-Type', 'application/json');
                         return $response;
                     }
@@ -168,7 +175,7 @@ class TeamLeaderController extends Controller
         }
         else
         {
-            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
             $response->headers->set('Content-Type', 'application/json');
             return $response;
         }
@@ -203,7 +210,7 @@ class TeamLeaderController extends Controller
         }
         else
         {
-            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
             $response->headers->set('Content-Type', 'application/json');
             return $response;
         }
@@ -232,7 +239,7 @@ class TeamLeaderController extends Controller
             }
             else
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }

@@ -28,7 +28,7 @@ class AdminControllerController extends Controller
             $json=$result['json'];
             if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -42,6 +42,7 @@ class AdminControllerController extends Controller
             $creds->setPassword($password);
             $creds->setTitle(Titles::Admin);
             $admin->setCredentials($creds);
+            $admin->setTitle($json->{"title"});
             if(isset($json->{"tel"}))
                 $admin->setTel($json->{"tel"});
             $validator = $this->get('validator');
@@ -86,7 +87,7 @@ class AdminControllerController extends Controller
             $admin=$usr= $this->get('security.context')->getToken()->getUser();
             if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }

@@ -48,6 +48,10 @@ class TesterController extends Controller
                 $user->setSurname($json->{'surname'});
                 $user->setCapacity($json->{'capacity'});
                 $user->setSkills($json->{'skills'});
+                $user->setState($json->{"status"});
+                $user->setTitle($json->{'title'});
+                $user->setCity($json->{'city'});
+                $user->setCountry($json->{'country'});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -115,6 +119,10 @@ class TesterController extends Controller
                         $user->setSurname($json->{'surname'});
                         $user->setCapacity($json->{'capacity'});
                         $user->setSkills($json->{'skills'});
+                        $user->setState($json->{"status"});
+                        $user->setTitle($json->{'title'});
+                        $user->setCity($json->{'city'});
+                        $user->setCountry($json->{'country'});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});

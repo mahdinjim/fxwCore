@@ -46,6 +46,10 @@ class KeyAccountController extends Controller
                 $user->setEmail($json->{'email'});
                 $user->setName($json->{'name'});
                 $user->setSurname($json->{'surname'});
+                $user->setState($json->{"status"});
+                $user->setTitle($json->{'title'});
+                $user->setCity($json->{'city'});
+                $user->setCountry($json->{'country'});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -111,6 +115,10 @@ class KeyAccountController extends Controller
                         $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         $user->setSurname($json->{'surname'});
+                        $user->setState($json->{"status"});
+                        $user->setTitle($json->{'title'});
+                        $user->setCity($json->{'city'});
+                        $user->setCountry($json->{'country'});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});

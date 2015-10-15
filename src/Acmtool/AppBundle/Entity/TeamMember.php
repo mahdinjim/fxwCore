@@ -77,6 +77,18 @@ class TeamMember
      */
     protected $title;
     /**
+     * @var string
+     *
+     * @ORM\Column(name="phonecode", type="string", length=255,nullable=true)
+     */
+    protected $phonecode;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phonenumber", type="string", length=255,nullable=true)
+     */
+    protected $phonenumber;
+    /**
      * Set description
      *
      * @param string $description
@@ -277,5 +289,49 @@ class TeamMember
     public function getTitle()
     {
         return $this->title;
+    }
+    /**
+     * Set phonecode
+     *
+     * @param string $phonecode
+     * @return TeamMember
+     */
+    public function setPhonecode($phonecode)
+    {
+        $this->phonecode = $phonecode;
+    
+        return $this;
+    }
+
+    /**
+     * Get phonecode
+     *
+     * @return string 
+     */
+    public function getPhonecode()
+    {
+        return $this->phonecode;
+    }
+    /**
+     * Set phonenumber
+     *
+     * @param string $phonecode
+     * @return TeamMember
+     */
+    public function setPhonenumber($phonenumber)
+    {
+        $this->phonenumber = $phonenumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get phonenumber
+     *
+     * @return string 
+     */
+    public function getPhonenumber()
+    {
+        return $this->phonenumber;
     }
 }

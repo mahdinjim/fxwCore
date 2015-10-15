@@ -51,6 +51,8 @@ class SystemAdminController extends Controller
                 $user->setTitle($json->{'title'});
                 $user->setCity($json->{'city'});
                 $user->setCountry($json->{'country'});
+                $user->setPhonecode($json->{'phonecode'});
+                $user->setPhonenumber($json->{'phonenumber'});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -90,7 +92,7 @@ class SystemAdminController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{'id'}) && isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'capacity'}) && isset($json->{'skills'})))
+            if(!(isset($json->{'id'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'capacity'}) && isset($json->{'skills'})))
             {
                 $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
@@ -109,10 +111,13 @@ class SystemAdminController extends Controller
                     $user=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($json->{'id'});
                     if($user instanceOf SystemAdmin){
                         $user->getCredentials()->setLogin($json->{"login"});
-                        $factory = $this->get('security.encoder_factory');
-                        $encoder = $factory->getEncoder($user->getCredentials());
-                        $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
-                        $user->getCredentials()->setPassword($password);
+                        if(isset($json->{'password'}))
+                        {
+                            $factory = $this->get('security.encoder_factory');
+                            $encoder = $factory->getEncoder($user->getCredentials());
+                            $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
+                            $user->getCredentials()->setPassword($password);
+                        }
                         $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         $user->setSurname($json->{'surname'});
@@ -122,6 +127,8 @@ class SystemAdminController extends Controller
                         $user->setTitle($json->{'title'});
                         $user->setCity($json->{'city'});
                         $user->setCountry($json->{'country'});
+                        $user->setPhonecode($json->{'phonecode'});
+                        $user->setPhonenumber($json->{'phonenumber'});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});

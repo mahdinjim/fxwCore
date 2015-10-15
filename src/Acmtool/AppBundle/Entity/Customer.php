@@ -105,9 +105,9 @@ class Customer implements UserInterface, \Serializable
     /**
     * @Assert\NotBlank
     * @ORM\ManyToOne(targetEntity="KeyAccount", inversedBy="cutomers")
-    * @ORM\JoinColumn(name="keyaccount_id",referencedColumnName="id")
+    * @ORM\JoinColumn(name="keyaccount_id",referencedColumnName="id",onDelete="SET NULL")
     */
-    private $KeyAccount;
+    private $keyAccount;
     /**
     * @ORM\OneToMany(targetEntity="Project", mappedBy="owner")
     */
@@ -118,6 +118,7 @@ class Customer implements UserInterface, \Serializable
         $this->salt = md5(uniqid(null, true));
         $this->users = new ArrayCollection();
         $this->projects=new ArrayCollection();
+
     }
 
     /**

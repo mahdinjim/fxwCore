@@ -52,6 +52,8 @@ class DeveloperController extends Controller
                 $user->setCity($json->{'city'});
                 $user->setCountry($json->{'country'});
                 $validator = $this->get('validator');
+                $user->setPhonecode($json->{'phonecode'});
+                $user->setPhonenumber($json->{'phonenumber'});
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
                 if (count($errorList) > 0 || count($crederrorlist)>0) {
@@ -69,6 +71,8 @@ class DeveloperController extends Controller
                 } else {
                     $em->persist($user);
                     $em->flush();
+                    if($json->{"dosend"})
+                        $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember($json->{'email'},$json->{'password'},$json->{"login"},$json->{'name'},$json->{'surname'});
                     $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent(ConstValues::DEVCREATED);
@@ -90,7 +94,7 @@ class DeveloperController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{'id'}) && isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'capacity'}) && isset($json->{'skills'})))
+            if(!(isset($json->{'id'}) &&  isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'capacity'}) && isset($json->{'skills'})))
             {
                 $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
@@ -109,10 +113,13 @@ class DeveloperController extends Controller
                     $user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{'id'});
                     if($user instanceOf Developer){
                         $user->getCredentials()->setLogin($json->{"login"});
-                        $factory = $this->get('security.encoder_factory');
-                        $encoder = $factory->getEncoder($user->getCredentials());
-                        $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
-                        $user->getCredentials()->setPassword($password);
+                        if(isset($json->{'password'}))
+                        {
+                            $factory = $this->get('security.encoder_factory');
+                            $encoder = $factory->getEncoder($user->getCredentials());
+                            $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
+                            $user->getCredentials()->setPassword($password);
+                        }
                         $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         $user->setSurname($json->{'surname'});
@@ -122,6 +129,8 @@ class DeveloperController extends Controller
                         $user->setTitle($json->{'title'});
                         $user->setCity($json->{'city'});
                         $user->setCountry($json->{'country'});
+                        $user->setPhonecode($json->{'phonecode'});
+                        $user->setPhonenumber($json->{'phonenumber'});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});

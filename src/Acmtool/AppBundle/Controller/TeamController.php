@@ -23,29 +23,19 @@ class TeamController extends Controller
 		 if($keyaccounts>0)
 		 {
             foreach ($keyaccounts as $user) {
-                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Account Manager","username"=>$user->getUsername());
+                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Key Account","username"=>$user->getUsername(),"status"=>$user->getState(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber());
                 $i++;
 
             }
             
 		 }
+		 
 		 $teamleaders=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findAll();
 		 if($teamleaders>0)
 		 {
 		 	
             foreach ($teamleaders as $user) {
-                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Account Manager","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"state"=>$user->getState(),"skills"=>$user->getSkills());
-                $i++;
-
-            }
-           
-		 }
-		 $teamleaders=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findAll();
-		 if($teamleaders>0)
-		 {
-		 	
-            foreach ($teamleaders as $user) {
-                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Team Leader","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"state"=>$user->getState(),"skills"=>$user->getSkills());
+                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Teamleader","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber());
                 $i++;
 
             }
@@ -56,7 +46,7 @@ class TeamController extends Controller
 		 {
 		 	
             foreach ($developers as $user) {
-                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Developer","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"state"=>$user->getState(),"skills"=>$user->getSkills());
+                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Developer","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber());
                 $i++;
 
             }
@@ -67,7 +57,7 @@ class TeamController extends Controller
 		 {
 		 	
             foreach ($testers as $user) {
-                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Tester","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"state"=>$user->getState(),"skills"=>$user->getSkills());
+                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Tester","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber());
                 $i++;
 
             }
@@ -78,7 +68,7 @@ class TeamController extends Controller
 		 {
 		 	
             foreach ($designers as $user) {
-                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"UX/UI designer","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"state"=>$user->getState(),"skills"=>$user->getSkills());
+                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Designer","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber());
                 $i++;
 
             }
@@ -89,7 +79,7 @@ class TeamController extends Controller
 		 {
 		 	
             foreach ($admins as $user) {
-                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"System Admin","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"state"=>$user->getState(),"skills"=>$user->getSkills());
+                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>"Administrator","username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber());
                 $i++;
 
             }

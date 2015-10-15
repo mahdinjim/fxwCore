@@ -7,7 +7,7 @@ use Acmtool\AppBundle\Entity\TeamMember;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-
+use Doctrine\Common\Collections\ArrayCollection;
 /**
  * KeyAccount
  *
@@ -45,11 +45,11 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
      **/
     private $apitoken;
     /**
-    * @ORM\OneToMany(targetEntity="Customer", mappedBy="keyaccount",cascade={"remove"})
+    * @ORM\OneToMany(targetEntity="Customer", mappedBy="keyAccount",cascade={"remove"})
     */
     private $customers;
     /**
-    * @ORM\OneToMany(targetEntity="Project", mappedBy="keyaccount")
+    * @ORM\OneToMany(targetEntity="Project", mappedBy="keyaccount",cascade={"remove"})
     */
     private $projects;
 

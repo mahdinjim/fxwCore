@@ -338,3 +338,8 @@ _allteammemebrs:
     defaults: { _controller: AcmtoolAppBundle:Team:getAllTeamMmebers }
     requirements:
         _method: get
+_uploadteamphoto:
+    path:     /private/team/upload/photo/{id}/{role}
+    defaults: { _controller: AcmtoolAppBundle:Team:uploadPhoto }
+    requirements:
+        _method: post

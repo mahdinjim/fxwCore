@@ -92,4 +92,65 @@ class TeamController extends Controller
          return $res;
 
 	}
+	public function uploadPhotoAction($id,$role)
+	{
+		$request = $this->get('request');
+		$baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+		$path=__DIR__.'/../../../../web'.'/uploads/teamphotos';
+		$em = $this->getDoctrine()->getManager();
+        $data = $request->getContent();
+        list($type, $data) = explode(';', $data);
+        list(, $data)      = explode(',', $data);
+        list(,$extension)=explode("/", $type);
+        $data = base64_decode($data);
+        $user=null;
+        if($role=="Key Account")
+        {
+        	$user=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findOneById($id);
+        }
+        elseif ($role=="Teamleader") {
+        	$user=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($id);
+        }
+        elseif ($role=="Developer") {
+        	$user=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($id);
+        }
+        elseif ($role=="Tester") {
+        	$user=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($id);
+        }
+        elseif ($role=="Designer") {
+        	$user=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($id);
+        }
+        elseif ($role=="Administrator") {
+        	$user=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($id);
+        }
+        if($user!=null)
+        {
+        	$filename=$this->random_string(70);
+        	$result=file_put_contents($path."/".$filename.".".$extension, $data);
+        	$photoUrl=$baseurl."/uploads/teamphotos/".$filename.".".$extension;
+        	$user->setPhoto($photoUrl);
+        	$em->flush();
+			$res=new Response();
+	        $res->setStatusCode(200);
+	        $res->setContent("photo uplaoded successfully");
+	        return $res;
+        }
+        else{
+        	$res=new Response();
+	        $res->setStatusCode(400);
+	        $res->setContent("Can't upload photo");
+	        return $res;
+        }
+		
+	}
+	private function random_string($length) {
+	    $key = '';
+	    $keys = array_merge(range(0, 9), range('a', 'z'));
+
+	    for ($i = 0; $i < $length; $i++) {
+	        $key .= $keys[array_rand($keys)];
+	    }
+
+	    return $key;
+	}
 }

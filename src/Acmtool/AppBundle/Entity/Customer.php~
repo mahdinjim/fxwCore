@@ -627,27 +627,4 @@ class Customer implements UserInterface, \Serializable
     {
         return $this->day;
     }
-
-    /**
-     * Set phonecode
-     *
-     * @param string $phonecode
-     * @return Customer
-     */
-    public function setPhonecode($phonecode)
-    {
-        $this->phonecode = $phonecode;
-    
-        return $this;
-    }
-
-    /**
-     * Get phonecode
-     *
-     * @return string 
-     */
-    public function getPhonecode()
-    {
-        return $this->phonecode;
-    }
 }

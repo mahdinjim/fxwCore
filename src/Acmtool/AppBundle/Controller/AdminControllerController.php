@@ -45,6 +45,8 @@ class AdminControllerController extends Controller
             $admin->setTitle($json->{"title"});
             if(isset($json->{"tel"}))
                 $admin->setTel($json->{"tel"});
+            $admin->setName($json->{"name"});
+            $admin->setSurname($json->{"surname"});
             $validator = $this->get('validator');
             $errorList = $validator->validate($admin);
             $crederrorlist=$validator->validate($creds);

@@ -12,7 +12,7 @@ use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
 
-
+Const TIMEZONE="Europe/Berlin";
 class CustomerController extends Controller
 {
     public function CreateAction()
@@ -29,7 +29,7 @@ class CustomerController extends Controller
 
             if(!(isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'address'}) && isset($json->{'companyname'}) && isset($json->{'address'}->{'address'}) && isset($json->{'address'}->{'city'}) && isset($json->{'address'}->{'zipcode'}) && isset($json->{'address'}->{'country'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -38,7 +38,7 @@ class CustomerController extends Controller
                 $keyaccount=null;
                 if($this->get('security.context')->isGranted('ROLE_ADMIN') && !isset($json->{"keyaccount_id"}))
                 {
-                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                     $response->headers->set('Content-Type', 'application/json');
                     return $response;
                 }
@@ -49,7 +49,7 @@ class CustomerController extends Controller
                 else
                     $keyaccount=$this->get('security.context')->getToken()->getUser();
                 $user=new Customer();
-                $user->setKeyaccount($keyaccount);
+                $user->setKeyAccount($keyaccount);
                 $creds=new Creds();
                 $creds->setLogin($json->{"login"});
                 $factory = $this->get('security.encoder_factory');
@@ -66,8 +66,10 @@ class CustomerController extends Controller
                 $user->setTelnumber($json->{'telnumber'});
                 if(isset($json->{'vat'}))
                     $user->setVat($json->{'vat'});
-                if(isset($json->{"tel"}))
-                    $user->setTelnumber($json->{"tel"});
+                date_default_timezone_set('UTC');
+                $user->setDay(date('d'));
+                $user->setMonth(date("m"));
+                $user->setYear(date("Y"));
                 $address=new Address();
                 $address->setAddress($json->{'address'}->{'address'});
                 $address->setZipCode($json->{'address'}->{'zipcode'});

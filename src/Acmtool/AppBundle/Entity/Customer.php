@@ -72,13 +72,13 @@ class Customer implements UserInterface, \Serializable
     private $logo;
 
     /**
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The creds field is required")
      * @ORM\OneToOne(targetEntity="Creds",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
      **/
     private $credentials;
     /**
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The address field is required")
      * @ORM\OneToOne(targetEntity="Address",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
      **/
@@ -103,7 +103,7 @@ class Customer implements UserInterface, \Serializable
      **/
     private $apitoken;
     /**
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="The keyaccount field is required")
     * @ORM\ManyToOne(targetEntity="KeyAccount", inversedBy="cutomers")
     * @ORM\JoinColumn(name="keyaccount_id",referencedColumnName="id",onDelete="SET NULL")
     */
@@ -511,7 +511,7 @@ class Customer implements UserInterface, \Serializable
      */
     public function setKeyAccount(\Acmtool\AppBundle\Entity\KeyAccount $keyAccount = null)
     {
-        $this->KeyAccount = $keyAccount;
+        $this->keyAccount = $keyAccount;
     
         return $this;
     }
@@ -523,7 +523,7 @@ class Customer implements UserInterface, \Serializable
      */
     public function getKeyAccount()
     {
-        return $this->KeyAccount;
+        return $this->keyAccount;
     }
 
     /**

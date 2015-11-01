@@ -124,7 +124,7 @@ class CustomerController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{'id'}) && isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'address'}) && isset($json->{'companyname'}) && isset($json->{'address'}->{'address'}) && isset($json->{'address'}->{'city'}) && isset($json->{'address'}->{'zipcode'}) && isset($json->{'address'}->{'country'})))
+            if(!(isset($json->{'id'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'}) && isset($json->{'address'}) && isset($json->{'companyname'}) && isset($json->{'address'}->{'address'}) && isset($json->{'address'}->{'city'}) && isset($json->{'address'}->{'zipcode'}) && isset($json->{'address'}->{'country'})))
             {
                 $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
@@ -148,10 +148,13 @@ class CustomerController extends Controller
                             $user->setKeyaccount($keyaccount);
                         }
                         $user->getCredentials()->setLogin($json->{"login"});
-                        $factory = $this->get('security.encoder_factory');
-                        $encoder = $factory->getEncoder($user->getCredentials());
-                        $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
-                        $user->getCredentials()->setPassword($password);
+                        if(isset($json->{'password'}))
+                        {
+                            $factory = $this->get('security.encoder_factory');
+                            $encoder = $factory->getEncoder($user->getCredentials());
+                            $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
+                            $user->getCredentials()->setPassword($password);
+                        }
                         $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         if(isset($json->{'vat'}))

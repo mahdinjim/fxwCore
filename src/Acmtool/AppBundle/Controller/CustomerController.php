@@ -101,6 +101,8 @@ class CustomerController extends Controller
                 } else {
                     $em->persist($user);
                     $em->flush();
+                     if($json->{"isSent"})
+                        $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember($json->{'email'},$json->{'password'},$json->{"login"},$json->{'name'},$json->{'surname'});
                     $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent(ConstValues::CUSCREATED);
@@ -251,7 +253,7 @@ class CustomerController extends Controller
             $users=array();
             $i=0;
             foreach ($result as $user) {
-                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"logo"=>$user->getLogo(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"tel"=>$user->getTelnumber(),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
+                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
                 $i++;
 
             }

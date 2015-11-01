@@ -71,6 +71,8 @@ class SystemAdminController extends Controller
                 } else {
                     $em->persist($user);
                     $em->flush();
+                     if($json->{"dosend"})
+                        $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember($json->{'email'},$json->{'password'},$json->{"login"},$json->{'name'},$json->{'surname'});
                     $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent(ConstValues::SYSACREATED);

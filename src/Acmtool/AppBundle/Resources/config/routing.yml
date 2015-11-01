@@ -235,7 +235,7 @@ _deletecustomeruser:
         _method: delete
 _listcustomeruser:
     path:     /private/customer/users/all/{page}
-    defaults: { _controller: AcmtoolAppBundle:Customer:List }
+    defaults: { _controller: AcmtoolAppBundle:CustomerUser:List }
     requirements:
         _method: get
 _detailscustomeruser:

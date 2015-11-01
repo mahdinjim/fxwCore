@@ -61,7 +61,7 @@ class CustomerUser implements UserInterface, \Serializable
     private $telnumber;
      /**
      * @Assert\NotBlank
-     * @ORM\OneToOne(targetEntity="Creds")
+     * @ORM\OneToOne(targetEntity="Creds",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
      **/
     private $credentials;
@@ -85,7 +85,18 @@ class CustomerUser implements UserInterface, \Serializable
      * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
      **/
     private $apitoken;
-
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phonecode", type="string",nullable=true)
+     */
+    private $phonecode;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string",nullable=true)
+     */
+    private $title;
     public function __construct()
     {
         $this->isActive = true;
@@ -374,5 +385,51 @@ class CustomerUser implements UserInterface, \Serializable
         list (
             $this->id,
         ) = unserialize($serialized);
+    }
+
+    /**
+     * Set phonecode
+     *
+     * @param string $phonecode
+     * @return CustomerUser
+     */
+    public function setPhonecode($phonecode)
+    {
+        $this->phonecode = $phonecode;
+    
+        return $this;
+    }
+
+    /**
+     * Get phonecode
+     *
+     * @return string 
+     */
+    public function getPhonecode()
+    {
+        return $this->phonecode;
+    }
+
+    /**
+     * Set title
+     *
+     * @param string $title
+     * @return CustomerUser
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string 
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 }

@@ -46,8 +46,11 @@ class CustomerUserController extends Controller
                 $user->setEmail($json->{'email'});
                 $user->setName($json->{'name'});
                 $user->setSurname($json->{'surname'});
-                if(isset($json->{"tel"}))
-                    $user->setTelnumber($json->{"tel"});
+                if(isset($json->{"phonenumber"}))
+                    $user->setTelnumber($json->{"phonenumber"});
+                $user->setTitle($json->{"title"});
+                $user->setPhonecode($json->{"phonecode"});
+                $user->setCompany($this->get('security.context')->getToken()->getUser());
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -66,6 +69,8 @@ class CustomerUserController extends Controller
                 } else {
                     $em->persist($user);
                     $em->flush();
+                     if($json->{"isSent"})
+                        $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember($json->{'email'},$json->{'password'},$json->{"login"},$json->{'name'},$json->{'surname'});
                     $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent(ConstValues::KEYACREATED);
@@ -87,9 +92,9 @@ class CustomerUserController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{'id'}) && isset($json->{'password'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'})))
+            if(!(isset($json->{'id'}) && isset($json->{'login'}) && isset($json->{'email'}) && isset($json->{'name'}) && isset($json->{'surname'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -114,17 +119,20 @@ class CustomerUserController extends Controller
                             return $response;
                         }
                         $user->getCredentials()->setLogin($json->{"login"});
-                        $factory = $this->get('security.encoder_factory');
-                        $encoder = $factory->getEncoder($user->getCredentials());
-                        $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
-                        $user->getCredentials()->setPassword($password);
+                        if(isset($json->{'password'}))
+                        {
+                            $factory = $this->get('security.encoder_factory');
+                            $encoder = $factory->getEncoder($user->getCredentials());
+                            $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
+                            $user->getCredentials()->setPassword($password);
+                        }
                         $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         $user->setSurname($json->{'surname'});
-                        if(isset($json->{"tel"}))
-                        {
-                            $user->setTelnumber($json->{"description"});
-                        }
+                       if(isset($json->{"phonenumber"}))
+                            $user->setTelnumber($json->{"phonenumber"});
+                        $user->setTitle($json->{"title"});
+                        $user->setPhonecode($json->{"phonecode"});
                         $validator = $this->get('validator');
                         $errorList = $validator->validate($user);
                         $crederrorlist=$validator->validate($user->getCredentials());
@@ -187,19 +195,21 @@ class CustomerUserController extends Controller
         {
             $em = $this->getDoctrine()->getManager();
             $customer=$this->get('security.context')->getToken()->getUser();
-            $totalpages=ceil($em->getRepository("AcmtoolAppBundle:CustomerUser")->getCustomerUsersCount($customer)/ConstValues::COUNT);
-            $start=ConstValues::COUNT*($page-1);
-            $result=$em->getRepository("AcmtoolAppBundle:CustomerUser")->getUsersByKeyCustomer($customer,$start);
+            //$totalpages=ceil($em->getRepository("AcmtoolAppBundle:CustomerUser")->getCustomerUsersCount($customer)/ConstValues::COUNT);
+            //$start=ConstValues::COUNT*($page-1);
+            //$result=$em->getRepository("AcmtoolAppBundle:CustomerUser")->getUsersByKeyCustomer($customer,$start);
+            $result=$em->getRepository("AcmtoolAppBundle:CustomerUser")->findAll();
             if(count($result)>0)
             {
                 $users=array();
                 $i=0;
                 foreach ($result as $user) {
-                    $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"tel"=>$user->getTelnumber());
+                    $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"phonenumber"=>$user->getTelnumber(),"phonecode"=>$user->getPhonecode(),"title"=>$user->getTitle());
                     $i++;
 
                 }
-                $messag = array('totalpages' => $totalpages,'current_page'=>$page,'users'=>$users);
+                //$messag = array('totalpages' => $totalpages,'current_page'=>$page,'users'=>$users);
+                $messag = array('users'=>$users);
                 $res=new Response();
                 $res->setStatusCode(200);
                 $res->setContent(json_encode($messag));

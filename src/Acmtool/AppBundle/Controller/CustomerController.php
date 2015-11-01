@@ -159,8 +159,8 @@ class CustomerController extends Controller
                         $user->setName($json->{'name'});
                         if(isset($json->{'vat'}))
                             $user->setVat($json->{'vat'});
-                         if(isset($json->{"tel"}))
-                            $user->setTelnumber($json->{"tel"});
+                        $user->setPhonecode($json->{'phonecode'});
+                        $user->setTelnumber($json->{'telnumber'});
                         $address=new Address();
                         $user->getAddress()->setAddress($json->{'address'}->{'address'});
                         $user->getAddress()->setZipCode($json->{'address'}->{'zipcode'});

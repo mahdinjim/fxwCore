@@ -12,7 +12,7 @@ use Acmtool\AppBundle\Entity\Titles;
  */
 class CustomerUserRepository extends EntityRepository
 {
-	public function getUsersByKeyCustomer($customer,$start)
+	/*public function getUsersByKeyCustomer($customer,$start)
 	{
 		$em=$this->getEntityManager();
 		$result=$em->createQuery('select c from AcmtoolAppBundle:CustomerUser c
@@ -30,5 +30,5 @@ class CustomerUserRepository extends EntityRepository
 			->setParameter("customer",$customer)
             ->getSingleScalarResult();
         return $totalcount;
-	}
+	}*/
 }

@@ -264,5 +264,49 @@ class CustomerUserController extends Controller
         }
 
     }
+    public function uploadPhotoAction($id)
+    {
+        $request = $this->get('request');
+        $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+        $path=__DIR__.'/../../../../web'.'/uploads/cuserphotos';
+        $em = $this->getDoctrine()->getManager();
+        $data = $request->getContent();
+        list($type, $data) = explode(';', $data);
+        list(, $data)      = explode(',', $data);
+        list(,$extension)=explode("/", $type);
+        $data = base64_decode($data);
+        $user=null;
+        $user=$em->getRepository("AcmtoolAppBundle:CustomerUser")->findOneById($id);
+        
+        if($user!=null)
+        {
+            $filename=$this->random_string(70);
+            $result=file_put_contents($path."/".$filename.".".$extension, $data);
+            $photoUrl=$baseurl."/uploads/cuserphotos/".$filename.".".$extension;
+            $user->setPhoto($photoUrl);
+            $em->flush();
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent("photo uplaoded successfully");
+            return $res;
+        }
+        else{
+            $res=new Response();
+            $res->setStatusCode(400);
+            $res->setContent("Can't upload photo");
+            return $res;
+        }
+        
+    }
+    private function random_string($length) {
+        $key = '';
+        $keys = array_merge(range(0, 9), range('a', 'z'));
+
+        for ($i = 0; $i < $length; $i++) {
+            $key .= $keys[array_rand($keys)];
+        }
+
+        return $key;
+    }
 
 }

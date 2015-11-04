@@ -343,3 +343,8 @@ _uploadteamphoto:
     defaults: { _controller: AcmtoolAppBundle:Team:uploadPhoto }
     requirements:
         _method: post
+_uploadcuserphoto:
+    path:     /private/customer/users/upload/photo/{id}
+    defaults: { _controller: AcmtoolAppBundle:CustomerUser:uploadPhoto }
+    requirements:
+        _method: post

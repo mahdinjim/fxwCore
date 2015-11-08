@@ -25,3 +25,8 @@ services:
     acmtool_app.email.notifier:
      class: '%acmtoo_app.email.notifier.class%'
      arguments: ['@mailer']
+    acmtool_app.corss_listener:
+     class: Acmtool\AppBundle\Listeners\CorssListener
+     tags:
+             -  { name: kernel.event_listener, event: kernel.request, method: onRequest }
+             -  { name: kernel.event_listener, event: kernel.response, method: onResponse }

@@ -5,20 +5,17 @@ acmtool_app_homepage:
 _create:
     path:     /secret/once/create
     defaults: { _controller: AcmtoolAppBundle:AdminController:Create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 
 update:
     path:     /private/super/admin/update
     defaults: { _controller: AcmtoolAppBundle:AdminController:update }
-    requirements:
-        _method: put
+    methods:  [PUT,OPTIONS]
 
 _api_authentification:
     path:     /public/login
     defaults: { _controller: AcmtoolAppBundle:Authentification:ApiAuthentification }
-    requirements:
-        _method: post
+    methods:  [OPTIONS,POST]
 
 _createTeamleader:
     path:     /private/super/teamleader/create
@@ -27,324 +24,264 @@ _createTeamleader:
 _updateTeamleader:
     path:     /private/teamleader/update
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:Update }
-    requirements:
-        _method: put
+    methods:  [PUT,OPTIONS]
 
 _deleteTeamleader:
     path:     /private/super/teamleader/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:Delete }
-    requirements:
-        _method: delete
+    methods:  [DELETE,OPTIONS]
 
 _listTeamleader:
     path:     /private/super/teamleader/all/{page}
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:List }
-    requirements:
-        _method: get
+    methods:  [GET,OPTIONS]
 
 _detailsTeamleader:
     path:     /private/teamleader/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:Details }
-    requirements:
-        _method: get
+    methods:  [GET,OPTIONS]
 
 _createdeveloper:
     path:     /private/super/developer/create
     defaults: { _controller: AcmtoolAppBundle:Developer:Create }
-    requirements:
-        _method: post
+    methods:  [POST,OPTIONS]
 
 _updatedeveloper:
     path:     /private/developer/update
     defaults: { _controller: AcmtoolAppBundle:Developer:Update }
-    requirements:
-        _method: put
+    methods:  [PUT,OPTIONS]
 
 _deletedeveloper:
     path:     /private/super/developer/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:Developer:Delete }
-    requirements:
-        _method: delete
+    methods:  [DELETE,OPTIONS]
 
 _listdeveloper:
     path:     /private/super/developer/all/{page}
     defaults: { _controller: AcmtoolAppBundle:Developer:List }
-    requirements:
-        _method: get
+    methods:  [GET,OPTIONS]
 
 _detailsdeveloper:
     path:     /private/developer/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:Developer:Details }
-    requirements:
-        _method: get
+    methods:  [GET,OPTIONS]
 _createtester:
     path:     /private/super/tester/create
     defaults: { _controller: AcmtoolAppBundle:Tester:Create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 
 _updatetester:
     path:     /private/tester/update
     defaults: { _controller: AcmtoolAppBundle:Tester:Update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 
 _deletetester:
     path:     /private/super/tester/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:Tester:Delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 
 _listtester:
     path:     /private/super/tester/all/{page}
     defaults: { _controller: AcmtoolAppBundle:Tester:List }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 
 _detailstester:
     path:     /private/tester/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:Tester:Details }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _createdesigner:
     path:     /private/super/designer/create
     defaults: { _controller: AcmtoolAppBundle:Designer:Create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 
 _updatedesigner:
     path:     /private/designer/update
     defaults: { _controller: AcmtoolAppBundle:Designer:Update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 
 _deletedesigner:
     path:     /private/super/designer/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:Designer:Delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 
 _listdesigner:
     path:     /private/super/designer/all/{page}
     defaults: { _controller: AcmtoolAppBundle:Designer:List }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 
 _detailsdesigner:
     path:     /private/designer/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:Designer:Details }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _createsysadmin:
     path:     /private/super/sysadmin/create
     defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 
 _updatesysadmin:
     path:     /private/sysadmin/update
     defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 
 _deletesysadmin:
     path:     /private/super/sysadmin/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 
 _listsysadmin:
     path:     /private/super/sysadmin/all/{page}
     defaults: { _controller: AcmtoolAppBundle:SystemAdmin:List }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 
 _detailssysadmin:
     path:     /private/sysadmin/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:SystemAdmin:Details }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _createkeyaccount:
     path:     /private/super/keyaccount/create
     defaults: { _controller: AcmtoolAppBundle:KeyAccount:Create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 
 _updatekeyaccount:
     path:     /private/keyaccount/update
     defaults: { _controller: AcmtoolAppBundle:KeyAccount:Update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 
 _deletekeyaccount:
     path:     /private/super/keyaccount/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:KeyAccount:Delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 
 _listkeyaccount:
     path:     /private/super/keyaccount/all/{page}
     defaults: { _controller: AcmtoolAppBundle:KeyAccount:List }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 
 _detailskeyaccount:
     path:     /private/keyaccount/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:KeyAccount:Details }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _createcustomer:
     path:     /private/keyaccount/customer/create
     defaults: { _controller: AcmtoolAppBundle:Customer:Create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _updatecustomer:
     path:     /private/customer/update
     defaults: { _controller: AcmtoolAppBundle:Customer:Update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 _deletecustomer:
     path:     /private/keyaccount/customer/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:Customer:Delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 _listcustomer:
     path:     /private/keyaccount/customer/all/{page}
     defaults: { _controller: AcmtoolAppBundle:Customer:List }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _detailscustomer:
     path:     /private/customer/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:Customer:Details }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _createcustomeruser:
     path:     /private/customer/users/create
     defaults: { _controller: AcmtoolAppBundle:CustomerUser:Create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _updatecustomeruser:
     path:     /private/customer/users/update
     defaults: { _controller: AcmtoolAppBundle:CustomerUser:Update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 _deletecustomeruser:
     path:     /private/customer/users/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:CustomerUser:Delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 _listcustomeruser:
     path:     /private/customer/users/all/{page}
     defaults: { _controller: AcmtoolAppBundle:CustomerUser:List }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _detailscustomeruser:
     path:     /private/customer/users/profile/{id}
     defaults: { _controller: AcmtoolAppBundle:Customer:Details }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _createproject:
     path:     /private/project/restricted/create
     defaults: { _controller: AcmtoolAppBundle:Project:create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _updateproject:
     path:     /private/project/restricted/update
     defaults: { _controller: AcmtoolAppBundle:Project:update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 _deleteproject:
     path:     /private/project/restricted/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:Project:delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 _listprojects:
     path:     /private/project/restricted/list/{page}/{state}
     defaults: { _controller: AcmtoolAppBundle:Project:list }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _detailscustomeruser:
     path:     /private/project/restricted/details/{id}
     defaults: { _controller: AcmtoolAppBundle:Project:details }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _assignteamleadertoproject:
     path:     /private/super/project/teamleader/assign
     defaults: { _controller: AcmtoolAppBundle:Project:assignTeamLeader }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _adddevelopertoproject:
     path:     /private/teamleader/project/developer/add
     defaults: { _controller: AcmtoolAppBundle:Project:addDeveloper }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _adddesigneroproject:
     path:     /private/teamleader/project/designer/add
     defaults: { _controller: AcmtoolAppBundle:Project:addDesigner }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _addtesteroproject:
     path:     /private/teamleader/project/tester/add
     defaults: { _controller: AcmtoolAppBundle:Project:addTester }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _addsysadminoproject:
     path:     /private/teamleader/project/sysadmin/add
     defaults: { _controller: AcmtoolAppBundle:Project:addSysadmin }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _deletedeveloperfromproject:
     path:     /private/teamleader/project/developer/delete
     defaults: { _controller: AcmtoolAppBundle:Project:deleteDeveloper }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _deletedesignerfromproject:
     path:     /private/teamleader/project/designer/delete
     defaults: { _controller: AcmtoolAppBundle:Project:deleteDesigner }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _deletetesterfromproject:
     path:     /private/teamleader/project/tester/delete
     defaults: { _controller: AcmtoolAppBundle:Project:deleteTester }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _deletesysadminfromproject:
     path:     /private/teamleader/project/sysadmin/delete
     defaults: { _controller: AcmtoolAppBundle:Project:deleteSysadmin }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _addprojectconfig:
     path:     /private/project/restricted/config/create
     defaults: { _controller: AcmtoolAppBundle:ProjectConfig:create }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _updateprojectconfig:
     path:     /private/project/restricted/config/update
     defaults: { _controller: AcmtoolAppBundle:ProjectConfig:update }
-    requirements:
-        _method: put
+    methods: [PUT,OPTIONS]
 _projectconfigdetails:
     path:     /private/project/restricted/config/detail/{project_id}
     defaults: { _controller: AcmtoolAppBundle:ProjectConfig:getProjectConfig }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _deleteprojectconfig:
     path:     /private/project/restricted/config/delete
     defaults: { _controller: AcmtoolAppBundle:ProjectConfig:delete }
-    requirements:
-        _method: delete
+    methods: [DELETE,OPTIONS]
 _allteammemebrs:
     path:     /private/team/all
     defaults: { _controller: AcmtoolAppBundle:Team:getAllTeamMmebers }
-    requirements:
-        _method: get
+    methods: [GET,OPTIONS]
 _uploadteamphoto:
     path:     /private/team/upload/photo/{id}/{role}
     defaults: { _controller: AcmtoolAppBundle:Team:uploadPhoto }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]
 _uploadcuserphoto:
     path:     /private/customer/users/upload/photo/{id}
     defaults: { _controller: AcmtoolAppBundle:CustomerUser:uploadPhoto }
-    requirements:
-        _method: post
+    methods: [POST,OPTIONS]

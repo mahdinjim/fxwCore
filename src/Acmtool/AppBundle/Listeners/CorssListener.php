@@ -18,8 +18,8 @@ class CorssListener
 	}
 	public function onResponse(FilterResponseEvent $event)
 	{
-		 $response = $event->getResponse();
-    	$response->headers->set('Access-Control-Allow-Origin', 'http://dev.fxw.io');
+		$response = $event->getResponse();
+    	$response->headers->set('Access-Control-Allow-Origin', '*');
     	$response->headers->set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
    		$response->headers->set('Access-Control-Allow-Headers', 'x-crm-access-token,Content-Type');
 

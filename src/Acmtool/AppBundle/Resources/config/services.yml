@@ -5,6 +5,7 @@ parameters:
     acmtool_app.authentification.class: Acmtool\AppBundle\DependencyInjection\AuthentificationService
     acmtool_app.validation.json.class: Acmtool\AppBundle\DependencyInjection\JsonValidatorService
     acmtoo_app.email.notifier.class: Acmtool\AppBundle\DependencyInjection\EmailNotifierService
+    acmtoo_app.chat.class: Acmtool\AppBundle\DependencyInjection\MessagingService
 
 services:
 #    acmtool_app.example:
@@ -30,3 +31,5 @@ services:
      tags:
              -  { name: kernel.event_listener, event: kernel.request, method: onRequest }
              -  { name: kernel.event_listener, event: kernel.response, method: onResponse }
+    acmtool_app.messaging:
+      class: '%acmtoo_app.chat.class%'

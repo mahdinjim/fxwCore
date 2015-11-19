@@ -285,3 +285,27 @@ _uploadcuserphoto:
     path:     /private/customer/users/upload/photo/{id}
     defaults: { _controller: AcmtoolAppBundle:CustomerUser:uploadPhoto }
     methods: [POST,OPTIONS]
+_chatgroupinfo:
+    path:     /private/chat/info/{group}
+    defaults: { _controller: AcmtoolAppBundle:Chat:getGroupInfo }
+    methods: [GET,OPTIONS]
+_chatmessages:
+    path:     /private/chat/messages/{number}/{group}
+    defaults: { _controller: AcmtoolAppBundle:Chat:getMessages }
+    methods: [GET,OPTIONS]
+_sendMessage:
+    path:     /private/chat/send/{group}
+    defaults: { _controller: AcmtoolAppBundle:Chat:sendMessage }
+    methods: [POST,OPTIONS]
+_editMessage:
+    path:     /private/chat/edit/{group}
+    defaults: { _controller: AcmtoolAppBundle:Chat:editMessage }
+    methods: [PUT,OPTIONS]
+_markMessage:
+    path:     /private/chat/mark/{group}/{mess}
+    defaults: { _controller: AcmtoolAppBundle:Chat:markMessages }
+    methods: [GET,OPTIONS]
+_deleteMessage:
+    path:     /private/chat/delete/{group}/{mess}
+    defaults: { _controller: AcmtoolAppBundle:Chat:deleteMessages }
+    methods: [DELETE,OPTIONS]

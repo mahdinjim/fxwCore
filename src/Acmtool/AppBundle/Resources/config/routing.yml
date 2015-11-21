@@ -294,8 +294,8 @@ _chatmessages:
     defaults: { _controller: AcmtoolAppBundle:Chat:getMessages }
     methods: [GET,OPTIONS]
 _chatnewmessages:
-    path:     /private/chat/messages/{group}/{last}
-    defaults: { _controller: AcmtoolAppBundle:Chat:getMessages }
+    path:     /private/chat/new/{group}/{last}
+    defaults: { _controller: AcmtoolAppBundle:Chat:getNewMessages }
     methods: [GET,OPTIONS]
 _sendMessage:
     path:     /private/chat/send/{group}

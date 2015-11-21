@@ -290,7 +290,11 @@ _chatgroupinfo:
     defaults: { _controller: AcmtoolAppBundle:Chat:getGroupInfo }
     methods: [GET,OPTIONS]
 _chatmessages:
-    path:     /private/chat/messages/{number}/{group}
+    path:     /private/chat/messages/{number}/{group}/{start}
+    defaults: { _controller: AcmtoolAppBundle:Chat:getMessages }
+    methods: [GET,OPTIONS]
+_chatnewmessages:
+    path:     /private/chat/messages/{group}/{last}
     defaults: { _controller: AcmtoolAppBundle:Chat:getMessages }
     methods: [GET,OPTIONS]
 _sendMessage:

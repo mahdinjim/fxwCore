@@ -29,10 +29,30 @@ class ChatController extends Controller
             return $res;
 		}
 	}
-	public function getMessagesAction($number,$group){
+	public function getNewMessagesAction($group,$last)
+	{
 		$chatservice=$this->get("acmtool_app.messaging");
 		$chatprovider=$chatservice->CreateChatProvider();
-		$result=$chatprovider->getAllmess($number,$group);
+		$result=$chatprovider->getNewMessages($group,$last);
+		if($result["result"])
+		{
+			$res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($result));
+            return $res;
+		}
+		else
+		{
+			$res=new Response();
+            $res->setStatusCode(400);
+            $res->setContent('{error:"bad request"}');
+            return $res;
+		}
+	}
+	public function getMessagesAction($number,$group,$start){
+		$chatservice=$this->get("acmtool_app.messaging");
+		$chatprovider=$chatservice->CreateChatProvider();
+		$result=$chatprovider->getAllmess($number,$group,$start);
 		if($result["result"])
 		{
 			$res=new Response();

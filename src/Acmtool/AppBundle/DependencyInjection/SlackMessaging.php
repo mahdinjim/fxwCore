@@ -23,10 +23,30 @@ class SlackMessaging implements IMessaging
 		$mess=json_decode(file_get_contents(self::Baseurl.self::deleteMessage."token=".self::clienttoken."&channel=".$group."&ts=".$mess));
 		return $mess->{"ok"};
 	}
-	public function getAllmess($number,$group)
+	public function getNewMessages($group,$last)
 	{
 		$data=array();
-		$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&count=".$number."&unreads=1"));
+		$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&oldest=".$last."&unreads=1"));
+		if($history->{"ok"})
+		{
+			$data["messages"]=$history->{"messages"};
+			$data["hasmore"]=$history->{"has_more"};
+			$data["result"]=true;
+			$data["undread_count"]=$history->{"unread_count_display"};
+		}
+		else
+		{
+			$data["result"]=false;
+		}
+		return $data;
+	}
+	public function getAllmess($number,$group,$start)
+	{
+		$data=array();
+		if($start==0)
+			$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&count=".$number."&unreads=1"));
+		else 
+			$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&count=".$number."&unreads=1&latest=".$start));
 		if($history->{"ok"})
 		{
 			$data["messages"]=$history->{"messages"};

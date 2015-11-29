@@ -25,7 +25,7 @@ class ChatController extends Controller
 		{
 			$res=new Response();
             $res->setStatusCode(400);
-            $res->setContent('{error:"bad request"}');
+            $res->setContent('{"error":"bad request"}');
             return $res;
 		}
 	}
@@ -45,7 +45,7 @@ class ChatController extends Controller
 		{
 			$res=new Response();
             $res->setStatusCode(400);
-            $res->setContent('{error:"bad request"}');
+            $res->setContent('{"error":"bad request"}');
             return $res;
 		}
 	}
@@ -81,7 +81,7 @@ class ChatController extends Controller
 				$chatservice=$this->get("acmtool_app.messaging");
 				$chatprovider=$chatservice->CreateChatProvider();
 				$result=$chatprovider->sendMessage($json->{"message"},$group,$json->{"client"});
-				if($result)
+				if($result->{"ok"})
 				{
 					$res=new Response();
 		            $res->setStatusCode(200);
@@ -92,7 +92,7 @@ class ChatController extends Controller
 				{
 					$res=new Response();
 		            $res->setStatusCode(400);
-		            $res->setContent('{error:"impossible to send message"}');
+		            $res->setContent('{"error":"impossible to send message"}');
 		            return $res;
 				}
 			}
@@ -100,7 +100,7 @@ class ChatController extends Controller
 			{
 				$res=new Response();
 		        $res->setStatusCode(400);
-		        $res->setContent('{error:"missing the message"}');
+		        $res->setContent('{"error":"missing the message"}');
 		        return $res;
 			}
 		}
@@ -181,5 +181,25 @@ class ChatController extends Controller
             return $res;
 		}
 
+	}
+	public function getNewMessagesNumberAction($group)
+	{
+		$chatservice=$this->get("acmtool_app.messaging");
+		$chatprovider=$chatservice->CreateChatProvider();
+		$result=$chatprovider->getNewMessagesNumber($group);
+		if($result)
+		{
+			$res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($result));
+            return $res;
+		}
+		else
+		{
+			$res=new Response();
+            $res->setStatusCode(400);
+            $res->setContent('{"error":"impossible to get new messages number"}');
+            return $res;
+		}		
 	}
 }

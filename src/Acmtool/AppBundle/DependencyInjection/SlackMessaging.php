@@ -16,7 +16,14 @@ class SlackMessaging implements IMessaging
 	{
 		$text=urlencode($text);
 		$mess=json_decode(file_get_contents(self::Baseurl.self::sendmessage."token=".self::clienttoken."&channel=".$group."&username=".$client."&text=".$text));
-		return $mess->{"ok"};
+		if($mess->{"ok"})
+		{
+			return $mess;
+		}
+		else
+		{
+			return json_decode('{"ok":false}');
+		}
 	}
 	public function deleteMessage($mess,$group)
 	{
@@ -71,6 +78,7 @@ class SlackMessaging implements IMessaging
 	public function markAsRead($mess,$group)
 	{
 		$mess=json_decode(file_get_contents(self::Baseurl.self::markRead."token=".self::clienttoken."&channel=".$group."&ts=".$mess));
+
 		return $mess->{"ok"};
 	}
 	public function getGroupInfo($group)
@@ -93,6 +101,21 @@ class SlackMessaging implements IMessaging
 			}
 			$data["members"]=$users;
 			$data["result"]=true;
+		}
+		else
+		{
+			$data["result"]=false;
+		}
+		return $data;
+	}
+	public function getNewMessagesNumber($group)
+	{
+		$data=array();
+		$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&count=1"."&unreads=1"));
+		if($history->{"ok"})
+		{
+			$data["result"]=true;
+			$data["undread_count"]=$history->{"unread_count_display"};
 		}
 		else
 		{

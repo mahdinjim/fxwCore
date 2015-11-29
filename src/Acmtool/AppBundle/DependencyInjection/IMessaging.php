@@ -11,4 +11,5 @@ interface IMessaging
 	public function createGroupForProject();
 	public function markAsRead($mess,$group);
 	public function getNewMessages($group,$last);
+	public function getNewMessagesNumber($group);
 }

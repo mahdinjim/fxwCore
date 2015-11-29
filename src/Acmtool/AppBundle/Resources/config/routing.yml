@@ -313,3 +313,7 @@ _deleteMessage:
     path:     /private/chat/delete/{group}/{mess}
     defaults: { _controller: AcmtoolAppBundle:Chat:deleteMessages }
     methods: [DELETE,OPTIONS]
+_newMessageNumber:
+    path:     /private/chat/newmessages/number/{group}
+    defaults: { _controller: AcmtoolAppBundle:Chat:getNewMessagesNumber }
+    methods: [GET,OPTIONS]

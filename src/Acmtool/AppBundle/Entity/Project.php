@@ -45,7 +45,7 @@ class Project
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="startingdate", type="datetime")
+     * @ORM\Column(name="startingdate", type="datetime",nullable=true)
      */
     private $startingdate;
     /**
@@ -95,9 +95,61 @@ class Project
     /**
      * @var string
      * 
-     * @ORM\Column(name="channelid", type="string", length=255)
+     * @ORM\Column(name="channelid", type="string", length=255,nullable=true)
      */
     private $channelid;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="pivotalId", type="string", length=255,nullable=true)
+     */
+    private $pivotal_id;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="pivotalUrl", type="string", length=255,nullable=true)
+     */
+    private $pivotalUrl;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="pivotalName", type="string", length=255,nullable=true)
+     */
+    private $pivotalName;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="repoId", type="string", length=255,nullable=true)
+     */
+    private $repoId;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="repoUrl", type="string", length=255,nullable=true)
+     */
+    private $repoUrl;
+     /**
+     * @var string
+     * 
+     * @ORM\Column(name="repoName", type="string", length=255,nullable=true)
+     */
+    private $repoName;
+    /**
+     * @var float
+     * 
+     * @ORM\Column(name="budget", type="float",nullable=true)
+     */
+    private $budget;
+     /**
+    * @ORM\OneToMany(targetEntity="Ticket", mappedBy="project")
+    */
+    private $tickets;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="projectSkills", type="string", length=1000,nullable=true)
+     */
+    private $projectSkills;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -451,5 +503,245 @@ class Project
     public function getChannelid()
     {
         return $this->channelid;
+    }
+
+    /**
+     * Set pivotal_id
+     *
+     * @param string $pivotalId
+     * @return Project
+     */
+    public function setPivotalId($pivotalId)
+    {
+        $this->pivotal_id = $pivotalId;
+    
+        return $this;
+    }
+
+    /**
+     * Get pivotal_id
+     *
+     * @return string 
+     */
+    public function getPivotalId()
+    {
+        return $this->pivotal_id;
+    }
+
+    /**
+     * Set github_id
+     *
+     * @param string $githubId
+     * @return Project
+     */
+    public function setGithubId($githubId)
+    {
+        $this->github_id = $githubId;
+    
+        return $this;
+    }
+
+    /**
+     * Get github_id
+     *
+     * @return string 
+     */
+    public function getGithubId()
+    {
+        return $this->github_id;
+    }
+
+    /**
+     * Set budget
+     *
+     * @param float $budget
+     * @return Project
+     */
+    public function setBudget($budget)
+    {
+        $this->budget = $budget;
+    
+        return $this;
+    }
+
+    /**
+     * Get budget
+     *
+     * @return float 
+     */
+    public function getBudget()
+    {
+        return $this->budget;
+    }
+
+    /**
+     * Add tickets
+     *
+     * @param \Acmtool\AppBundle\Entity\Ticket $tickets
+     * @return Project
+     */
+    public function addTicket(\Acmtool\AppBundle\Entity\Ticket $tickets)
+    {
+        $this->tickets[] = $tickets;
+    
+        return $this;
+    }
+
+    /**
+     * Remove tickets
+     *
+     * @param \Acmtool\AppBundle\Entity\Ticket $tickets
+     */
+    public function removeTicket(\Acmtool\AppBundle\Entity\Ticket $tickets)
+    {
+        $this->tickets->removeElement($tickets);
+    }
+
+    /**
+     * Get tickets
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTickets()
+    {
+        return $this->tickets;
+    }
+
+    /**
+     * Set pivotalUrl
+     *
+     * @param string $pivotalUrl
+     * @return Project
+     */
+    public function setPivotalUrl($pivotalUrl)
+    {
+        $this->pivotalUrl = $pivotalUrl;
+    
+        return $this;
+    }
+
+    /**
+     * Get pivotalUrl
+     *
+     * @return string 
+     */
+    public function getPivotalUrl()
+    {
+        return $this->pivotalUrl;
+    }
+
+    /**
+     * Set pivotalName
+     *
+     * @param string $pivotalName
+     * @return Project
+     */
+    public function setPivotalName($pivotalName)
+    {
+        $this->pivotalName = $pivotalName;
+    
+        return $this;
+    }
+
+    /**
+     * Get pivotalName
+     *
+     * @return string 
+     */
+    public function getPivotalName()
+    {
+        return $this->pivotalName;
+    }
+
+    /**
+     * Set repoId
+     *
+     * @param string $repoId
+     * @return Project
+     */
+    public function setRepoId($repoId)
+    {
+        $this->repoId = $repoId;
+    
+        return $this;
+    }
+
+    /**
+     * Get repoId
+     *
+     * @return string 
+     */
+    public function getRepoId()
+    {
+        return $this->repoId;
+    }
+
+    /**
+     * Set repoUrl
+     *
+     * @param string $repoUrl
+     * @return Project
+     */
+    public function setRepoUrl($repoUrl)
+    {
+        $this->repoUrl = $repoUrl;
+    
+        return $this;
+    }
+
+    /**
+     * Get repoUrl
+     *
+     * @return string 
+     */
+    public function getRepoUrl()
+    {
+        return $this->repoUrl;
+    }
+
+    /**
+     * Set repoName
+     *
+     * @param string $repoName
+     * @return Project
+     */
+    public function setRepoName($repoName)
+    {
+        $this->repoName = $repoName;
+    
+        return $this;
+    }
+
+    /**
+     * Get repoName
+     *
+     * @return string 
+     */
+    public function getRepoName()
+    {
+        return $this->repoName;
+    }
+
+    /**
+     * Set projectSkills
+     *
+     * @param string $projectSkills
+     * @return Project
+     */
+    public function setProjectSkills($projectSkills)
+    {
+        $this->projectSkills = $projectSkills;
+    
+        return $this;
+    }
+
+    /**
+     * Get projectSkills
+     *
+     * @return string 
+     */
+    public function getProjectSkills()
+    {
+        return $this->projectSkills;
     }
 }

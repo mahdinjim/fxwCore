@@ -3,7 +3,7 @@ namespace Acmtool\AppBundle\DependencyInjection;
 class SlackMessaging implements IMessaging
 {
 	const clienttoken="xoxp-9690007030-13891980720-13935717936-ad972deac5";
-	const admintoken="";
+	const admintoken="xoxp-9690007030-9689729651-11893394084-76906645f3";
 	const Baseurl="https://slack.com/api/";
 	const channelInfo="channels.info?";
 	const userInfo="users.info?";
@@ -12,6 +12,8 @@ class SlackMessaging implements IMessaging
 	const updatemessage="chat.update?";
 	const markRead="channels.mark?";
 	const deleteMessage="chat.delete?";
+	const createchannel="channels.create?";
+	const invitechannel="channels.invite?";
 	public function sendMessage($text,$group,$client)
 	{
 		$text=urlencode($text);
@@ -123,8 +125,32 @@ class SlackMessaging implements IMessaging
 		}
 		return $data;
 	}
-	public function createGroupForProject()
+	public function createGroupForProject($name)
 	{
+		$data=array();
+		$mess=json_decode(file_get_contents(self::Baseurl.self::createchannel."token=".self::admintoken."&name=".$name));
+		if($mess->{"ok"})
+		{
+			$channel_id=$mess->{"channel"}->{"id"};
+			$mess2=json_decode(file_get_contents(self::Baseurl.self::invitechannel."token=".self::admintoken."&channel=".$channel_id."&user=U0DS7UUM6"));
+			if($mess2->{"ok"})
+			{
+				$data["result"]=true;
+				$data["id"]=$channel_id;
+			}
+			else
+			{
+				$data["result"]=false;
+				$data["reason"]=$mess->{"error"};
+			}
 
+		}
+		else
+		{
+			$data["result"]=false;
+			$data["reason"]=$mess->{"error"};
+		}
+		return $data;
 	}
+	
 }

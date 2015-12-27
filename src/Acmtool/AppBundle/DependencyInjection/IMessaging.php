@@ -8,7 +8,7 @@ interface IMessaging
 	public function getAllmess($number,$group,$start);
 	public function editMessage($mess,$text,$group);
 	public function getGroupInfo($group);
-	public function createGroupForProject();
+	public function createGroupForProject($name);
 	public function markAsRead($mess,$group);
 	public function getNewMessages($group,$last);
 	public function getNewMessagesNumber($group);

@@ -61,6 +61,10 @@ class ProjectController extends Controller
             $project->setOwner($customer);
             $project->setKeyaccount($customer->getKeyAccount());
             $project->setName($json->{'name'});
+            if(isset($json->{"skills"}))
+            {
+                $project->setProjectSkills($json->{"skills"});
+            }
             if(isset($json->{"description"}))
             	$project->setDescription($json->{"description"});
             if(isset($json->{'startingdate'}))
@@ -78,11 +82,7 @@ class ProjectController extends Controller
                 	return $response;
             	}
             }
-            else
-	    	{
-	    		$project->setStartingdate(new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE)));
-
-	    	}
+           
 	    	if(isset($json->{"teamleader_id"}))
 	    	{
 	    		$project->setTeamleader($em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($json->{"teamleader_id"}));
@@ -119,10 +119,26 @@ class ProjectController extends Controller
                     $member->addProject($project);
                 }
             }
-            $em->persist($project);
-            $em->flush();
-            $response=new Response(ConstValues::PROJECTCREATED,200);
-            return $response;
+            
+            $chatservice=$this->get("acmtool_app.messaging");
+            $chatprovider=$chatservice->CreateChatProvider();
+
+            $result=$chatprovider->createGroupForProject(preg_replace('/\s+/', '_', $project->getName()));
+            if($result["result"])
+            {
+                $project->setChannelid($result["id"]);
+                $em->persist($project);
+                $em->flush();
+                $response=new Response(ConstValues::PROJECTCREATED,200);
+                return $response;
+
+            }
+            else
+            {
+                $response=new Response($result["reason"],400);
+                return $response;
+            }
+           
 
 
         }
@@ -258,13 +274,16 @@ class ProjectController extends Controller
             $mess=array();
             $mess['totalpages']=$totalpages;
             $projects=array();
+            $channels=array();
             $i=0;
             foreach ($result as $key) {
-                $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"description"=>$key->getDescription(),"customer"=>$key->getOwner()->getCompanyname(),"startingdate"=>$key->getStartingdate(),"state"=>$key->getState());
+                $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName());
+                $channels[$i]=array("id"=>$key->getChannelid(),"name"=>$key->getName());
                 $i++;
             }
             $mess["current_page"]=$page;
             $mess["projects"]=$projects;
+            $mess["channels"]=$channels;
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent(json_encode($mess));
@@ -562,7 +581,7 @@ class ProjectController extends Controller
     }
     public function deleteDeveloperAction()
     {
-         $request = $this->get('request');
+        $request = $this->get('request');
         $message = $request->getContent();
         $em = $this->getDoctrine()->getManager();
         $result = $this->get('acmtool_app.validation.json')->validate($message);
@@ -606,9 +625,48 @@ class ProjectController extends Controller
             }
         }
     }
+    public function assignBudgetAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"budget"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+
+                    $project->setBudget($json->{"budget"});
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERDELETED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+        }
+    }
     public function deleteDesignerAction()
     {
-         $request = $this->get('request');
+        $request = $this->get('request');
         $message = $request->getContent();
         $em = $this->getDoctrine()->getManager();
         $result = $this->get('acmtool_app.validation.json')->validate($message);
@@ -654,7 +712,7 @@ class ProjectController extends Controller
     }
     public function deleteTesterAction()
     {
-         $request = $this->get('request');
+        $request = $this->get('request');
         $message = $request->getContent();
         $em = $this->getDoctrine()->getManager();
         $result = $this->get('acmtool_app.validation.json')->validate($message);
@@ -700,7 +758,7 @@ class ProjectController extends Controller
     }
     public function deleteSysadminAction()
     {
-         $request = $this->get('request');
+        $request = $this->get('request');
         $message = $request->getContent();
         $em = $this->getDoctrine()->getManager();
         $result = $this->get('acmtool_app.validation.json')->validate($message);

@@ -264,6 +264,15 @@ class ProjectController extends Controller
             $start=ConstValues::COUNT*($page-1);
             $result=$em->getRepository("AcmtoolAppBundle:Project")->getProjectsByCustomer($customer,$start,$state);
         }
+        elseif($this->get('security.context')->isGranted("ROLE_DEVELOPER")){
+            $user_id=$this->get("security.context")->getToken()->getUser()->getId();
+            $repository = $em->getRepository('AcmtoolAppBundle:Project');
+            $query = $repository->createQueryBuilder('p')
+                ->innerJoin('p.developers', 'd')
+                ->where('d.id = :developer_id')
+                ->setParameter('developer_id', $user_id)
+                ->getQuery()->getResult();
+        }
         else
         {
             $response=new Response(403);
@@ -277,7 +286,7 @@ class ProjectController extends Controller
             $channels=array();
             $i=0;
             foreach ($result as $key) {
-                $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName());
+                $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
                 $channels[$i]=array("id"=>$key->getChannelid(),"name"=>$key->getName());
                 $i++;
             }
@@ -304,7 +313,7 @@ class ProjectController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($id);
         if($project)
         {
-            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"startingdate"=>$project->getStartingdate(),"state"=>$project->getState());
+            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState());
             $mess["keyaccount"]=array("id"=>$project->getKeyAccount()->getId(),"surname"=>$project->getKeyAccount()->getSurname(),"name"=>$project->getKeyAccount()->getName(),"email"=>$project->getKeyAccount()->getEmail(),"photo"=>$project->getKeyAccount()->getPhoto());
             if($project->getTeamleader())
                 $mess["teamleader"]=array("id"=>$project->getTeamleader()->getId(),"surname"=>$project->getTeamleader()->getSurname(),"name"=>$project->getTeamleader()->getName(),"email"=>$project->getTeamleader()->getEmail(),"photo"=>$project->getTeamleader()->getPhoto());

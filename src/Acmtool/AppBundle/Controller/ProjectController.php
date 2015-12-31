@@ -345,6 +345,22 @@ class ProjectController extends Controller
                 $i++;
             }  
             $mess["sysadmins"]=$sysadmins;
+            $tickets=array();
+            $i=0;
+            foreach ($project->getTickets() as $key) {
+                $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDisplayId()
+                    "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
+                    "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription());
+                $i++;
+            }
+            $mess["tickets"]=$tickets;
+            $configs=array();
+            $i=0;
+            foreach ($project->getConfigs() as $key ) {
+                $configs[$i]=array("id"=>$key->getId(),"title"=>$key->getTitle(),"config"=>$key->getConfig());
+                $i++;
+            }
+            $mess["configs"]=$configs;           
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent(json_encode($mess));

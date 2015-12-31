@@ -91,7 +91,10 @@ class Project
     * @ORM\ManyToOne(targetEntity="ProjectConfig", inversedBy="projects")
     * @ORM\JoinColumn(name="config_id",referencedColumnName="id",onDelete="SET NULL")
     */
-    private $config;
+     /**
+    * @ORM\OneToMany(targetEntity="ProjectConfig", mappedBy="project")
+    */
+    private $configs;
     /**
      * @var string
      * 
@@ -459,28 +462,7 @@ class Project
         return $this->state;
     }
 
-    /**
-     * Set config
-     *
-     * @param \Acmtool\AppBundle\Entity\ProjectConfig $config
-     * @return Project
-     */
-    public function setConfig(\Acmtool\AppBundle\Entity\ProjectConfig $config = null)
-    {
-        $this->config = $config;
     
-        return $this;
-    }
-
-    /**
-     * Get config
-     *
-     * @return \Acmtool\AppBundle\Entity\ProjectConfig 
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
 
     /**
      * Set channelid
@@ -743,5 +725,38 @@ class Project
     public function getProjectSkills()
     {
         return $this->projectSkills;
+    }
+
+    /**
+     * Add configs
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectConfig $configs
+     * @return Project
+     */
+    public function addConfig(\Acmtool\AppBundle\Entity\ProjectConfig $configs)
+    {
+        $this->configs[] = $configs;
+    
+        return $this;
+    }
+
+    /**
+     * Remove configs
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectConfig $configs
+     */
+    public function removeConfig(\Acmtool\AppBundle\Entity\ProjectConfig $configs)
+    {
+        $this->configs->removeElement($configs);
+    }
+
+    /**
+     * Get configs
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getConfigs()
+    {
+        return $this->configs;
     }
 }

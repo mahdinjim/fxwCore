@@ -4,6 +4,7 @@ namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * ProjectConfig
@@ -21,7 +22,12 @@ class ProjectConfig
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255)
+     */
+    private $title;
     /**
      * @var string
      *
@@ -29,14 +35,16 @@ class ProjectConfig
      */
     private $config;
 
-    /**
-    * @ORM\OneToMany(targetEntity="Project", mappedBy="config")
+     /**
+    * @Assert\NotBlank
+    * @ORM\ManyToOne(targetEntity="Project", inversedBy="configs")
+    * @ORM\JoinColumn(name="project_id",referencedColumnName="id",onDelete="SET NULL")
     */
-    private $projects;
+    private $project;
 
     public function __construct()
     {
-        $this->projects=new ArrayCollection();
+        
     }
     /**
      * Get id
@@ -72,36 +80,50 @@ class ProjectConfig
     }
 
 
+
     /**
-     * Add projects
+     * Set project
      *
-     * @param \Acmtool\AppBundle\Entity\Project $projects
+     * @param \Acmtool\AppBundle\Entity\Project $project
      * @return ProjectConfig
      */
-    public function addProject(\Acmtool\AppBundle\Entity\Project $projects)
+    public function setProject(\Acmtool\AppBundle\Entity\Project $project = null)
     {
-        $this->projects[] = $projects;
+        $this->project = $project;
     
         return $this;
     }
 
     /**
-     * Remove projects
+     * Get project
      *
-     * @param \Acmtool\AppBundle\Entity\Project $projects
+     * @return \Acmtool\AppBundle\Entity\Project 
      */
-    public function removeProject(\Acmtool\AppBundle\Entity\Project $projects)
+    public function getProject()
     {
-        $this->projects->removeElement($projects);
+        return $this->project;
     }
 
     /**
-     * Get projects
+     * Set title
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @param string $title
+     * @return ProjectConfig
      */
-    public function getProjects()
+    public function setTitle($title)
     {
-        return $this->projects;
+        $this->title = $title;
+    
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string 
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 }

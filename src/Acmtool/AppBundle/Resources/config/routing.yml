@@ -217,7 +217,7 @@ _listprojects:
     path:     /private/project/restricted/list/{page}/{state}
     defaults: { _controller: AcmtoolAppBundle:Project:list }
     methods: [GET,OPTIONS]
-_detailscustomeruser:
+_detailsproject:
     path:     /private/project/restricted/details/{id}
     defaults: { _controller: AcmtoolAppBundle:Project:details }
     methods: [GET,OPTIONS]

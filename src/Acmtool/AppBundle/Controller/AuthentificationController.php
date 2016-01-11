@@ -88,5 +88,9 @@ class AuthentificationController extends Controller
             }
         }
     }
+    public function isTokenExpiredAction()
+    {
+        return new Response('{"Expired":false}',200);
+    }
 
 }

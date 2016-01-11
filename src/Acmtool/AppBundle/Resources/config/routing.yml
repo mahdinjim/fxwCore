@@ -16,7 +16,10 @@ _api_authentification:
     path:     /public/login
     defaults: { _controller: AcmtoolAppBundle:Authentification:ApiAuthentification }
     methods:  [OPTIONS,POST]
-
+_is_expired:
+    path:     /private/token/expired
+    defaults: { _controller: AcmtoolAppBundle:Authentification:isTokenExpired }
+    methods:  [OPTIONS,GET]
 _createTeamleader:
     path:     /private/super/teamleader/create
     defaults: { _controller: AcmtoolAppBundle:TeamLeader:Create }
@@ -277,6 +280,10 @@ _allteammemebrs:
     path:     /private/team/all
     defaults: { _controller: AcmtoolAppBundle:Team:getAllTeamMmebers }
     methods: [GET,OPTIONS]
+_alldevteammemebrs:
+    path:     /private/devteam/all
+    defaults: { _controller: AcmtoolAppBundle:Team:getAllDevTeamMmebers }
+    methods: [GET,OPTIONS]
 _uploadteamphoto:
     path:     /private/team/upload/photo/{id}/{role}
     defaults: { _controller: AcmtoolAppBundle:Team:uploadPhoto }
@@ -317,3 +324,11 @@ _newMessageNumber:
     path:     /private/chat/newmessages/number/{group}
     defaults: { _controller: AcmtoolAppBundle:Chat:getNewMessagesNumber }
     methods: [GET,OPTIONS]
+_getroles:
+    path:     /private/roles
+    defaults: { _controller: AcmtoolAppBundle:Team:getTeamRoles }
+    methods: [GET,OPTIONS]
+_assignprojectbudget:
+    path:     /private/project/restricted/budget
+    defaults: { _controller: AcmtoolAppBundle:Project:assignBudget }
+    methods: [POST,OPTIONS]

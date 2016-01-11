@@ -17,7 +17,7 @@ use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Project;
 use Acmtool\AppBundle\Entity\ProjectStates;
-
+use Acmtool\AppBundle\Entity\Roles;
 class ProjectController extends Controller
 {
 	public function createAction()
@@ -94,7 +94,7 @@ class ProjectController extends Controller
 	    			$project->addDeveloper($member);
                     $member->addProject($project);
 	    		}
-	    	}
+            }
             if(isset($json->{"testers"}))
             {
                 foreach ($json->{"testers"} as $dev) {
@@ -285,9 +285,13 @@ class ProjectController extends Controller
             $projects=array();
             $channels=array();
             $i=0;
+            $j=0;
             foreach ($result as $key) {
                 $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
-                $channels[$i]=array("id"=>$key->getChannelid(),"name"=>$key->getName());
+                if($key->getChannelid()!=null){
+                    $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName());
+                    $j++;
+                }
                 $i++;
             }
             $mess["current_page"]=$page;
@@ -313,42 +317,38 @@ class ProjectController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($id);
         if($project)
         {
-            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState());
+            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget());
             $mess["keyaccount"]=array("id"=>$project->getKeyAccount()->getId(),"surname"=>$project->getKeyAccount()->getSurname(),"name"=>$project->getKeyAccount()->getName(),"email"=>$project->getKeyAccount()->getEmail(),"photo"=>$project->getKeyAccount()->getPhoto());
-            if($project->getTeamleader())
-                $mess["teamleader"]=array("id"=>$project->getTeamleader()->getId(),"surname"=>$project->getTeamleader()->getSurname(),"name"=>$project->getTeamleader()->getName(),"email"=>$project->getTeamleader()->getEmail(),"photo"=>$project->getTeamleader()->getPhoto());
             $i=0;
-            $developers=array();
+            $team=array();
+
+            if($project->getTeamleader())
+                $team[$i]=array("id"=>$project->getTeamleader()->getId(),"surname"=>$project->getTeamleader()->getSurname(),"name"=>$project->getTeamleader()->getName(),"email"=>$project->getTeamleader()->getEmail(),"photo"=>$project->getTeamleader()->getPhoto(),"role"=>Roles::Teamlead());
+            $i++;
             foreach ($project->getDevelopers() as $key) {
-                $developers[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::Developer());
                 $i++;
             }           
-            $mess["developers"]=$developers;
-            $i=0;
-            $testers=array();
+            
             foreach ($project->getTesters() as $key) {
-                $testers[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::Tester());
                 $i++;
             }  
-            $mess["testers"]=$testers;
-            $designers=array();
-            $i=0;
+           
             foreach ($project->getDesigners() as $key) {
-                $designers[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>ROLES::Designer());
                 $i++;
             }  
-            $mess["designers"]=$designers;
-            $sysadmins=array();
-            $i=0;
+
             foreach ($project->getSysadmins() as $key) {
-                $sysadmins[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto());
+                $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::SysAdmin());
                 $i++;
             }  
-            $mess["sysadmins"]=$sysadmins;
+            $mess["team"]=$team;
             $tickets=array();
             $i=0;
             foreach ($project->getTickets() as $key) {
-                $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDisplayId()
+                $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDisplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
                     "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription());
                 $i++;
@@ -439,7 +439,7 @@ class ProjectController extends Controller
                 if($project)
                 {
                     foreach ($json->{"developers"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key->{"id"});
+                       $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key);
                        if($member)
                        {
                             $project->addDeveloper($member);
@@ -486,7 +486,7 @@ class ProjectController extends Controller
                 if($project)
                 {
                     foreach ($json->{"designers"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key->{"id"});
+                       $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key);
                        if($member)
                        {
                             $project->addDesigner($member);
@@ -533,7 +533,7 @@ class ProjectController extends Controller
                 if($project)
                 {
                     foreach ($json->{"testers"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key->{"id"});
+                       $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key);
                        if($member)
                        {
                             $project->addTester($member);
@@ -580,7 +580,7 @@ class ProjectController extends Controller
                 if($project)
                 {
                     foreach ($json->{"sysadmins"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key->{"id"});
+                       $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key);
                        if($member)
                        {
                             $project->addSysAdmin($member);
@@ -628,7 +628,7 @@ class ProjectController extends Controller
                 {
 
                     foreach ($json->{"developers"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key->{"id"});
+                        $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key);
                        if($member)
                        {
                         $project->removeDeveloper($member);
@@ -713,7 +713,7 @@ class ProjectController extends Controller
                 {
 
                     foreach ($json->{"designers"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key->{"id"});
+                        $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key);
                        if($member)
                        {
                         $project->removeDesigner($member);
@@ -759,7 +759,7 @@ class ProjectController extends Controller
                 {
 
                     foreach ($json->{"testers"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key->{"id"});
+                        $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key);
                        if($member)
                        {
                         $project->removeTester($member);
@@ -805,7 +805,7 @@ class ProjectController extends Controller
                 {
 
                     foreach ($json->{"sysadmins"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key->{"id"});
+                        $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key);
                        if($member)
                        {
                         $project->removeSysadmin($member);

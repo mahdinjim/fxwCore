@@ -23,9 +23,9 @@ class ProjectConfigController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{'project_id'}) && isset($json->{'config'})))
+            if(!(isset($json->{'project_id'}) && isset($json->{'config'})&& isset($json->{'title'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
@@ -33,9 +33,10 @@ class ProjectConfigController extends Controller
             {
             	$project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{'project_id'});
             	$config=new ProjectConfig();
+                $config->setTitle($json->{'title'});
             	$config->setConfig($json->{'config'});
-            	$config->addProject($project);
-            	$project->setConfig($config);
+            	$config->setProject($project);
+            	$project->addConfig($config);
             	$em->persist($config);
             	$em->flush();
             	$res=new Response();
@@ -44,6 +45,38 @@ class ProjectConfigController extends Controller
                 return $res;
 
             }
+        }
+    }
+    public function getAllProjectConfigsAction($project_id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        if($project)
+        {
+            $qb = $em->createQueryBuilder();
+            $qb->select('k')
+            ->from("AcmtoolAppBundle:ProjectConfig","k")
+            ->where("k.project=:project")
+            ->setParameter("project",$project);
+            $result = $qb->getQuery()->getResult();
+            //var_dump($result);die();
+            $configs=array();
+            $i=0;
+            foreach ($result as $key) {
+                $configs[$i]=array("id"=>$key->getId(),"title"=>$key->getTitle(),"config"=>$key->getConfig());
+                $i++;
+            }
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($configs));
+            return $res;
+
+        }
+        else
+        {
+            $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
         }
     }
     public function UpdateAction()
@@ -57,16 +90,17 @@ class ProjectConfigController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{'config_id'}) && isset($json->{'config'})))
+            if(!(isset($json->{'config_id'}) && isset($json->{'config'}) && isset($json->{'title'})))
             {
-                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
             else
             {
-                $config=$em->getRepository("AcmtoolAppBundle:ProjectConfig")->findOneById($json->{'project_id'});
+                $config=$em->getRepository("AcmtoolAppBundle:ProjectConfig")->findOneById($json->{'config_id'});
                 $config->setConfig($json->{'config'});
+                 $config->setTitle($json->{'title'});
                 $em->flush();
                 $res=new Response();
                 $res->setStatusCode(200);
@@ -76,30 +110,12 @@ class ProjectConfigController extends Controller
             }
         }
     }
-    public function getProjectConfigAction($project_id)
+    public function deleteAction($config_id)
     {
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{'project_id'});
-        if($project)
+        $em = $this->getDoctrine()->getManager();
+        $config=$em->getRepository("AcmtoolAppBundle:ProjectConfig")->findOneById($config_id);
+        if($config)
         {
-            $mess=$project->getConfig();
-            $res=new Response();
-            $res->setStatusCode(200);
-            $res->setContent($mess);
-            return $res;
-        }
-        else
-        {
-            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
-        }
-    }
-    public function deleteAction($project_id)
-    {
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{'project_id'});
-        if($project)
-        {
-            $config=$project->getConfig();
             $em->remove($config);
             $em->flush();
             $res=new Response();
@@ -109,7 +125,7 @@ class ProjectConfigController extends Controller
         }
         else
         {
-            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
             $response->headers->set('Content-Type', 'application/json');
             return $response;   
         }

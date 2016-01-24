@@ -18,6 +18,7 @@ use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Project;
 use Acmtool\AppBundle\Entity\ProjectStates;
 use Acmtool\AppBundle\Entity\Roles;
+use Acmtool\AppBundle\Entity\TicketStatus;
 class ProjectController extends Controller
 {
 	public function createAction()
@@ -122,9 +123,12 @@ class ProjectController extends Controller
             
             $chatservice=$this->get("acmtool_app.messaging");
             $chatprovider=$chatservice->CreateChatProvider();
-
+            $em->persist($project);
+            $em->flush();
+            $response=new Response(ConstValues::PROJECTCREATED,200);
+            return $response;
             $result=$chatprovider->createGroupForProject(preg_replace('/\s+/', '_', $project->getName()));
-            if($result["result"])
+            /*if($result["result"])
             {
                 $project->setChannelid($result["id"]);
                 $em->persist($project);
@@ -137,7 +141,7 @@ class ProjectController extends Controller
             {
                 $response=new Response($result["reason"],400);
                 return $response;
-            }
+            }*/
            
 
 
@@ -219,6 +223,7 @@ class ProjectController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $result=null;
+
         $totalpages=null;
         if($this->get('security.context')->isGranted("ROLE_ADMIN"))
         {
@@ -257,6 +262,9 @@ class ProjectController extends Controller
             $start=ConstValues::COUNT*($page-1);
             $result=$em->getRepository("AcmtoolAppBundle:Project")->getProjectsByCustomer($customer,$start,$state);
         }
+        elseif ($this->get('security.context')->isGranted("ROLE_TEAMLEADER")) {
+            $result=$this->get("security.context")->getToken()->getUser()->getProjects();
+        }
         elseif($this->get('security.context')->isGranted("ROLE_CUSER"))
         {
             $customer=$this->get("security.context")->getToken()->getUser()->getCompany();
@@ -267,7 +275,7 @@ class ProjectController extends Controller
         elseif($this->get('security.context')->isGranted("ROLE_DEVELOPER")){
             $user_id=$this->get("security.context")->getToken()->getUser()->getId();
             $repository = $em->getRepository('AcmtoolAppBundle:Project');
-            $query = $repository->createQueryBuilder('p')
+            $result = $repository->createQueryBuilder('p')
                 ->innerJoin('p.developers', 'd')
                 ->where('d.id = :developer_id')
                 ->setParameter('developer_id', $user_id)
@@ -278,14 +286,15 @@ class ProjectController extends Controller
             $response=new Response(403);
             return $response;
         }
-        if($result && $totalpages)
+        if($result)
         {
             $mess=array();
-            $mess['totalpages']=$totalpages;
+            //$mess['totalpages']=$totalpages;
             $projects=array();
             $channels=array();
             $i=0;
             $j=0;
+
             foreach ($result as $key) {
                 $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
                 if($key->getChannelid()!=null){
@@ -311,13 +320,36 @@ class ProjectController extends Controller
             return $response;
         }
     }
+    public function acceptContractAction($project_id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        if($project)
+        {
+            $project->setSignedContract(true);
+            $em->flush();
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent("Contract signed");
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
     public function detailsAction($id)
     {
+        $request = $this->get('request');
         $em = $this->getDoctrine()->getManager();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($id);
         if($project)
         {
-            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget());
+            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract());
+            $user=$project->getOwner();
+            $mess["client"]=array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"logo"=>$user->getLogo(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"tel"=>$user->getTelnumber(),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
             $mess["keyaccount"]=array("id"=>$project->getKeyAccount()->getId(),"surname"=>$project->getKeyAccount()->getSurname(),"name"=>$project->getKeyAccount()->getName(),"email"=>$project->getKeyAccount()->getEmail(),"photo"=>$project->getKeyAccount()->getPhoto());
             $i=0;
             $team=array();
@@ -345,12 +377,53 @@ class ProjectController extends Controller
                 $i++;
             }  
             $mess["team"]=$team;
+            $h=0;
+            $dosc=array();
+            $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+            foreach ($project->getDocuments() as $key) {
+                $data=array("id"=>$key->getId(),"name"=>$key->getName(),"link"=>$baseurl.$key->getPath());
+                $dosc[$h]=$data;
+                $h++;
+            }
+            $mess['docs']=$dosc;
             $tickets=array();
             $i=0;
             foreach ($project->getTickets() as $key) {
-                $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDisplayId(),
+                $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
-                    "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription());
+                    "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
+                if($key->getStatus()==TicketStatus::REJECT)
+                {
+                    $tickets[$i]["rejectionmessage"]=$key->getRejectionmessage();
+                }
+                $tasks=array();
+                $j=0;
+                $developerrole=Roles::Developer();
+                $testerrole=Roles::Tester();
+                $designerrole=Roles::Designer();
+                $sysadminrole=Roles::SysAdmin();
+                $tasksnumber=count($key->getTasks());
+                $finishedTasks=0;
+                foreach ($key->getTasks() as $task) {
+                    $data=array("id"=>$task->getId(),"displayid"=>$task->getDisplayId(),"title"=>$task->getTitle(),"description"=>$task->getDescription(),"estimation"=>$task->getEstimation(),"realtime"=>$task->getRealtime(),"isstarted"=>$task->getIsStarted(),"finished"=>$task->getIsFinished());
+                    if($task->getDeveloper()!=null)
+                        $assignedto=array("id"=>$task->getDeveloper()->getId(),"name"=>$task->getDeveloper()->getName(),"surname"=>$task->getDeveloper()->getSurname(),"role"=>array("role"=>$developerrole["role"]));
+                    elseif($task->getDesigner()!=null)
+                        $assignedto=array("id"=>$task->getDesigner()->getId(),"name"=>$task->getDesigner()->getName(),"surname"=>$task->getDesigner()->getSurname(),"role"=>array("role"=>$designerrole["role"]));
+                    elseif($task->getTester()!=null)
+                        $assignedto=array("id"=>$task->getTester()->getId(),"name"=>$task->getTester()->getName(),"surname"=>$task->getTester()->getSurname(),"role"=>array("role"=>$testerrole["role"]));
+                    elseif($task->getSysadmin()!=null)
+                        $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
+                    $data["assignto"]=$assignedto;
+                    $owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
+                    $tasks[$j]=$data;
+                    if($task->getIsFinished())
+                        $finishedTasks++;
+                    $j++;
+                }
+                $tickets[$i]["finishedtasks"]=$finishedTasks;
+                $tickets[$i]["taskscount"]=$tasksnumber;
+                $tickets[$i]["tasks"]=$tasks;
                 $i++;
             }
             $mess["tickets"]=$tickets;

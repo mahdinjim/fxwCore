@@ -3,7 +3,7 @@
 namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * ProjectDocument
  *
@@ -34,7 +34,12 @@ class ProjectDocument
      * @ORM\Column(name="path", type="string", length=255)
      */
     private $path;
-
+     /**
+    * @Assert\NotBlank
+    * @ORM\ManyToOne(targetEntity="Project", inversedBy="documents")
+    * @ORM\JoinColumn(name="project_id",referencedColumnName="id",onDelete="SET NULL")
+    */
+    private $project;
 
     /**
      * Get id
@@ -77,6 +82,7 @@ class ProjectDocument
      */
     public function setPath($path)
     {
+
         $this->path = $path;
     
         return $this;
@@ -89,6 +95,30 @@ class ProjectDocument
      */
     public function getPath()
     {
+        $basepath=__DIR__.'/../../../../web'.'/uploads/pdocs';
         return $this->path;
+    }
+
+    /**
+     * Set project
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $project
+     * @return ProjectDocument
+     */
+    public function setProject(\Acmtool\AppBundle\Entity\Project $project = null)
+    {
+        $this->project = $project;
+    
+        return $this;
+    }
+
+    /**
+     * Get project
+     *
+     * @return \Acmtool\AppBundle\Entity\Project 
+     */
+    public function getProject()
+    {
+        return $this->project;
     }
 }

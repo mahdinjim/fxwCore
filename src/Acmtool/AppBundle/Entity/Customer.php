@@ -59,6 +59,12 @@ class Customer implements UserInterface, \Serializable
      */
     private $vat;
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="signedContract", type="boolean",nullable=true)
+     */
+    private $signedContract=false;
+    /**
      * @var string
      * @Assert\NotBlank(message="The email field is required")
      * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
@@ -649,5 +655,28 @@ class Customer implements UserInterface, \Serializable
     public function getPhonecode()
     {
         return $this->phonecode;
+    }
+
+    /**
+     * Set signedContract
+     *
+     * @param boolean $signedContract
+     * @return Customer
+     */
+    public function setSignedContract($signedContract)
+    {
+        $this->signedContract = $signedContract;
+    
+        return $this;
+    }
+
+    /**
+     * Get signedContract
+     *
+     * @return boolean 
+     */
+    public function getSignedContract()
+    {
+        return $this->signedContract;
     }
 }

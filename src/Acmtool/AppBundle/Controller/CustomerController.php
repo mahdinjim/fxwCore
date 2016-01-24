@@ -227,7 +227,26 @@ class CustomerController extends Controller
             return $response;
         }
     }
-
+    public function acceptContractAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $customer=$em->getRepository("AcmtoolAppBundle:Customer")->findOneById($id);
+        if($customer)
+        {
+            $customer->setSignedContract(true);
+            $em->flush();
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent("Contract signed");
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
     public function ListAction($page)
     {
 

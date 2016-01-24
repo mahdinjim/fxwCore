@@ -344,6 +344,10 @@ class CustomerUser implements UserInterface, \Serializable
     {
         return $this->company;
     }
+    public function getKeyaccount()
+    {
+        return $this->company->getKeyaccount();
+    }
 
     /**
      * Set apitoken

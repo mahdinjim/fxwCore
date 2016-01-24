@@ -49,7 +49,11 @@ class SystemAdmin extends DevTeamMember implements UserInterface, \Serializable
     /**
     * @ORM\ManyToMany(targetEntity="Project",inversedBy="developers")
     */
-    private $projects;             
+    private $projects;
+    /**
+    * @ORM\OneToMany(targetEntity="Task", mappedBy="sysadmin")
+    */
+    private $tasks;             
     public function __construct()
     {
         $this->isActive = true;
@@ -195,5 +199,37 @@ class SystemAdmin extends DevTeamMember implements UserInterface, \Serializable
     public function getProjects()
     {
         return $this->projects;
+    }
+    /**
+     * Add tasks
+     *
+     * @param \Acmtool\AppBundle\Entity\Task $tasks
+     * @return SystemAdmin
+     */
+    public function addTask(\Acmtool\AppBundle\Entity\Task $tasks)
+    {
+        $this->tasks[] = $tasks;
+    
+        return $this;
+    }
+
+    /**
+     * Remove tasks
+     *
+     * @param \Acmtool\AppBundle\Entity\Task $tasks
+     */
+    public function removeTask(\Acmtool\AppBundle\Entity\Task $tasks)
+    {
+        $this->tasks->removeElement($tasks);
+    }
+
+    /**
+     * Get tasks
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
     }
 }

@@ -29,7 +29,12 @@ class Project
      * @ORM\Column(name="description", type="string", length=255,nullable=true)
      */
     private $description;
-
+     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="signedContract", type="boolean",nullable=true)
+     */
+    private $signedContract=false;
     /**
      * @var string
      * @Assert\NotBlank(message="The name field is required")
@@ -86,15 +91,16 @@ class Project
     * @ORM\JoinColumn(name="teamleader_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $teamleader;
-     /**
-    * @Assert\NotBlank
-    * @ORM\ManyToOne(targetEntity="ProjectConfig", inversedBy="projects")
-    * @ORM\JoinColumn(name="config_id",referencedColumnName="id",onDelete="SET NULL")
-    */
+    
      /**
     * @ORM\OneToMany(targetEntity="ProjectConfig", mappedBy="project")
     */
+
     private $configs;
+    /**
+    * @ORM\OneToMany(targetEntity="ProjectDocument", mappedBy="project")
+    */
+    private $documents;
     /**
      * @var string
      * 
@@ -758,5 +764,61 @@ class Project
     public function getConfigs()
     {
         return $this->configs;
+    }
+
+    /**
+     * Add documents
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectDocument $documents
+     * @return Project
+     */
+    public function addDocument(\Acmtool\AppBundle\Entity\ProjectDocument $documents)
+    {
+        $this->documents[] = $documents;
+    
+        return $this;
+    }
+
+    /**
+     * Remove documents
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectDocument $documents
+     */
+    public function removeDocument(\Acmtool\AppBundle\Entity\ProjectDocument $documents)
+    {
+        $this->documents->removeElement($documents);
+    }
+
+    /**
+     * Get documents
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
+    }
+
+    /**
+     * Set signedContract
+     *
+     * @param boolean $signedContract
+     * @return Project
+     */
+    public function setSignedContract($signedContract)
+    {
+        $this->signedContract = $signedContract;
+    
+        return $this;
+    }
+
+    /**
+     * Get signedContract
+     *
+     * @return boolean 
+     */
+    public function getSignedContract()
+    {
+        return $this->signedContract;
     }
 }

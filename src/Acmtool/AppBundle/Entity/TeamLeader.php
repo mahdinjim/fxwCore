@@ -45,9 +45,13 @@ class TeamLeader extends DevTeamMember implements UserInterface, \Serializable
      **/
     private $apitoken;
      /**
-    * @ORM\OneToMany(targetEntity="Project", mappedBy="owner")
+    * @ORM\OneToMany(targetEntity="Project", mappedBy="teamleader")
     */
     private $projects;
+    /**
+    * @ORM\OneToMany(targetEntity="Task", mappedBy="owner")
+    */
+    private $tasks; 
 
     public function __construct()
     {
@@ -194,5 +198,37 @@ class TeamLeader extends DevTeamMember implements UserInterface, \Serializable
     public function getProjects()
     {
         return $this->projects;
+    }
+     /**
+     * Add tasks
+     *
+     * @param \Acmtool\AppBundle\Entity\Task $tasks
+     * @return TeamLeader
+     */
+    public function addTask(\Acmtool\AppBundle\Entity\Task $tasks)
+    {
+        $this->tasks[] = $tasks;
+    
+        return $this;
+    }
+
+    /**
+     * Remove tasks
+     *
+     * @param \Acmtool\AppBundle\Entity\Task $tasks
+     */
+    public function removeTask(\Acmtool\AppBundle\Entity\Task $tasks)
+    {
+        $this->tasks->removeElement($tasks);
+    }
+
+    /**
+     * Get tasks
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
     }
 }

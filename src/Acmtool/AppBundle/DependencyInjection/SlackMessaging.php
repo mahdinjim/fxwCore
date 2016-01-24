@@ -3,7 +3,7 @@ namespace Acmtool\AppBundle\DependencyInjection;
 class SlackMessaging implements IMessaging
 {
 	const clienttoken="xoxp-9690007030-13891980720-13935717936-ad972deac5";
-	const admintoken="xoxp-9690007030-9689729651-11893394084-76906645f3";
+	const admintoken="xoxp-9690007030-13891980720-18702937587-27e78574bf";
 	const Baseurl="https://slack.com/api/";
 	const channelInfo="channels.info?";
 	const userInfo="users.info?";

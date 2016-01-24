@@ -43,6 +43,12 @@ class Ticket
      * @ORM\Column(name="estimation", type="float",nullable=true)
      */
     private $estimation;
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="realtime", type="float",nullable=true)
+     */
+    private $realtime;
 
     /**
      * @var string
@@ -83,6 +89,24 @@ class Ticket
      * @ORM\Column(name="description", type="text", length=1000)
      */
     private $description;
+    /**
+     * @var string
+     * @Assert\NotBlank(message="The created by field is required")
+     * @ORM\Column(name="createdBy", type="string", length=250)
+     */
+    private $createdBy;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="rejectionmessage", type="text", length=2000,nullable=true)
+     */
+    private $rejectionmessage;
+     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="creationdate", type="datetime",nullable=true)
+     */
+    private $creationdate;
     /**
     * @ORM\OneToMany(targetEntity="Task", mappedBy="ticket")
     */
@@ -287,7 +311,6 @@ class Ticket
     {
         return $this->description;
     }
-
     /**
      * Set project
      *
@@ -342,5 +365,97 @@ class Ticket
     public function getTasks()
     {
         return $this->tasks;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param string $createdBy
+     * @return Ticket
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+    
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return string 
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * Set rejectionmessage
+     *
+     * @param string $rejectionmessage
+     * @return Ticket
+     */
+    public function setRejectionmessage($rejectionmessage)
+    {
+        $this->rejectionmessage = $rejectionmessage;
+    
+        return $this;
+    }
+
+    /**
+     * Get rejectionmessage
+     *
+     * @return string 
+     */
+    public function getRejectionmessage()
+    {
+        return $this->rejectionmessage;
+    }
+
+    /**
+     * Set creationdate
+     *
+     * @param \DateTime $creationdate
+     * @return Ticket
+     */
+    public function setCreationdate($creationdate)
+    {
+        $this->creationdate = $creationdate;
+    
+        return $this;
+    }
+
+    /**
+     * Get creationdate
+     *
+     * @return \DateTime 
+     */
+    public function getCreationdate()
+    {
+        return $this->creationdate;
+    }
+
+    /**
+     * Set realtime
+     *
+     * @param float $realtime
+     * @return Ticket
+     */
+    public function setRealtime($realtime)
+    {
+        $this->realtime = $realtime;
+    
+        return $this;
+    }
+
+    /**
+     * Get realtime
+     *
+     * @return float 
+     */
+    public function getRealtime()
+    {
+        return $this->realtime;
     }
 }

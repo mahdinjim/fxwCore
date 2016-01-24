@@ -172,6 +172,14 @@ _updatecustomer:
     path:     /private/customer/update
     defaults: { _controller: AcmtoolAppBundle:Customer:Update }
     methods: [PUT,OPTIONS]
+_acceptterms:
+    path:     /private/customer/contract/accept/{id}
+    defaults: { _controller: AcmtoolAppBundle:Customer:acceptContract }
+    methods: [GET,OPTIONS]
+_signproject:
+    path:     /private/project/restricted/accept/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:Project:acceptContract }
+    methods: [GET,OPTIONS]
 _deletecustomer:
     path:     /private/keyaccount/customer/delete/{id}
     defaults: { _controller: AcmtoolAppBundle:Customer:Delete }
@@ -217,11 +225,11 @@ _deleteproject:
     defaults: { _controller: AcmtoolAppBundle:Project:delete }
     methods: [DELETE,OPTIONS]
 _listprojects:
-    path:     /private/project/restricted/list/{page}/{state}
+    path:     /private/project/list/{page}/{state}
     defaults: { _controller: AcmtoolAppBundle:Project:list }
     methods: [GET,OPTIONS]
 _detailsproject:
-    path:     /private/project/restricted/details/{id}
+    path:     /private/project/details/{id}
     defaults: { _controller: AcmtoolAppBundle:Project:details }
     methods: [GET,OPTIONS]
 _assignteamleadertoproject:
@@ -269,11 +277,11 @@ _updateprojectconfig:
     defaults: { _controller: AcmtoolAppBundle:ProjectConfig:update }
     methods: [PUT,OPTIONS]
 _projectconfigdetails:
-    path:     /private/project/restricted/config/detail/{project_id}
-    defaults: { _controller: AcmtoolAppBundle:ProjectConfig:getProjectConfig }
+    path:     /private/project/configs/list/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:ProjectConfig:getAllProjectConfigs }
     methods: [GET,OPTIONS]
 _deleteprojectconfig:
-    path:     /private/project/restricted/config/delete
+    path:     /private/project/restricted/config/delete/{config_id}
     defaults: { _controller: AcmtoolAppBundle:ProjectConfig:delete }
     methods: [DELETE,OPTIONS]
 _allteammemebrs:
@@ -332,3 +340,99 @@ _assignprojectbudget:
     path:     /private/project/restricted/budget
     defaults: { _controller: AcmtoolAppBundle:Project:assignBudget }
     methods: [POST,OPTIONS]
+_createTicket:
+    path:     /private/project/restricted/ticket/create
+    defaults: { _controller: AcmtoolAppBundle:Ticket:create }
+    methods: [POST,OPTIONS]
+_getticketypes:
+    path:     /private/ticket/types
+    defaults: { _controller: AcmtoolAppBundle:Ticket:getTicketTypes }
+    methods: [GET,OPTIONS]
+_gettickelist:
+    path:     /private/ticket/list/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:ticketList }
+    methods: [GET,OPTIONS]
+_startestimation:
+    path:     /private/project/restricted/ticket/startestipamtion/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:startEstimation }
+    methods: [GET,OPTIONS]
+_acceptestimation:
+    path:     /private/project/restricted/ticket/acceptestipamtion/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:acceptEstimation }
+    methods: [GET,OPTIONS]
+_rejectestimation:
+    path:     /private/project/restricted/ticket/rejectestipamtion/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:rejectEstimation }
+    methods: [GET,OPTIONS]
+_acceptticket:
+    path:     /private/project/restricted/ticket/accept/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:acceptTicket }
+    methods: [GET,OPTIONS]
+_acceptticket:
+    path:     /private/project/restricted/ticket/accept/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:acceptTicket }
+    methods: [GET,OPTIONS]
+_sendtoclientticket:
+    path:     /private/project/ticket/sent/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:sendToClient }
+    methods: [GET,OPTIONS]
+_sendtoprodticket:
+    path:     /private/project/ticket/production/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:sendToProd }
+    methods: [GET,OPTIONS]
+_delivertoclientticket:
+    path:     /private/project/ticket/acceptance/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:deliverToClient }
+    methods: [GET,OPTIONS]
+_rejectticket:
+    path:     /private/project/restricted/ticket/reject
+    defaults: { _controller: AcmtoolAppBundle:Ticket:rejectTicket }
+    methods: [POST,OPTIONS]
+_deleteticket:
+    path:     /private/project/restricted/ticket/delete/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:deleteTicket }
+    methods: [DELETE,OPTIONS]
+_updateticket:
+    path:     /private/project/restricted/ticket/update
+    defaults: { _controller: AcmtoolAppBundle:Ticket:updateTicket }
+    methods: [PUT,OPTIONS]
+_createtask:
+    path:     /private/project/task/create
+    defaults: { _controller: AcmtoolAppBundle:Task:create }
+    methods: [POST,OPTIONS]
+_updatetask:
+    path:     /private/project/task/update
+    defaults: { _controller: AcmtoolAppBundle:Task:update }
+    methods: [PUT,OPTIONS]
+_listtask:
+    path:     /private/project/task/list/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Task:list }
+    methods: [GET,OPTIONS]
+_setestimation:
+    path:     /private/project/task/estimation
+    defaults: { _controller: AcmtoolAppBundle:Task:setEstimation }
+    methods: [POST,OPTIONS]
+_deletetask:
+    path:     /private/project/task/delete/{task_id}
+    defaults: { _controller: AcmtoolAppBundle:Task:delete }
+    methods: [DELETE,OPTIONS]
+_starttask:
+    path:     /private/project/task/start/{task_id}
+    defaults: { _controller: AcmtoolAppBundle:Task:startTask }
+    methods: [GET,OPTIONS]
+_finishtask:
+    path:     /private/project/task/finish/{task_id}
+    defaults: { _controller: AcmtoolAppBundle:Task:finishTask }
+    methods: [GET,OPTIONS]
+_setrealtime:
+    path:     /private/project/task/realtime
+    defaults: { _controller: AcmtoolAppBundle:Task:setRealtime }
+    methods: [POST,OPTIONS]
+_uploadfile:
+    path:     /private/project/restricted/file/uplaod/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:ProjectDocument:uploadFile }
+    methods: [POST,OPTIONS]
+_listfile:
+    path:     /private/project/file/list/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:ProjectDocument:listDocuments }
+    methods: [GET,OPTIONS]

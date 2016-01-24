@@ -9,6 +9,8 @@ abstract class TicketStatus
 	const GOPRODUCTION="goproduction";
 	const WAITING="waiting";
 	const PRODUCTION="production";
+	const TESTING="testing";
 	const ACCEPT="accept";
+	const REJECT="reject";
 	const DONE="done";
 }

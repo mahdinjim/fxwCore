@@ -291,6 +291,33 @@ class ProjectController extends Controller
                 ->setParameter('developer_id', $user_id)
                 ->getQuery()->getResult();
         }
+        elseif($this->get('security.context')->isGranted("ROLE_DESIGNER")){
+            $user_id=$this->get("security.context")->getToken()->getUser()->getId();
+            $repository = $em->getRepository('AcmtoolAppBundle:Project');
+            $result = $repository->createQueryBuilder('p')
+                ->innerJoin('p.designers', 'd')
+                ->where('d.id = :designer_id')
+                ->setParameter('designer_id', $user_id)
+                ->getQuery()->getResult();
+        }
+        elseif($this->get('security.context')->isGranted("ROLE_TESTER")){
+            $user_id=$this->get("security.context")->getToken()->getUser()->getId();
+            $repository = $em->getRepository('AcmtoolAppBundle:Project');
+            $result = $repository->createQueryBuilder('p')
+                ->innerJoin('p.testers', 'd')
+                ->where('d.id = :tester_id')
+                ->setParameter('tester_id', $user_id)
+                ->getQuery()->getResult();
+        }
+        elseif($this->get('security.context')->isGranted("ROLE_SYSADMIN")){
+            $user_id=$this->get("security.context")->getToken()->getUser()->getId();
+            $repository = $em->getRepository('AcmtoolAppBundle:Project');
+            $result = $repository->createQueryBuilder('p')
+                ->innerJoin('p.sysadmins', 'd')
+                ->where('d.id = :sysadmin_id')
+                ->setParameter('sysadmin_id', $user_id)
+                ->getQuery()->getResult();
+        }
         else
         {
             $response=new Response(403);
@@ -419,6 +446,7 @@ class ProjectController extends Controller
                 $finishedTasks=0;
                 foreach ($key->getTasks() as $task) {
                     $data=array("id"=>$task->getId(),"displayid"=>$task->getDisplayId(),"title"=>$task->getTitle(),"description"=>$task->getDescription(),"estimation"=>$task->getEstimation(),"realtime"=>$task->getRealtime(),"isstarted"=>$task->getIsStarted(),"finished"=>$task->getIsFinished());
+                    $assignedto=null;
                     if($task->getDeveloper()!=null)
                         $assignedto=array("id"=>$task->getDeveloper()->getId(),"name"=>$task->getDeveloper()->getName(),"surname"=>$task->getDeveloper()->getSurname(),"role"=>array("role"=>$developerrole["role"]));
                     elseif($task->getDesigner()!=null)
@@ -427,7 +455,8 @@ class ProjectController extends Controller
                         $assignedto=array("id"=>$task->getTester()->getId(),"name"=>$task->getTester()->getName(),"surname"=>$task->getTester()->getSurname(),"role"=>array("role"=>$testerrole["role"]));
                     elseif($task->getSysadmin()!=null)
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
-                    $data["assignto"]=$assignedto;
+                    if($assignedto!=null)
+                        $data["assignto"]=$assignedto;
                     $owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
                     $tasks[$j]=$data;
                     if($task->getIsFinished())

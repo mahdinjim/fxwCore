@@ -54,6 +54,9 @@ class TesterController extends Controller
                 $user->setCountry($json->{'country'});
                 $user->setPhonecode($json->{'phonecode'});
                 $user->setPhonenumber($json->{'phonenumber'});
+                $user->setLanguage($json->{'language'});
+                $user->setHourrate($json->{'hourate'});
+                $user->setLevel($json->{'level'});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -131,7 +134,10 @@ class TesterController extends Controller
                         $user->setCity($json->{'city'});
                         $user->setCountry($json->{'country'});
                         $user->setPhonecode($json->{'phonecode'});
-                $user->setPhonenumber($json->{'phonenumber'});
+                        $user->setLanguage($json->{'language'});
+                        $user->setHourrate($json->{'hourate'});
+                        $user->setLevel($json->{'level'});
+                        $user->setPhonenumber($json->{'phonenumber'});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});
@@ -208,7 +214,7 @@ class TesterController extends Controller
             $users=array();
             $i=0;
             foreach ($result as $user) {
-                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"capacity"=>$user->getCapacity(),"skills"=>$user->getSkills(),"description"=>$user->getDescription());
+                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"capacity"=>$user->getCapacity(),"skills"=>$user->getSkills(),"description"=>$user->getDescription(),"language"=>$user->getLanguage(),"hourate"=>$user->getHourrate(),"level"=>$user->getLevel());
                 $i++;
 
             }

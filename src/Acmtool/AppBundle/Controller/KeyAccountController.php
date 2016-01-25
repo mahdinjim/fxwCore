@@ -52,6 +52,9 @@ class KeyAccountController extends Controller
                 $user->setCountry($json->{'country'});
                 $user->setPhonecode($json->{'phonecode'});
                 $user->setPhonenumber($json->{'phonenumber'});
+                $user->setLanguage($json->{'language'});
+                $user->setHourrate($json->{'hourate'});
+                $user->setLevel($json->{'level'});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -128,6 +131,9 @@ class KeyAccountController extends Controller
                         $user->setCountry($json->{'country'});
                         $user->setPhonecode($json->{'phonecode'});
                         $user->setPhonenumber($json->{'phonenumber'});
+                        $user->setLanguage($json->{'language'});
+                        $user->setHourrate($json->{'hourate'});
+                        $user->setLevel($json->{'level'});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});
@@ -204,7 +210,7 @@ class KeyAccountController extends Controller
             $users=array();
             $i=0;
             foreach ($result as $user) {
-                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription());
+                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"language"=>$user->getLanguage(),"hourate"=>$user->getHourrate(),"level"=>$user->getLevel());
                 $i++;
 
             }

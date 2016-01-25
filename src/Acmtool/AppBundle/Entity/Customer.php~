@@ -59,6 +59,24 @@ class Customer implements UserInterface, \Serializable
      */
     private $vat;
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="signedContract", type="boolean",nullable=true)
+     */
+    private $signedContract=false;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="signaturedate", type="datetime",nullable=true)
+     */
+    private $signaturedate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="startingdate", type="datetime",nullable=true)
+     */
+    private $startingdate;
+    /**
      * @var string
      * @Assert\NotBlank(message="The email field is required")
      * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
@@ -72,13 +90,13 @@ class Customer implements UserInterface, \Serializable
     private $logo;
 
     /**
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The creds field is required")
      * @ORM\OneToOne(targetEntity="Creds",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="cred_id", referencedColumnName="id")
      **/
     private $credentials;
     /**
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="The address field is required")
      * @ORM\OneToOne(targetEntity="Address",cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
      **/
@@ -103,7 +121,7 @@ class Customer implements UserInterface, \Serializable
      **/
     private $apitoken;
     /**
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="The keyaccount field is required")
     * @ORM\ManyToOne(targetEntity="KeyAccount", inversedBy="cutomers")
     * @ORM\JoinColumn(name="keyaccount_id",referencedColumnName="id",onDelete="SET NULL")
     */
@@ -511,7 +529,7 @@ class Customer implements UserInterface, \Serializable
      */
     public function setKeyAccount(\Acmtool\AppBundle\Entity\KeyAccount $keyAccount = null)
     {
-        $this->KeyAccount = $keyAccount;
+        $this->keyAccount = $keyAccount;
     
         return $this;
     }
@@ -523,7 +541,7 @@ class Customer implements UserInterface, \Serializable
      */
     public function getKeyAccount()
     {
-        return $this->KeyAccount;
+        return $this->keyAccount;
     }
 
     /**
@@ -626,5 +644,51 @@ class Customer implements UserInterface, \Serializable
     public function getDay()
     {
         return $this->day;
+    }
+
+    /**
+     * Set phonecode
+     *
+     * @param string $phonecode
+     * @return Customer
+     */
+    public function setPhonecode($phonecode)
+    {
+        $this->phonecode = $phonecode;
+    
+        return $this;
+    }
+
+    /**
+     * Get phonecode
+     *
+     * @return string 
+     */
+    public function getPhonecode()
+    {
+        return $this->phonecode;
+    }
+
+    /**
+     * Set signedContract
+     *
+     * @param boolean $signedContract
+     * @return Customer
+     */
+    public function setSignedContract($signedContract)
+    {
+        $this->signedContract = $signedContract;
+    
+        return $this;
+    }
+
+    /**
+     * Get signedContract
+     *
+     * @return boolean 
+     */
+    public function getSignedContract()
+    {
+        return $this->signedContract;
     }
 }

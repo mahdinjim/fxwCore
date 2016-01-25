@@ -340,6 +340,10 @@ _assignprojectbudget:
     path:     /private/project/restricted/budget
     defaults: { _controller: AcmtoolAppBundle:Project:assignBudget }
     methods: [POST,OPTIONS]
+_assignprojectrate:
+    path:     /private/super/project/rate
+    defaults: { _controller: AcmtoolAppBundle:Project:assignRate }
+    methods: [POST,OPTIONS]
 _createTicket:
     path:     /private/project/restricted/ticket/create
     defaults: { _controller: AcmtoolAppBundle:Ticket:create }
@@ -435,4 +439,8 @@ _uploadfile:
 _listfile:
     path:     /private/project/file/list/{project_id}
     defaults: { _controller: AcmtoolAppBundle:ProjectDocument:listDocuments }
+    methods: [GET,OPTIONS]
+_listprojectbyclient:
+    path:     /private/super/project/client/list/{client_id}
+    defaults: { _controller: AcmtoolAppBundle:Project:listbyClient }
     methods: [GET,OPTIONS]

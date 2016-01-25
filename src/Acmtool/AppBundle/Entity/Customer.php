@@ -65,6 +65,18 @@ class Customer implements UserInterface, \Serializable
      */
     private $signedContract=false;
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="signaturedate", type="datetime",nullable=true)
+     */
+    private $signaturedate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="startingdate", type="datetime",nullable=true)
+     */
+    private $startingdate;
+    /**
      * @var string
      * @Assert\NotBlank(message="The email field is required")
      * @Assert\Email(message = "The email '{{ value }}' is not a valid email.", checkMX = true, checkHost = true)
@@ -678,5 +690,51 @@ class Customer implements UserInterface, \Serializable
     public function getSignedContract()
     {
         return $this->signedContract;
+    }
+
+    /**
+     * Set signaturedate
+     *
+     * @param \DateTime $signaturedate
+     * @return Customer
+     */
+    public function setSignaturedate($signaturedate)
+    {
+        $this->signaturedate = $signaturedate;
+    
+        return $this;
+    }
+
+    /**
+     * Get signaturedate
+     *
+     * @return \DateTime 
+     */
+    public function getSignaturedate()
+    {
+        return $this->signaturedate;
+    }
+
+    /**
+     * Set startingdate
+     *
+     * @param \DateTime $startingdate
+     * @return Customer
+     */
+    public function setStartingdate($startingdate)
+    {
+        $this->startingdate = $startingdate;
+    
+        return $this;
+    }
+
+    /**
+     * Get startingdate
+     *
+     * @return \DateTime 
+     */
+    public function getStartingdate()
+    {
+        return $this->startingdate;
     }
 }

@@ -83,6 +83,12 @@ class ProjectController extends Controller
                 	return $response;
             	}
             }
+            else
+            {
+                $format = 'Y-m-d';
+                $startingdate = new \DateTime('UTC');
+                $project->setStartingdate($startingdate);
+            }
            
 	    	if(isset($json->{"teamleader_id"}))
 	    	{
@@ -190,6 +196,10 @@ class ProjectController extends Controller
                         $response->headers->set('Content-Type', 'application/json');
                         return $response;
                     }
+                }
+                if(isset($json->{"skills"}))
+                {
+                    $project->setProjectSkills($json->{"skills"});
                 }
                 $em->flush();
                 $res=new Response();
@@ -327,6 +337,9 @@ class ProjectController extends Controller
         if($project)
         {
             $project->setSignedContract(true);
+            $format = 'Y-m-d';
+            $startingdate = new \DateTime('UTC');
+            $user->setSignaturedate($startingdate);
             $em->flush();
             $res=new Response();
             $res->setStatusCode(200);
@@ -885,6 +898,99 @@ class ProjectController extends Controller
                         $member->removeProject($project);
                        }
                     }
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::MEMBERDELETED);
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                }
+            }
+        }
+    }
+    public function listbyClientAction($client_id)
+    {
+        $em =$this->getDoctrine()->getManager();
+        $client=$em->getRepository("AcmtoolAppBundle:Customer")->findOneById($client_id);
+        if($client)
+        {
+            $mess=array();
+            $i=0;
+            foreach ($client->getProjects() as $key) {
+                $data=array("id"=>$key->getId(),"name"=>$key->getName(),"description"=>$key->getDescription(),"skills"=>$key->getProjectSkills(),"budget"=>$key->getBudget(),"signed"=>$key->getSignedContract(),"ticketcount"=>count($key->getTickets()),"creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'),"rate"=>$key->getRate());
+                if($key->getSignedContract())
+                    $data["signaturedate"]=date_format($key->getSignaturedate(),"Y-m-d");
+                $j=0;
+                $team=array();
+
+                if($key->getTeamleader())
+                    array_push($team, array("id"=>$key->getTeamleader()->getId(),"surname"=>$key->getTeamleader()->getSurname(),"name"=>$key->getTeamleader()->getName(),"email"=>$key->getTeamleader()->getEmail(),"photo"=>$key->getTeamleader()->getPhoto(),"role"=>Roles::Teamlead()));
+                $j++;
+                foreach ($key->getDevelopers() as $member) {
+                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer()));
+                    $j++;
+                }           
+                
+                foreach ($key->getTesters() as $member) {
+                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Tester()));
+                    $j++;
+                }  
+               
+                foreach ($key->getDesigners() as $member) {
+                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>ROLES::Designer()));
+                    $j++;
+                }  
+
+                foreach ($key->getSysadmins() as $member) {
+                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::SysAdmin()));
+                    $j++;          
+                }  
+                $data["team"]=$team;
+                $mess[$i]=$data;
+                $i++;
+            }
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($mess));
+            $res->headers->set('Content-Type', 'application/json');
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+    public function assignRateAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!isset($json->{"project_id"}) || !isset($json->{"rate"}))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;       
+            }
+            else
+            {
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                if($project)
+                {
+
+                    $project->setRate($json->{"rate"});
                     $em->flush();
                     $res=new Response();
                     $res->setStatusCode(200);

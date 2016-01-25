@@ -70,6 +70,9 @@ class CustomerController extends Controller
                 $user->setDay(date('d'));
                 $user->setMonth(date("m"));
                 $user->setYear(date("Y"));
+                $format = 'Y-m-d';
+                $startingdate = new \DateTime('UTC');
+                $user->setStartingdate($startingdate);
                 $address=new Address();
                 $address->setAddress($json->{'address'}->{'address'});
                 $address->setZipCode($json->{'address'}->{'zipcode'});
@@ -234,6 +237,9 @@ class CustomerController extends Controller
         if($customer)
         {
             $customer->setSignedContract(true);
+            $format = 'Y-m-d';
+            $startingdate = new \DateTime('UTC');
+            $user->setSignaturedate($startingdate);
             $em->flush();
             $res=new Response();
             $res->setStatusCode(200);
@@ -275,7 +281,12 @@ class CustomerController extends Controller
             $users=array();
             $i=0;
             foreach ($result as $user) {
-                $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
+                $users[$i] = array('id'=>$user->getId(),"creationdate"=>date_format($user->getStartingdate(), 'Y-m-d'),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto()));
+                $ticketnumber=0;
+                foreach ($user->getProjects() as $key) {
+                    $ticketnumber+=count($key->getTickets());
+                }
+                $users[$i]['ticketnumber']=$ticketnumber;
                 $i++;
 
             }

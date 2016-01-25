@@ -54,6 +54,18 @@ class Project
      */
     private $startingdate;
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="signaturedate", type="datetime",nullable=true)
+     */
+    private $signaturedate;
+    /**
+     * @var \float
+     *
+     * @ORM\Column(name="rate", type="float",nullable=true)
+     */
+    private $rate;
+    /**
     * @ORM\ManyToMany(targetEntity="Developer",inversedBy="projects")
     * @ORM\JoinTable(name="project_developers")
     */
@@ -820,5 +832,51 @@ class Project
     public function getSignedContract()
     {
         return $this->signedContract;
+    }
+
+    /**
+     * Set signaturedate
+     *
+     * @param \DateTime $signaturedate
+     * @return Project
+     */
+    public function setSignaturedate($signaturedate)
+    {
+        $this->signaturedate = $signaturedate;
+    
+        return $this;
+    }
+
+    /**
+     * Get signaturedate
+     *
+     * @return \DateTime 
+     */
+    public function getSignaturedate()
+    {
+        return $this->signaturedate;
+    }
+
+    /**
+     * Set rate
+     *
+     * @param float $rate
+     * @return Project
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+    
+        return $this;
+    }
+
+    /**
+     * Get rate
+     *
+     * @return float 
+     */
+    public function getRate()
+    {
+        return $this->rate;
     }
 }

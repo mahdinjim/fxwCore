@@ -29,7 +29,12 @@ class Project
      * @ORM\Column(name="description", type="string", length=255,nullable=true)
      */
     private $description;
-
+     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="signedContract", type="boolean",nullable=true)
+     */
+    private $signedContract=false;
     /**
      * @var string
      * @Assert\NotBlank(message="The name field is required")
@@ -45,9 +50,21 @@ class Project
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="startingdate", type="datetime")
+     * @ORM\Column(name="startingdate", type="datetime",nullable=true)
      */
     private $startingdate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="signaturedate", type="datetime",nullable=true)
+     */
+    private $signaturedate;
+    /**
+     * @var \float
+     *
+     * @ORM\Column(name="rate", type="float",nullable=true)
+     */
+    private $rate;
     /**
     * @ORM\ManyToMany(targetEntity="Developer",inversedBy="projects")
     * @ORM\JoinTable(name="project_developers")
@@ -86,18 +103,74 @@ class Project
     * @ORM\JoinColumn(name="teamleader_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $teamleader;
+    
      /**
-    * @Assert\NotBlank
-    * @ORM\ManyToOne(targetEntity="ProjectConfig", inversedBy="projects")
-    * @ORM\JoinColumn(name="config_id",referencedColumnName="id",onDelete="SET NULL")
+    * @ORM\OneToMany(targetEntity="ProjectConfig", mappedBy="project")
     */
-    private $config;
+
+    private $configs;
+    /**
+    * @ORM\OneToMany(targetEntity="ProjectDocument", mappedBy="project")
+    */
+    private $documents;
     /**
      * @var string
      * 
-     * @ORM\Column(name="channelid", type="string", length=255)
+     * @ORM\Column(name="channelid", type="string", length=255,nullable=true)
      */
     private $channelid;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="pivotalId", type="string", length=255,nullable=true)
+     */
+    private $pivotal_id;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="pivotalUrl", type="string", length=255,nullable=true)
+     */
+    private $pivotalUrl;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="pivotalName", type="string", length=255,nullable=true)
+     */
+    private $pivotalName;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="repoId", type="string", length=255,nullable=true)
+     */
+    private $repoId;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="repoUrl", type="string", length=255,nullable=true)
+     */
+    private $repoUrl;
+     /**
+     * @var string
+     * 
+     * @ORM\Column(name="repoName", type="string", length=255,nullable=true)
+     */
+    private $repoName;
+    /**
+     * @var float
+     * 
+     * @ORM\Column(name="budget", type="float",nullable=true)
+     */
+    private $budget;
+     /**
+    * @ORM\OneToMany(targetEntity="Ticket", mappedBy="project")
+    */
+    private $tickets;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="projectSkills", type="string", length=1000,nullable=true)
+     */
+    private $projectSkills;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -407,26 +480,357 @@ class Project
         return $this->state;
     }
 
+    
+
     /**
-     * Set config
+     * Set channelid
      *
-     * @param \Acmtool\AppBundle\Entity\ProjectConfig $config
+     * @param string $channelid
      * @return Project
      */
-    public function setConfig(\Acmtool\AppBundle\Entity\ProjectConfig $config = null)
+    public function setChannelid($channelid)
     {
-        $this->config = $config;
+        $this->channelid = $channelid;
     
         return $this;
     }
 
     /**
-     * Get config
+     * Get channelid
      *
-     * @return \Acmtool\AppBundle\Entity\ProjectConfig 
+     * @return string 
      */
-    public function getConfig()
+    public function getChannelid()
     {
-        return $this->config;
+        return $this->channelid;
+    }
+
+    /**
+     * Set pivotal_id
+     *
+     * @param string $pivotalId
+     * @return Project
+     */
+    public function setPivotalId($pivotalId)
+    {
+        $this->pivotal_id = $pivotalId;
+    
+        return $this;
+    }
+
+    /**
+     * Get pivotal_id
+     *
+     * @return string 
+     */
+    public function getPivotalId()
+    {
+        return $this->pivotal_id;
+    }
+
+    /**
+     * Set github_id
+     *
+     * @param string $githubId
+     * @return Project
+     */
+    public function setGithubId($githubId)
+    {
+        $this->github_id = $githubId;
+    
+        return $this;
+    }
+
+    /**
+     * Get github_id
+     *
+     * @return string 
+     */
+    public function getGithubId()
+    {
+        return $this->github_id;
+    }
+
+    /**
+     * Set budget
+     *
+     * @param float $budget
+     * @return Project
+     */
+    public function setBudget($budget)
+    {
+        $this->budget = $budget;
+    
+        return $this;
+    }
+
+    /**
+     * Get budget
+     *
+     * @return float 
+     */
+    public function getBudget()
+    {
+        return $this->budget;
+    }
+
+    /**
+     * Add tickets
+     *
+     * @param \Acmtool\AppBundle\Entity\Ticket $tickets
+     * @return Project
+     */
+    public function addTicket(\Acmtool\AppBundle\Entity\Ticket $tickets)
+    {
+        $this->tickets[] = $tickets;
+    
+        return $this;
+    }
+
+    /**
+     * Remove tickets
+     *
+     * @param \Acmtool\AppBundle\Entity\Ticket $tickets
+     */
+    public function removeTicket(\Acmtool\AppBundle\Entity\Ticket $tickets)
+    {
+        $this->tickets->removeElement($tickets);
+    }
+
+    /**
+     * Get tickets
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTickets()
+    {
+        return $this->tickets;
+    }
+
+    /**
+     * Set pivotalUrl
+     *
+     * @param string $pivotalUrl
+     * @return Project
+     */
+    public function setPivotalUrl($pivotalUrl)
+    {
+        $this->pivotalUrl = $pivotalUrl;
+    
+        return $this;
+    }
+
+    /**
+     * Get pivotalUrl
+     *
+     * @return string 
+     */
+    public function getPivotalUrl()
+    {
+        return $this->pivotalUrl;
+    }
+
+    /**
+     * Set pivotalName
+     *
+     * @param string $pivotalName
+     * @return Project
+     */
+    public function setPivotalName($pivotalName)
+    {
+        $this->pivotalName = $pivotalName;
+    
+        return $this;
+    }
+
+    /**
+     * Get pivotalName
+     *
+     * @return string 
+     */
+    public function getPivotalName()
+    {
+        return $this->pivotalName;
+    }
+
+    /**
+     * Set repoId
+     *
+     * @param string $repoId
+     * @return Project
+     */
+    public function setRepoId($repoId)
+    {
+        $this->repoId = $repoId;
+    
+        return $this;
+    }
+
+    /**
+     * Get repoId
+     *
+     * @return string 
+     */
+    public function getRepoId()
+    {
+        return $this->repoId;
+    }
+
+    /**
+     * Set repoUrl
+     *
+     * @param string $repoUrl
+     * @return Project
+     */
+    public function setRepoUrl($repoUrl)
+    {
+        $this->repoUrl = $repoUrl;
+    
+        return $this;
+    }
+
+    /**
+     * Get repoUrl
+     *
+     * @return string 
+     */
+    public function getRepoUrl()
+    {
+        return $this->repoUrl;
+    }
+
+    /**
+     * Set repoName
+     *
+     * @param string $repoName
+     * @return Project
+     */
+    public function setRepoName($repoName)
+    {
+        $this->repoName = $repoName;
+    
+        return $this;
+    }
+
+    /**
+     * Get repoName
+     *
+     * @return string 
+     */
+    public function getRepoName()
+    {
+        return $this->repoName;
+    }
+
+    /**
+     * Set projectSkills
+     *
+     * @param string $projectSkills
+     * @return Project
+     */
+    public function setProjectSkills($projectSkills)
+    {
+        $this->projectSkills = $projectSkills;
+    
+        return $this;
+    }
+
+    /**
+     * Get projectSkills
+     *
+     * @return string 
+     */
+    public function getProjectSkills()
+    {
+        return $this->projectSkills;
+    }
+
+    /**
+     * Add configs
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectConfig $configs
+     * @return Project
+     */
+    public function addConfig(\Acmtool\AppBundle\Entity\ProjectConfig $configs)
+    {
+        $this->configs[] = $configs;
+    
+        return $this;
+    }
+
+    /**
+     * Remove configs
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectConfig $configs
+     */
+    public function removeConfig(\Acmtool\AppBundle\Entity\ProjectConfig $configs)
+    {
+        $this->configs->removeElement($configs);
+    }
+
+    /**
+     * Get configs
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getConfigs()
+    {
+        return $this->configs;
+    }
+
+    /**
+     * Add documents
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectDocument $documents
+     * @return Project
+     */
+    public function addDocument(\Acmtool\AppBundle\Entity\ProjectDocument $documents)
+    {
+        $this->documents[] = $documents;
+    
+        return $this;
+    }
+
+    /**
+     * Remove documents
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectDocument $documents
+     */
+    public function removeDocument(\Acmtool\AppBundle\Entity\ProjectDocument $documents)
+    {
+        $this->documents->removeElement($documents);
+    }
+
+    /**
+     * Get documents
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
+    }
+
+    /**
+     * Set signedContract
+     *
+     * @param boolean $signedContract
+     * @return Project
+     */
+    public function setSignedContract($signedContract)
+    {
+        $this->signedContract = $signedContract;
+    
+        return $this;
+    }
+
+    /**
+     * Get signedContract
+     *
+     * @return boolean 
+     */
+    public function getSignedContract()
+    {
+        return $this->signedContract;
     }
 }

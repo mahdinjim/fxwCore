@@ -12,6 +12,7 @@ class CorssListener
     	$method  = $request->getRealMethod();
 	    if ('OPTIONS' == $method) {
 	        $response = new Response();
+	        
 	        $event->setResponse($response);
 	    }
 		

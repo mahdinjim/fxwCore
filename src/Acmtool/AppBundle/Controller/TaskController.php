@@ -172,8 +172,10 @@ class TaskController extends Controller
 					$assignedto=array("id"=>$key->getTester()->getId(),"name"=>$key->getTester()->getName(),"surname"=>$key->getTester()->getSurname(),"role"=>array("role"=>$testerrole["role"]));
 				elseif($key->getSysadmin()!=null)
 					$assignedto=array("id"=>$key->getSysadmin()->getId(),"name"=>$key->getSysadmin()->getName(),"surname"=>$key->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
-				$data["assignto"]=$assignedto;
-				$owner=array('id' =>$key->getOwner()->getId() ,"name"=>$key->getOwner()->getName(),"surname"=>$key->getOwner()->getSurname() );
+				if( $assignedto!=null)
+					$data["assignto"]=$assignedto;
+				if($task->getOwner()!=null)
+					$owner=array('id' =>$key->getOwner()->getId() ,"name"=>$key->getOwner()->getName(),"surname"=>$key->getOwner()->getSurname() );
 				$mess[$i]=$data;
 				$i++;
 			}

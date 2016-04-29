@@ -164,6 +164,7 @@ class CustomerController extends Controller
                             $user->setVat($json->{'vat'});
                         $user->setPhonecode($json->{'phonecode'});
                         $user->setTelnumber($json->{'telnumber'});
+                        $user->setCompanyName($json->{'companyname'});
                         $address=new Address();
                         $user->getAddress()->setAddress($json->{'address'}->{'address'});
                         $user->getAddress()->setZipCode($json->{'address'}->{'zipcode'});
@@ -239,7 +240,7 @@ class CustomerController extends Controller
             $customer->setSignedContract(true);
             $format = 'Y-m-d';
             $startingdate = new \DateTime('UTC');
-            $user->setSignaturedate($startingdate);
+            $customer->setSignaturedate($startingdate);
             $em->flush();
             $res=new Response();
             $res->setStatusCode(200);
@@ -298,9 +299,14 @@ class CustomerController extends Controller
         }
         else
         {
-            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
+            $mess=array();
+            $mess['users']=array();
+            $mess['totalpages']=1;
+            $mess['current_page']=1;
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($mess));
+            return $res;
         }
     }
 

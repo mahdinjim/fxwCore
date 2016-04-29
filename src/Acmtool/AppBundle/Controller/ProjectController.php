@@ -131,10 +131,8 @@ class ProjectController extends Controller
             $chatprovider=$chatservice->CreateChatProvider();
             $em->persist($project);
             $em->flush();
-            $response=new Response(ConstValues::PROJECTCREATED,200);
-            return $response;
             $result=$chatprovider->createGroupForProject(preg_replace('/\s+/', '_', $project->getName()));
-            /*if($result["result"])
+            if($result["result"])
             {
                 $project->setChannelid($result["id"]);
                 $em->persist($project);
@@ -147,7 +145,7 @@ class ProjectController extends Controller
             {
                 $response=new Response($result["reason"],400);
                 return $response;
-            }*/
+            }
            
 
 
@@ -352,9 +350,14 @@ class ProjectController extends Controller
         }
         else
         {
-            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
+            $mess=array();
+            $mess["current_page"]=1;
+            $mess["projects"]=array();
+            $mess["channels"]=array();
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($mess));
+            return $res;
         }
     }
     public function acceptContractAction($project_id)
@@ -366,7 +369,7 @@ class ProjectController extends Controller
             $project->setSignedContract(true);
             $format = 'Y-m-d';
             $startingdate = new \DateTime('UTC');
-            $user->setSignaturedate($startingdate);
+            $project->setSignaturedate($startingdate);
             $em->flush();
             $res=new Response();
             $res->setStatusCode(200);
@@ -457,7 +460,8 @@ class ProjectController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if($assignedto!=null)
                         $data["assignto"]=$assignedto;
-                    $owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
+                    if($task->getOwner()!=null)
+                        $owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
                     $tasks[$j]=$data;
                     if($task->getIsFinished())
                         $finishedTasks++;

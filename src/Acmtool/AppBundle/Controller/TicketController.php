@@ -155,7 +155,8 @@ class TicketController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if( $assignedto!=null)
 						$data["assignto"]=$assignedto;
-					$owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
+					if($task->getOwner()!=null)
+					 $owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
 					$tasks[$j]=$data;
 					if($task->getIsFinished())
 						$finishedTasks++;

@@ -432,6 +432,22 @@ _setrealtime:
     path:     /private/project/task/realtime
     defaults: { _controller: AcmtoolAppBundle:Task:setRealtime }
     methods: [POST,OPTIONS]
+_addrealtime:
+    path:     /private/project/task/realtime/create
+    defaults: { _controller: AcmtoolAppBundle:Task:addRealtime }
+    methods: [POST,OPTIONS]
+_updaterealtime:
+    path:     /private/project/task/realtime/update
+    defaults: { _controller: AcmtoolAppBundle:Task:updateRealtime }
+    methods: [PUT,OPTIONS]
+_getrealtimes:
+    path:     /private/project/task/realtime/all/{task_id}
+    defaults: { _controller: AcmtoolAppBundle:Task:getRealtimes }
+    methods: [GET,OPTIONS]
+_deleterealtime:
+    path:     /private/project/task/realtime/delete/{realtime_id}
+    defaults: { _controller: AcmtoolAppBundle:Task:deleteRealtime }
+    methods: [DELETE,OPTIONS]
 _uploadfile:
     path:     /private/project/restricted/file/uplaod/{project_id}
     defaults: { _controller: AcmtoolAppBundle:ProjectDocument:uploadFile }

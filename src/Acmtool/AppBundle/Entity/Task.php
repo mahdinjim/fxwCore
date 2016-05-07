@@ -104,6 +104,11 @@ class Task
     * @ORM\JoinColumn(name="owner_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $owner;
+     /**
+    * @ORM\OneToMany(targetEntity="Realtime", mappedBy="task")
+    */
+
+    private $realtimes;
 
     /**
      * Get id
@@ -435,5 +440,45 @@ class Task
     public function getTitle()
     {
         return $this->title;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->realtimes = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Add realtimes
+     *
+     * @param \Acmtool\AppBundle\Entity\Realtime $realtimes
+     * @return Task
+     */
+    public function addRealtime(\Acmtool\AppBundle\Entity\Realtime $realtimes)
+    {
+        $this->realtimes[] = $realtimes;
+    
+        return $this;
+    }
+
+    /**
+     * Remove realtimes
+     *
+     * @param \Acmtool\AppBundle\Entity\Realtime $realtimes
+     */
+    public function removeRealtime(\Acmtool\AppBundle\Entity\Realtime $realtimes)
+    {
+        $this->realtimes->removeElement($realtimes);
+    }
+
+    /**
+     * Get realtimes
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRealtimes()
+    {
+        return $this->realtimes;
     }
 }

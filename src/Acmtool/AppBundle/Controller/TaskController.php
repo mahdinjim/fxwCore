@@ -11,7 +11,7 @@ use Acmtool\AppBundle\Entity\Task;
 use Acmtool\AppBundle\Entity\Roles;
 use Acmtool\AppBundle\Entity\TasksTypes;
 use Acmtool\AppBundle\Entity\TicketStatus;
-
+use Acmtool\AppBundle\Entity\Realtime;
 class TaskController extends Controller
 {
 	public function createAction()
@@ -174,7 +174,7 @@ class TaskController extends Controller
 					$assignedto=array("id"=>$key->getSysadmin()->getId(),"name"=>$key->getSysadmin()->getName(),"surname"=>$key->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
 				if( $assignedto!=null)
 					$data["assignto"]=$assignedto;
-				if($task->getOwner()!=null)
+				if($key->getOwner()!=null)
 					$owner=array('id' =>$key->getOwner()->getId() ,"name"=>$key->getOwner()->getName(),"surname"=>$key->getOwner()->getSurname() );
 				$mess[$i]=$data;
 				$i++;
@@ -239,11 +239,15 @@ class TaskController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{"task_id"}) && isset($json->{"realtime"}))
+        	if(isset($json->{"task_id"}))
         	{
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
         		if($task){
-	        		$task->setRealtime(floatval($json->{"realtime"}));
+        			$total=0;
+        			foreach ($task->getRealtimes() as $key ) {
+        				$total+=$key->getTime();
+        			}
+	        		$task->setRealtime(floatval($total));
 	        		$em->flush();
 	        		$response=new Response('realtime set',200);
 		            return $response;
@@ -263,6 +267,128 @@ class TaskController extends Controller
                 return $response;
     		}  
         }
+	}
+	public function addRealtimeAction()
+	{
+		$request = $this->get('request');
+		$message = $request->getContent();
+		$em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+        	$json=$result['json'];
+        	if(isset($json->{"task_id"}) && isset($json->{"realtime"}))
+        	{
+        		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
+        		if($task){
+        			$realtime=new Realtime();
+        			$realtime->setDate(new \DateTime('UTC'));
+        			$realtime->setTime(floatval($json->{"realtime"}));
+        			$realtime->setTask($task);
+        			$task->addRealtime($realtime);
+        			$em->persist($realtime);
+	        		$em->flush();
+	        		$response=new Response('realtime added',200);
+		            return $response;
+		        }
+		        else
+        		{
+        			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+	                $response->headers->set('Content-Type', 'application/json');
+	                return $response;
+        		}  
+
+        	}
+        	else
+    		{
+    			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+    		}  
+        }
+	}
+	public function deleteRealtimeAction($realtime_id)
+	{
+		$em = $this->getDoctrine()->getManager();
+		$realtime=$em->getRepository("AcmtoolAppBundle:Realtime")->findOneById($realtime_id);
+		if($realtime)
+		{
+			$em->remove($realtime);
+			$em->flush();
+			$response=new Response('Realtime deleted',200);
+	        return $response;
+		}
+		else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+		}
+	}
+	public function updateRealtimeAction()
+	{
+		$request = $this->get('request');
+		$message = $request->getContent();
+		$em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+        	$json=$result['json'];
+        	if(isset($json->{"realtime_id"}) && isset($json->{"realtime"}))
+        	{
+        		$realtime=$em->getRepository("AcmtoolAppBundle:Realtime")->findOneById($json->{"realtime_id"});
+        		if($realtime){
+        			$realtime->setTime(floatval($json->{"realtime"}));
+	        		$em->flush();
+	        		$response=new Response('realtime upadted',200);
+		            return $response;
+		        }
+		        else
+        		{
+        			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+	                $response->headers->set('Content-Type', 'application/json');
+	                return $response;
+        		}  
+
+        	}
+        	else
+    		{
+    			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+    		}  
+        }
+	}
+	public function getRealtimesAction($task_id)
+	{
+		$em = $this->getDoctrine()->getManager();
+		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($task_id);
+		if($task)
+		{
+			$mess=array();
+			$i=0;
+			$total=0;
+			foreach ($task->getRealtimes() as $key) {
+				$editable=$this->ifToday($key->getDate());
+				$data=array("id"=>$key->getId(),"date"=>date_format($key->getDate(), 'Y-m-d'),"time"=>$key->getTime(),"editable"=>$editable);
+				$mess[$i]=$data;
+				$total+=$key->getTime();
+				$i++;
+			}
+			$res=array("total"=>$total,"realtimes"=>$mess);
+			$response=new Response(json_encode($res),200);
+	        return $response;
+		}
+		else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+		}
 	}
 	public function startTaskAction($task_id)
 	{
@@ -333,5 +459,12 @@ class TaskController extends Controller
             $response->headers->set('Content-Type', 'application/json');
             return $response;
 		}
+	}
+	private function ifToday($date)
+	{
+		$today=new \DateTime("UTC");
+		$diff=$today->diff($date)->format('d');
+		return ($diff<1);
+
 	}
 }

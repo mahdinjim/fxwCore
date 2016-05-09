@@ -73,6 +73,36 @@ class Task
      * @ORM\Column(name="status", type="string", length=255)
      */
     private $status;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="starteddate", type="datetime",nullable=true)
+     */
+    private $starteddate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="finishdate", type="datetime",nullable=true)
+     */
+    private $finishdate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="estimateddate", type="datetime",nullable=true)
+     */
+    private $estimateddate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="creationdate", type="datetime",nullable=true)
+     */
+    private $creationdate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="rtsetdate", type="datetime",nullable=true)
+     */
+    private $rtsetdate;
      /**
     * @Assert\NotBlank
     * @ORM\ManyToOne(targetEntity="Ticket", inversedBy="tasks")
@@ -480,5 +510,120 @@ class Task
     public function getRealtimes()
     {
         return $this->realtimes;
+    }
+
+    /**
+     * Set starteddate
+     *
+     * @param \DateTime $starteddate
+     * @return Task
+     */
+    public function setStarteddate($starteddate)
+    {
+        $this->starteddate = $starteddate;
+    
+        return $this;
+    }
+
+    /**
+     * Get starteddate
+     *
+     * @return \DateTime 
+     */
+    public function getStarteddate()
+    {
+        return $this->starteddate;
+    }
+
+    /**
+     * Set finishdate
+     *
+     * @param \DateTime $finishdate
+     * @return Task
+     */
+    public function setFinishdate($finishdate)
+    {
+        $this->finishdate = $finishdate;
+    
+        return $this;
+    }
+
+    /**
+     * Get finishdate
+     *
+     * @return \DateTime 
+     */
+    public function getFinishdate()
+    {
+        return $this->finishdate;
+    }
+
+    /**
+     * Set estimateddate
+     *
+     * @param \DateTime $estimateddate
+     * @return Task
+     */
+    public function setEstimateddate($estimateddate)
+    {
+        $this->estimateddate = $estimateddate;
+    
+        return $this;
+    }
+
+    /**
+     * Get estimateddate
+     *
+     * @return \DateTime 
+     */
+    public function getEstimateddate()
+    {
+        return $this->estimateddate;
+    }
+
+    /**
+     * Set rtsetdate
+     *
+     * @param \DateTime $rtsetdate
+     * @return Task
+     */
+    public function setRtsetdate($rtsetdate)
+    {
+        $this->rtsetdate = $rtsetdate;
+    
+        return $this;
+    }
+
+    /**
+     * Get rtsetdate
+     *
+     * @return \DateTime 
+     */
+    public function getRtsetdate()
+    {
+        return $this->rtsetdate;
+    }
+
+    /**
+     * Set creationdate
+     *
+     * @param \DateTime $creationdate
+     * @return Task
+     */
+    public function setCreationdate($creationdate)
+    {
+        $this->creationdate = $creationdate;
+    
+        return $this;
+    }
+
+    /**
+     * Get creationdate
+     *
+     * @return \DateTime 
+     */
+    public function getCreationdate()
+    {
+        return $this->creationdate;
     }
 }

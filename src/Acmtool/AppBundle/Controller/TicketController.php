@@ -211,6 +211,7 @@ class TicketController extends Controller
 				$estimation+=$key->getEstimation();
 			}
 			$ticket->setEstimation($estimation);
+			$ticket->setEstimateddate(new \DateTime("UTC"));
 			$mess=array("estimation"=>$estimation);
 			$em->flush();
 			$res=new Response();
@@ -232,6 +233,7 @@ class TicketController extends Controller
 		if($ticket)
 		{
 			$ticket->setStatus(TicketStatus::PRODUCTION);
+			$ticket->setProductiondate(new \DateTime("UTC"));
 			$estimation=0;
 			$em->flush();
 			$res=new Response();
@@ -263,6 +265,7 @@ class TicketController extends Controller
 			if($done){
 				$ticket->setStatus(TicketStatus::ACCEPT);
 				$ticket->setRealtime($realtime);
+				$ticket->setDeliverydate(new \DateTime("UTC"));
 				$mess=array("realtime"=>$realtime);
 				$em->flush();
 				$res=new Response();
@@ -292,6 +295,7 @@ class TicketController extends Controller
 		if($ticket)
 		{
 			$ticket->setStatus(TicketStatus::ESTIMATION);
+			$ticket->setStarteddate(new \DateTime("UTC"));
 			$em->flush();
 			$res=new Response();
 	        $res->setStatusCode(200);
@@ -312,6 +316,7 @@ class TicketController extends Controller
 		if($ticket)
 		{
 			$ticket->setStatus(TicketStatus::WAITING);
+			$ticket->setEstimateconfirmedddate(new \DateTime("UTC"));
 			$em->flush();
 			$res=new Response();
 	        $res->setStatusCode(200);
@@ -351,6 +356,7 @@ class TicketController extends Controller
 		if($ticket)
 		{
 			$ticket->setStatus(TicketStatus::DONE);
+			$ticket->setFinisheddate(new \DateTime("UTC"));
 			$em->flush();
 			$res=new Response();
 	        $res->setStatusCode(200);
@@ -381,6 +387,7 @@ class TicketController extends Controller
 				if($ticket)
 				{
 					$ticket->setStatus(TicketStatus::REJECT);
+					$ticket->setRejecteddate(new \DateTime("UTC"));
 					$ticket->setRejectionmessage($json->{"message"});
 					$em->flush();
 					$res=new Response();

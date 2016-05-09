@@ -33,6 +33,7 @@ class TaskController extends Controller
         			$task=new Task();
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
+        			$task->setCreationdate(new \DateTime("UTC"));
         			$owner=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($json->{"owner"});
         			$task->setOwner($owner);
         			$task->setTicket($ticket);
@@ -163,7 +164,11 @@ class TaskController extends Controller
 	        $designerrole=Roles::Designer();
 	        $sysadminrole=Roles::SysAdmin();
 			foreach ($ticket->getTasks() as $key) {
-				$data=array("id"=>$key->getId(),"displayid"=>$key->getDisplayId(),"title"=>$key->getTitle(),"description"=>$key->getDescription(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"isstarted"=>$key->getIsStarted(),"finished"=>$key->getIsFinished());
+				$workedhours=0;
+				foreach ($key->getRealtimes() as $realtime) {
+					$workedhours+=$realtime->getTime();
+				}
+				$data=array("id"=>$key->getId(),"displayid"=>$key->getDisplayId(),"title"=>$key->getTitle(),"description"=>$key->getDescription(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"isstarted"=>$key->getIsStarted(),"finished"=>$key->getIsFinished(),"workedhours"=>$workedhours);
 				if($key->getDeveloper()!=null)
 					$assignedto=array("id"=>$key->getDeveloper()->getId(),"name"=>$key->getDeveloper()->getName(),"surname"=>$key->getDeveloper()->getSurname(),"role"=>array("role"=>$developerrole["role"]));
 				elseif($key->getDesigner()!=null)
@@ -208,6 +213,7 @@ class TaskController extends Controller
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
         		if($task){
 	        		$task->setEstimation(floatval($json->{"estimation"}));
+	        		$task->setEstimateddate(new \DateTime("UTC"));
 	        		$em->flush();
 	        		$response=new Response('Estimation set',200);
 		            return $response;
@@ -248,6 +254,7 @@ class TaskController extends Controller
         				$total+=$key->getTime();
         			}
 	        		$task->setRealtime(floatval($total));
+	        		$task->setRtsetdate(new \DateTime("UTC"));
 	        		$em->flush();
 	        		$response=new Response('realtime set',200);
 		            return $response;
@@ -397,6 +404,7 @@ class TaskController extends Controller
 		if($task)
 		{
 			$task->setIsStarted(true);
+			$task->setStarteddate(new \DateTime("UTC"));
 			$em->flush();
 	        $response=new Response('Task started',200);
 		    return $response;
@@ -416,6 +424,7 @@ class TaskController extends Controller
 		if($task)
 		{
 			$task->setisFinished(true);
+			$task->setFinishdate(new \DateTime("UTC"));
 			$ticket=$task->getTicket();
 			$done=true;
 			foreach ($ticket->getTasks() as $key) {
@@ -428,6 +437,7 @@ class TaskController extends Controller
 			if($done)
 			{
 				$ticket->setStatus(TicketStatus::TESTING);
+				$ticket->setTestingdate(new \DateTime("UTC"));
 			}
 			$mess=array("done"=>$done);
 			$em->flush();

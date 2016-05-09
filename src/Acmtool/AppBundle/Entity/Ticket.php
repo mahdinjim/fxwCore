@@ -108,6 +108,54 @@ class Ticket
      */
     private $creationdate;
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="starteddate", type="datetime",nullable=true)
+     */
+    private $starteddate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="estimateconfirmedddate", type="datetime",nullable=true)
+     */
+    private $estimateconfirmedddate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="estimateddate", type="datetime",nullable=true)
+     */
+    private $estimateddate;
+      /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="productiondate", type="datetime",nullable=true)
+     */
+    private $productiondate;
+     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="testingdate", type="datetime",nullable=true)
+     */
+    private $testingdate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="deliverydate", type="datetime",nullable=true)
+     */
+    private $deliverydate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="finisheddate", type="datetime",nullable=true)
+     */
+    private $finisheddate;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="rejecteddate", type="datetime",nullable=true)
+     */
+    private $rejecteddate;
+    /**
     * @ORM\OneToMany(targetEntity="Task", mappedBy="ticket")
     */
     private $tasks;
@@ -457,5 +505,189 @@ class Ticket
     public function getRealtime()
     {
         return $this->realtime;
+    }
+
+    /**
+     * Set starteddate
+     *
+     * @param \DateTime $starteddate
+     * @return Ticket
+     */
+    public function setStarteddate($starteddate)
+    {
+        $this->starteddate = $starteddate;
+    
+        return $this;
+    }
+
+    /**
+     * Get starteddate
+     *
+     * @return \DateTime 
+     */
+    public function getStarteddate()
+    {
+        return $this->starteddate;
+    }
+
+    /**
+     * Set estimateconfirmedddate
+     *
+     * @param \DateTime $estimateconfirmedddate
+     * @return Ticket
+     */
+    public function setEstimateconfirmedddate($estimateconfirmedddate)
+    {
+        $this->estimateconfirmedddate = $estimateconfirmedddate;
+    
+        return $this;
+    }
+
+    /**
+     * Get estimateconfirmedddate
+     *
+     * @return \DateTime 
+     */
+    public function getEstimateconfirmedddate()
+    {
+        return $this->estimateconfirmedddate;
+    }
+
+    /**
+     * Set estimateddate
+     *
+     * @param \DateTime $estimateddate
+     * @return Ticket
+     */
+    public function setEstimateddate($estimateddate)
+    {
+        $this->estimateddate = $estimateddate;
+    
+        return $this;
+    }
+
+    /**
+     * Get estimateddate
+     *
+     * @return \DateTime 
+     */
+    public function getEstimateddate()
+    {
+        return $this->estimateddate;
+    }
+
+    /**
+     * Set productiondate
+     *
+     * @param \DateTime $productiondate
+     * @return Ticket
+     */
+    public function setProductiondate($productiondate)
+    {
+        $this->productiondate = $productiondate;
+    
+        return $this;
+    }
+
+    /**
+     * Get productiondate
+     *
+     * @return \DateTime 
+     */
+    public function getProductiondate()
+    {
+        return $this->productiondate;
+    }
+
+    /**
+     * Set testingdate
+     *
+     * @param \DateTime $testingdate
+     * @return Ticket
+     */
+    public function setTestingdate($testingdate)
+    {
+        $this->testingdate = $testingdate;
+    
+        return $this;
+    }
+
+    /**
+     * Get testingdate
+     *
+     * @return \DateTime 
+     */
+    public function getTestingdate()
+    {
+        return $this->testingdate;
+    }
+
+    /**
+     * Set deliverydate
+     *
+     * @param \DateTime $deliverydate
+     * @return Ticket
+     */
+    public function setDeliverydate($deliverydate)
+    {
+        $this->deliverydate = $deliverydate;
+    
+        return $this;
+    }
+
+    /**
+     * Get deliverydate
+     *
+     * @return \DateTime 
+     */
+    public function getDeliverydate()
+    {
+        return $this->deliverydate;
+    }
+
+    /**
+     * Set finisheddate
+     *
+     * @param \DateTime $finisheddate
+     * @return Ticket
+     */
+    public function setFinisheddate($finisheddate)
+    {
+        $this->finisheddate = $finisheddate;
+    
+        return $this;
+    }
+
+    /**
+     * Get finisheddate
+     *
+     * @return \DateTime 
+     */
+    public function getFinisheddate()
+    {
+        return $this->finisheddate;
+    }
+
+    /**
+     * Set rejecteddate
+     *
+     * @param \DateTime $rejecteddate
+     * @return Ticket
+     */
+    public function setRejecteddate($rejecteddate)
+    {
+        $this->rejecteddate = $rejecteddate;
+    
+        return $this;
+    }
+
+    /**
+     * Get rejecteddate
+     *
+     * @return \DateTime 
+     */
+    public function getRejecteddate()
+    {
+        return $this->rejecteddate;
     }
 }

@@ -12,6 +12,7 @@ use Acmtool\AppBundle\Entity\Roles;
 use Acmtool\AppBundle\Entity\TasksTypes;
 use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\Realtime;
+use Acmtool\AppBundle\Entity\WorkedHours;
 class TaskController extends Controller
 {
 	public function createAction()
@@ -291,10 +292,36 @@ class TaskController extends Controller
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
         		if($task){
         			$realtime=new Realtime();
-        			$realtime->setDate(new \DateTime('UTC'));
+        			$now=new \DateTime('UTC');
+        			$realtime->setDate($now);
         			$realtime->setTime(floatval($json->{"realtime"}));
         			$realtime->setTask($task);
         			$task->addRealtime($realtime);
+        			$worked=new WorkedHours();
+        			$worked->setYear($now->format('Y'));
+        			$worked->setMonth($now->format('m'));
+        			$worked->setDay($now->format('d'));
+        			$worked->setHour($now->format('H'));
+        			$worked->setMinutes($now->format('i'));
+        			$worked->setDayOfTheWeek($now->format('w'));
+        			$worked->setWorkedhour(floatval($json->{"realtime"}));
+                    $worked->setWeek($this->weekOfMonth($now));
+        			$user=null;
+        			if($task->getDeveloper()!=null)
+						$user=$task->getDeveloper();
+					elseif($task->getDesigner()!=null)
+						$user=$task->getDesigner();
+					elseif($task->getTester()!=null)
+						$user=$task->getTester();
+					elseif($task->getSysadmin()!=null)
+						$user=$task->getSysadmin();
+					if($user!=null)
+					{
+						$worked->setUser($user->getCredentials());
+						$worked->setReference($realtime);
+						$realtime->setWorkedHours($worked);
+						$em->persist($worked);
+					}
         			$em->persist($realtime);
 	        		$em->flush();
 	        		$response=new Response('realtime added',200);
@@ -350,6 +377,8 @@ class TaskController extends Controller
         		$realtime=$em->getRepository("AcmtoolAppBundle:Realtime")->findOneById($json->{"realtime_id"});
         		if($realtime){
         			$realtime->setTime(floatval($json->{"realtime"}));
+        			$worked=$realtime->getWorkedHours();
+        			$worked->setWorkedhour(floatval($json->{"realtime"}));
 	        		$em->flush();
 	        		$response=new Response('realtime upadted',200);
 		            return $response;
@@ -477,4 +506,10 @@ class TaskController extends Controller
 		return ($diff<1);
 
 	}
+    private function weekOfMonth($date) {
+        //Get the first day of the month.
+        $d = new \DateTime('first day of this month');
+        //Apply above formula.
+        return intval($date->format("W")) - intval($d->format("W"));
+    }
 }

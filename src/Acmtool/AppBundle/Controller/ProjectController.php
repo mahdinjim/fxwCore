@@ -333,7 +333,7 @@ class ProjectController extends Controller
             foreach ($result as $key) {
                 $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
                 if($key->getChannelid()!=null){
-                    $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName());
+                    $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getId());
                     $j++;
                 }
                 $i++;

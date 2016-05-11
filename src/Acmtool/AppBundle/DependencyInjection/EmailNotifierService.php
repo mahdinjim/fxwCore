@@ -23,7 +23,9 @@ class EmailNotifierService
 			<b>Password:</b>'.$password.'<br/>
 
 			');
-		$this->mailer->send($message);
+		
+		$isent=$this->mailer->send($message);
+		
 	}
 
 

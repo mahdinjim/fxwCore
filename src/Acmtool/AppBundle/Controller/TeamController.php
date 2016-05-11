@@ -11,6 +11,7 @@ use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Roles;
+use Acmtool\AppBundle\Entity\WorkedDay;
 
 class TeamController extends Controller
 {
@@ -20,6 +21,8 @@ class TeamController extends Controller
 		 $keyaccounts=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findAll();
 		 $users=array();
 		 $i=0;
+         $date=new \DateTime("UTC");
+         $month=$date->format("m");
 		 if($keyaccounts>0)
 		 {
             foreach ($keyaccounts as $user) {
@@ -58,9 +61,11 @@ class TeamController extends Controller
 		 {
 		 	
             foreach ($developers as $user) {
+                
                 $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>Roles::Developer(),"username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber(),"language"=>$user->getLanguage(),"hourate"=>$user->getHourrate(),"level"=>$user->getLevel());
                  $users[$i]["projectcount"]=count($user->getProjects());
                 $finished=0;
+                $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
                 $total=count($user->getTasks());
                 foreach ($user->getTasks() as $key) {
                     if($key->getIsFinished())
@@ -278,6 +283,143 @@ class TeamController extends Controller
         }
 		
 	}
+    private function getHoursByMonth($user,$month,$capacity)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $hours=$em->getRepository("AcmtoolAppBundle:WorkedHours")->getWorkedHoursByMonth($user,$month);
+        $mess=array();
+        if($hours)
+        {
+           $week1=array();
+           $week2=array();
+           $week3=array();
+           $week4=array();
+           $week5=array();
+            foreach ($hours as $key) {
+                if($key->getWeek()==1)
+                {
+                    if(!array_key_exists ( $key->getDay() , $week1 ))
+                    {
+                        $week1[$key->getDay()]=$this->createWorkingday($key);
+                    }
+                    else
+                    {
+                        $workedDay=$week1[$key->getDay()];
+                        $sum=$workedDay->getTotalHours()+$key->getWorkedhour();
+                        $workedDay->setTotalHours($sum);
+                    }
+                }
+                if($key->getWeek()==2)
+                {
+                    if(!array_key_exists ( $key->getDay() , $week2 ))
+                    {
+                       
+                        $week2[$key->getDay()]=$this->createWorkingday($key);
+                    }
+                    else
+                    {
+                        $workedDay=$week2[$key->getDay()];
+                        $sum=$workedDay->getTotalHours()+$key->getWorkedhour();
+                        $workedDay->setTotalHours($sum);
+                    }
+                }
+                if($key->getWeek()==3)
+                {
+                    if(!array_key_exists ( $key->getDay() , $week3 ))
+                    {
+                       
+                        $week3[$key->getDay()]=$this->createWorkingday($key);
+                    }
+                    else
+                    {
+                        $workedDay=$week3[$key->getDay()];
+                        $sum=$workedDay->getTotalHours()+$key->getWorkedhour();
+                        $workedDay->setTotalHours($sum);
+                    }
+                }
+                if($key->getWeek()==4)
+                {
+                    if(!array_key_exists ( $key->getDay() , $week4 ))
+                    {
+                       
+                        $week4[$key->getDay()]=$this->createWorkingday($key);
+                    }
+                    else
+                    {
+                        $workedDay=$week4[$key->getDay()];
+                        $sum=$workedDay->getTotalHours()+$key->getWorkedhour();
+                        $workedDay->setTotalHours($sum);
+                    }
+                }
+                if($key->getWeek()==5)
+                {
+                    if(!array_key_exists ( $key->getDay() , $week5 ))
+                    {
+                       
+                        $week5[$key->getDay()]=$this->createWorkingday($key);
+                    }
+                    else
+                    {
+                        $workedDay=$week5[$key->getDay()];
+                        $sum=$workedDay->getTotalHours()+$key->getWorkedhour();
+                        $workedDay->setTotalHours($sum);
+                    }
+                }
+                
+            }
+            if(count($week1))
+            {
+               $mess["week1"]=$this->serializeWeek($week1,$capacity);
+            }
+            if(count($week2))
+            {
+                $mess["week2"]=$this->serializeWeek($week2,$capacity);
+            }
+            if(count($week3))
+            {
+                $mess["week3"]=$this->serializeWeek($week3,$capacity);
+            }
+            if(count($week4))
+            {
+                $mess["week4"]=$this->serializeWeek($week4,$capacity);
+            }
+            if(count($week5))
+            {
+                $mess["week5"]=$this->serializeWeek($week5,$capacity);
+            }
+            
+        }
+        return $mess;
+    }
+    private function serializeWeek($week,$capacity)
+    {
+        $mess=array();
+        $i=0;
+        $sum=0;
+        $data=array();
+        foreach ($week as $key) {
+            $data[$i]=$key->serialize();
+            $i++;
+            $sum+=$key->getTotalHours();
+        }
+        $performance=($sum/floatval($capacity))*100;
+        $mess["days"]=$data;
+        $mess["weekhours"]=$sum;
+        $mess["weekperformance"]=$performance;
+        return $mess;
+
+    }
+    private function createWorkingday($key)
+    {
+        $workedDay=new WorkedDay();
+        $workedDay->setYear($key->getYear());
+        $workedDay->setMonth($key->getMonth());
+        $workedDay->setDay($key->getDay());
+        $workedDay->setDayOfTheWeek($key->getDayOfTheWeek());
+        $workedDay->setWeek($key->getWeek());
+        $workedDay->setTotalHours($key->getWorkedhour());
+        return $workedDay;
+    }
 	private function random_string($length) {
 	    $key = '';
 	    $keys = array_merge(range(0, 9), range('a', 'z'));

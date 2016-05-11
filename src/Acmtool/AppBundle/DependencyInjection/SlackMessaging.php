@@ -2,8 +2,8 @@
 namespace Acmtool\AppBundle\DependencyInjection;
 class SlackMessaging implements IMessaging
 {
-	const clienttoken="";
-	const admintoken="";
+	const clienttoken="xoxp-9690007030-13891980720-41230371793-40f72d292f";
+	const admintoken="xoxp-9690007030-9689729651-41046604725-f3b338f063";
 	const Baseurl="https://slack.com/api/";
 	const channelInfo="channels.info?";
 	const userInfo="users.info?";
@@ -36,6 +36,7 @@ class SlackMessaging implements IMessaging
 	{
 		$data=array();
 		$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&oldest=".$last."&unreads=1"));
+
 		if($history->{"ok"})
 		{
 			$data["messages"]=$history->{"messages"};
@@ -56,6 +57,7 @@ class SlackMessaging implements IMessaging
 			$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&count=".$number."&unreads=1"));
 		else 
 			$history=json_decode(file_get_contents(self::Baseurl.self::channelthistory."token=".self::clienttoken."&channel=".$group."&count=".$number."&unreads=1&latest=".$start));
+
 		if($history->{"ok"})
 		{
 			$data["messages"]=$history->{"messages"};

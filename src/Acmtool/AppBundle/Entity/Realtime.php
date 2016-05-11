@@ -42,6 +42,11 @@ class Realtime
     */
     private $task;
     /**
+     * @ORM\OneToOne(targetEntity="WorkedHours",cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="work_id", referencedColumnName="id")
+     **/
+    private $workedHours;
+    /**
      * Get id
      *
      * @return integer 
@@ -118,5 +123,28 @@ class Realtime
     public function getTask()
     {
         return $this->task;
+    }
+
+    /**
+     * Set workedHours
+     *
+     * @param \Acmtool\AppBundle\Entity\WorkedHours $workedHours
+     * @return Realtime
+     */
+    public function setWorkedHours(\Acmtool\AppBundle\Entity\WorkedHours $workedHours = null)
+    {
+        $this->workedHours = $workedHours;
+    
+        return $this;
+    }
+
+    /**
+     * Get workedHours
+     *
+     * @return \Acmtool\AppBundle\Entity\WorkedHours 
+     */
+    public function getWorkedHours()
+    {
+        return $this->workedHours;
     }
 }

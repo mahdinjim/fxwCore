@@ -83,7 +83,7 @@ class CustomerController extends Controller
                 $user->setAddress($address);
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
-                $crederrorlist=$validator->validate($creds);
+                $crederrorlist=$validator->validate($user);
                 $addresserrorlist=$validator->validate($address);
 
                 if (count($errorList) > 0 || count($crederrorlist)>0 || count($addresserrorlist) >0) {

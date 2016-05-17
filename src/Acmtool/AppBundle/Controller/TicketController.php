@@ -155,8 +155,6 @@ class TicketController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if( $assignedto!=null)
 						$data["assignto"]=$assignedto;
-					if($task->getOwner()!=null)
-					 $owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
 					$tasks[$j]=$data;
 					if($task->getIsFinished())
 						$finishedTasks++;
@@ -204,20 +202,29 @@ class TicketController extends Controller
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
 		if($ticket)
 		{
-			$ticket->setStatus(TicketStatus::GOPRODUCTION);
-			$estimation=0;
-			$i=0;
-			foreach ($ticket->getTasks() as $key) {
-				$estimation+=$key->getEstimation();
-			}
-			$ticket->setEstimation($estimation);
-			$ticket->setEstimateddate(new \DateTime("UTC"));
-			$mess=array("estimation"=>$estimation);
-			$em->flush();
-			$res=new Response();
-	        $res->setStatusCode(200);
-	        $res->setContent(json_encode($mess));
-	        return $res;
+			$project=$ticket->getProject();
+			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+            $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+            if($isadmin || $isTeamLeader)
+            {
+            	$ticket->setStatus(TicketStatus::GOPRODUCTION);
+				$estimation=0;
+				$i=0;
+				foreach ($ticket->getTasks() as $key) {
+					$estimation+=$key->getEstimation();
+				}
+				$ticket->setEstimation($estimation);
+				$ticket->setEstimateddate(new \DateTime("UTC"));
+				$mess=array("estimation"=>$estimation);
+				$em->flush();
+				$res=new Response();
+		        $res->setStatusCode(200);
+		        $res->setContent(json_encode($mess));
+		        return $res;
+            }
+            else
+            	return new Response(403);
+			
 		}
 		else
 		{
@@ -232,14 +239,23 @@ class TicketController extends Controller
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
 		if($ticket)
 		{
-			$ticket->setStatus(TicketStatus::PRODUCTION);
-			$ticket->setProductiondate(new \DateTime("UTC"));
-			$estimation=0;
-			$em->flush();
-			$res=new Response();
-	        $res->setStatusCode(200);
-	        $res->setContent("Ticket in production");
-	        return $res;
+			$project=$ticket->getProject();
+			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+            $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+            if($isadmin || $isTeamLeader)
+            {
+            	$ticket->setStatus(TicketStatus::PRODUCTION);
+				$ticket->setProductiondate(new \DateTime("UTC"));
+				$estimation=0;
+				$em->flush();
+				$res=new Response();
+		        $res->setStatusCode(200);
+		        $res->setContent("Ticket in production");
+		        return $res;
+            }
+            else
+            	return new Response(403);
+			
 		}
 		else
 		{
@@ -254,31 +270,40 @@ class TicketController extends Controller
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
 		if($ticket)
 		{
-			$done=true;
-			$realtime=0;
-			foreach ($ticket->getTasks() as $key) {
-				if($key->getRealtime()==null)
-					$done=false;
+			$project=$ticket->getProject();
+			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+            $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+            if($isadmin || $isTeamLeader)
+            {
+            	$done=true;
+				$realtime=0;
+				foreach ($ticket->getTasks() as $key) {
+					if($key->getRealtime()==null)
+						$done=false;
+					else
+						$realtime+=$key->getRealtime();
+				}
+				if($done){
+					$ticket->setStatus(TicketStatus::ACCEPT);
+					$ticket->setRealtime($realtime);
+					$ticket->setDeliverydate(new \DateTime("UTC"));
+					$mess=array("realtime"=>$realtime);
+					$em->flush();
+					$res=new Response();
+			        $res->setStatusCode(200);
+			        $res->setContent(json_encode($mess));
+			        return $res;
+				}
 				else
-					$realtime+=$key->getRealtime();
-			}
-			if($done){
-				$ticket->setStatus(TicketStatus::ACCEPT);
-				$ticket->setRealtime($realtime);
-				$ticket->setDeliverydate(new \DateTime("UTC"));
-				$mess=array("realtime"=>$realtime);
-				$em->flush();
-				$res=new Response();
-		        $res->setStatusCode(200);
-		        $res->setContent(json_encode($mess));
-		        return $res;
-			}
-			else
-			{
-				$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
-            	$response->headers->set('Content-Type', 'application/json');
-            	return $response;
-			}
+				{
+					$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+	            	$response->headers->set('Content-Type', 'application/json');
+	            	return $response;
+				}
+            }
+            else
+            	return new Response(403);
+			
 			
 		}
 		else

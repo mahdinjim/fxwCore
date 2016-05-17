@@ -42,6 +42,14 @@ class Creds implements \Serializable
      * @ORM\Column(name="title", type="string", length=255)
      */
     private $title;
+     /**
+    * @ORM\OneToMany(targetEntity="Project", mappedBy="teamleader")
+    */
+    private $projects;
+    /**
+    * @ORM\OneToMany(targetEntity="Task", mappedBy="owner")
+    */
+    private $tasks; 
     /**
      * Get id
      *
@@ -137,5 +145,69 @@ class Creds implements \Serializable
         list (
             $this->id,
         ) = unserialize($serialized);
+    }
+     /**
+     * Add projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     * @return TeamLeader
+     */
+    public function addProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects[] = $projects;
+    
+        return $this;
+    }
+
+    /**
+     * Remove projects
+     *
+     * @param \Acmtool\AppBundle\Entity\Project $projects
+     */
+    public function removeProject(\Acmtool\AppBundle\Entity\Project $projects)
+    {
+        $this->projects->removeElement($projects);
+    }
+
+    /**
+     * Get projects
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getProjects()
+    {
+        return $this->projects;
+    }
+     /**
+     * Add tasks
+     *
+     * @param \Acmtool\AppBundle\Entity\Task $tasks
+     * @return TeamLeader
+     */
+    public function addTask(\Acmtool\AppBundle\Entity\Task $tasks)
+    {
+        $this->tasks[] = $tasks;
+    
+        return $this;
+    }
+
+    /**
+     * Remove tasks
+     *
+     * @param \Acmtool\AppBundle\Entity\Task $tasks
+     */
+    public function removeTask(\Acmtool\AppBundle\Entity\Task $tasks)
+    {
+        $this->tasks->removeElement($tasks);
+    }
+
+    /**
+     * Get tasks
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
     }
 }

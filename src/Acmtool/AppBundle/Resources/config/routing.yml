@@ -292,6 +292,10 @@ _alldevteammemebrs:
     path:     /private/devteam/all
     defaults: { _controller: AcmtoolAppBundle:Team:getAllDevTeamMmebers }
     methods: [GET,OPTIONS]
+_allteamperformance:
+    path:     /private/team/performance/{month}
+    defaults: { _controller: AcmtoolAppBundle:Team:getPerformanceByMonth }
+    methods: [GET,OPTIONS]
 _uploadteamphoto:
     path:     /private/team/upload/photo/{id}/{role}
     defaults: { _controller: AcmtoolAppBundle:Team:uploadPhoto }
@@ -459,4 +463,12 @@ _listfile:
 _listprojectbyclient:
     path:     /private/super/project/client/list/{client_id}
     defaults: { _controller: AcmtoolAppBundle:Project:listbyClient }
+    methods: [GET,OPTIONS]
+_ticketreportbymonth:
+    path:     /private/project/restricted/report/ticket/{month}/{year}/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:Project:generateTicketReport }
+    methods: [GET,OPTIONS]
+_datereportbymonth:
+    path:     /private/project/restricted/report/date/{month}/{year}/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:Project:generateDateReport }
     methods: [GET,OPTIONS]

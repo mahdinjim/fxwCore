@@ -130,7 +130,7 @@ class Task
     */
     private $tester;
     /**
-    * @ORM\ManyToOne(targetEntity="TeamLeader", inversedBy="tasks")
+    * @ORM\ManyToOne(targetEntity="Creds", inversedBy="tasks")
     * @ORM\JoinColumn(name="owner_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $owner;
@@ -429,10 +429,10 @@ class Task
     /**
      * Set owner
      *
-     * @param \Acmtool\AppBundle\Entity\TeamLeader $owner
+     * @param \Acmtool\AppBundle\Entity\Creds $owner
      * @return Task
      */
-    public function setOwner(\Acmtool\AppBundle\Entity\TeamLeader $owner = null)
+    public function setOwner(\Acmtool\AppBundle\Entity\Creds $owner = null)
     {
         $this->owner = $owner;
     
@@ -442,7 +442,7 @@ class Task
     /**
      * Get owner
      *
-     * @return \Acmtool\AppBundle\Entity\TeamLeader 
+     * @return \Acmtool\AppBundle\Entity\Creds 
      */
     public function getOwner()
     {

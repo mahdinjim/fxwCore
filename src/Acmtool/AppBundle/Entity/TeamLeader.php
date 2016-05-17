@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\TeamLeaderRepository")
  */
+//For this version teamleader role is not used but we keep this for later versions,
 class TeamLeader extends DevTeamMember implements UserInterface, \Serializable
 {
     /**
@@ -44,20 +45,14 @@ class TeamLeader extends DevTeamMember implements UserInterface, \Serializable
      * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
-     /**
-    * @ORM\OneToMany(targetEntity="Project", mappedBy="teamleader")
-    */
-    private $projects;
-    /**
-    * @ORM\OneToMany(targetEntity="Task", mappedBy="owner")
-    */
-    private $tasks; 
+    
+    
 
     public function __construct()
     {
         $this->isActive = true;
         $this->salt = md5(uniqid(null, true));
-        $this->projects=new ArrayCollection();
+        
     }
     /**
      * Get id
@@ -167,68 +162,6 @@ class TeamLeader extends DevTeamMember implements UserInterface, \Serializable
     {
         return $this->apitoken;
     }
-    /**
-     * Add projects
-     *
-     * @param \Acmtool\AppBundle\Entity\Project $projects
-     * @return TeamLeader
-     */
-    public function addProject(\Acmtool\AppBundle\Entity\Project $projects)
-    {
-        $this->projects[] = $projects;
+   
     
-        return $this;
-    }
-
-    /**
-     * Remove projects
-     *
-     * @param \Acmtool\AppBundle\Entity\Project $projects
-     */
-    public function removeProject(\Acmtool\AppBundle\Entity\Project $projects)
-    {
-        $this->projects->removeElement($projects);
-    }
-
-    /**
-     * Get projects
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getProjects()
-    {
-        return $this->projects;
-    }
-     /**
-     * Add tasks
-     *
-     * @param \Acmtool\AppBundle\Entity\Task $tasks
-     * @return TeamLeader
-     */
-    public function addTask(\Acmtool\AppBundle\Entity\Task $tasks)
-    {
-        $this->tasks[] = $tasks;
-    
-        return $this;
-    }
-
-    /**
-     * Remove tasks
-     *
-     * @param \Acmtool\AppBundle\Entity\Task $tasks
-     */
-    public function removeTask(\Acmtool\AppBundle\Entity\Task $tasks)
-    {
-        $this->tasks->removeElement($tasks);
-    }
-
-    /**
-     * Get tasks
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getTasks()
-    {
-        return $this->tasks;
-    }
 }

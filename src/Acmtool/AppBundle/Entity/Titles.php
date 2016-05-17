@@ -6,10 +6,10 @@ abstract class Titles
 	const Admin="admin";
 	const Customer="customer";
 	const CustomerUser="customeruser";
-	const Developer="developer";
-	const Designer="designer";
+	const Developer="Developer";
+	const Designer="Designer";
 	const KeyAccount="keyaccount";
-	const SystemAdmin="systemadmin";
-	const TeamLeader="teamleader";
-	const Tester="tester";
+	const SystemAdmin="Sysadmin";
+	const TeamLeader="Teamlead";
+	const Tester="Tester";
 }

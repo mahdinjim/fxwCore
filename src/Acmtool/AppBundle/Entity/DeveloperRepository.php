@@ -12,4 +12,25 @@ use Doctrine\ORM\EntityRepository;
  */
 class DeveloperRepository extends EntityRepository
 {
+	public function findOneByCreds($creds)
+	{
+		$result=null;
+		$em=$this->getEntityManager();
+		
+
+		try{
+			$result=$em->createQuery('select u from AcmtoolAppBundle:Developer u
+								WHERE u.credentials = :cred')
+						->setParameter("cred",$creds)
+                       
+                        ->getSingleResult();
+            return $result;
+           }
+        catch(\Doctrine\ORM\NoResultException $e)
+        {
+        	return null;
+        }
+    }
+
+
 }

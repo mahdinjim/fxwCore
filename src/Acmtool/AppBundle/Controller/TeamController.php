@@ -35,8 +35,8 @@ class TeamController extends Controller
             }
             
 		 }
-		 
-		 $teamleaders=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findAll();
+		 //For this version we don't use teamleasder version but we keep it for later versions
+		 /*$teamleaders=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findAll();
 		 if($teamleaders>0)
 		 {
 		 	
@@ -55,7 +55,7 @@ class TeamController extends Controller
 
             }
             
-		 }
+		 }*/
 		 $developers=$em->getRepository("AcmtoolAppBundle:Developer")->findAll();
 		 if($developers>0)
 		 {
@@ -86,6 +86,7 @@ class TeamController extends Controller
                 $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>Roles::Tester(),"username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber(),"language"=>$user->getLanguage(),"hourate"=>$user->getHourrate(),"level"=>$user->getLevel());
                  $users[$i]["projectcount"]=count($user->getProjects());
                 $finished=0;
+                 $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
                 $total=count($user->getTasks());
                 foreach ($user->getTasks() as $key) {
                     if($key->getIsFinished())
@@ -106,6 +107,7 @@ class TeamController extends Controller
                 $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>Roles::Designer(),"username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber(),"language"=>$user->getLanguage(),"hourate"=>$user->getHourrate(),"level"=>$user->getLevel());
                  $users[$i]["projectcount"]=count($user->getProjects());
                 $finished=0;
+                 $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
                 $total=count($user->getTasks());
                 foreach ($user->getTasks() as $key) {
                     if($key->getIsFinished())
@@ -126,6 +128,7 @@ class TeamController extends Controller
                 $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>Roles::SysAdmin(),"username"=>$user->getUsername(),"capacity"=>$user->getCapacity(),"status"=>$user->getState(),"skills"=>$user->getSkills(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber(),"language"=>$user->getLanguage(),"hourate"=>$user->getHourrate(),"level"=>$user->getLevel());
                  $users[$i]["projectcount"]=count($user->getProjects());
                 $finished=0;
+                 $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
                 $total=count($user->getTasks());
                 foreach ($user->getTasks() as $key) {
                     if($key->getIsFinished())
@@ -151,7 +154,8 @@ class TeamController extends Controller
          
          $users=array();
          $i=0;
-         if($this->get('security.context')->isGranted("ROLE_ADMIN")){
+         //For this version we don't use teamleasder version but we keep it for later versions
+         /*if($this->get('security.context')->isGranted("ROLE_ADMIN")){
              $teamleaders=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findAll();
              if($teamleaders>0)
              {
@@ -163,7 +167,7 @@ class TeamController extends Controller
                 }
                 
              }
-         }
+         }*/
          $developers=$em->getRepository("AcmtoolAppBundle:Developer")->findAll();
          if($developers>0)
          {
@@ -214,6 +218,83 @@ class TeamController extends Controller
          $res->setContent(json_encode($users));
          return $res;
 
+    }
+    public function getPerformanceByMonthAction($month)
+    {
+         $em = $this->getDoctrine()->getManager();
+         $keyaccounts=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findAll();
+         $users=array();
+         $i=0;
+         $date=new \DateTime("UTC");
+         if($keyaccounts>0)
+         {
+            foreach ($keyaccounts as $user) {
+                $users[$i] = array();
+                $i++;
+            }
+            
+         }
+         //For this version we don't use teamleasder version but we keep it for later versions
+         /*$teamleaders=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findAll();
+         if($teamleaders>0)
+         {
+            
+            foreach ($teamleaders as $user) {
+                $users[$i] = array();
+               
+                $i++;
+
+            }
+            
+         }*/
+         $developers=$em->getRepository("AcmtoolAppBundle:Developer")->findAll();
+         if($developers>0)
+         {
+            
+            foreach ($developers as $user) {
+                $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
+                $i++;
+            }
+           
+         }
+         $testers=$em->getRepository("AcmtoolAppBundle:Tester")->findAll();
+         if($testers>0)
+         {
+            
+            foreach ($testers as $user) {
+                $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
+                $i++;
+
+            }
+           
+         }
+         $designers=$em->getRepository("AcmtoolAppBundle:Designer")->findAll();
+         if($designers>0)
+         {
+            
+            foreach ($designers as $user) {
+                $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
+                $i++;
+
+            }
+            
+         }
+         $admins=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findAll();
+         if($admins>0)
+         {
+            
+            foreach ($admins as $user) {
+               $users[$i]["workeddays"]=$this->getHoursByMonth($user->getCredentials(),$month,$user->getCapacity());
+                $i++;
+
+            }
+           
+         }
+         $res=new Response();
+         $res->setStatusCode(200);
+         $res->headers->set('Content-Type', 'application/json');
+         $res->setContent(json_encode($users));
+         return $res;
     }
     public function getTeamRolesAction()
     {

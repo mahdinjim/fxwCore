@@ -12,4 +12,16 @@ use Doctrine\ORM\EntityRepository;
  */
 class TaskRepository extends EntityRepository
 {
+	public function getTasksByMonth($ticket,$month,$year)
+	{
+		$em=$this->getEntityManager();
+		$result=$em->createQuery('SELECT t FROM AcmtoolAppBundle:Task t 
+			WHERE t.ticket= :t AND  MONTH(t.finishdate) = :m AND YEAR(t.finishdate) = :y')
+		->setParameter("t",$ticket)
+		->setParameter("m",$month)
+		->setParameter("y",$year)
+		->getResult();
+		return $result;
+
+	}
 }

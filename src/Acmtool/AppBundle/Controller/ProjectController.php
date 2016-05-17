@@ -396,27 +396,76 @@ class ProjectController extends Controller
             $mess["keyaccount"]=array("id"=>$project->getKeyAccount()->getId(),"surname"=>$project->getKeyAccount()->getSurname(),"name"=>$project->getKeyAccount()->getName(),"email"=>$project->getKeyAccount()->getEmail(),"photo"=>$project->getKeyAccount()->getPhoto());
             $i=0;
             $team=array();
-
+            $Teamleader=null;
             if($project->getTeamleader())
-                $team[$i]=array("id"=>$project->getTeamleader()->getId(),"surname"=>$project->getTeamleader()->getSurname(),"name"=>$project->getTeamleader()->getName(),"email"=>$project->getTeamleader()->getEmail(),"photo"=>$project->getTeamleader()->getPhoto(),"role"=>Roles::Teamlead(),"order"=>$i);
-            $i++;
+            {
+                $user=$project->getTeamleader();
+                $role=$user->getTitle();
+                
+                $developerrole=Roles::Developer();
+                $testerrole=Roles::Tester();
+                $designerrole=Roles::Designer();
+                $sysadminrole=Roles::SysAdmin();
+                if ($role==$developerrole['role']) {
+                    $Teamleader=$em->getRepository("AcmtoolAppBundle:Developer")->findOneByCreds($project->getTeamleader());
+                }
+                elseif ($role==$testerrole["role"]) {
+                    $Teamleader=$em->getRepository("AcmtoolAppBundle:Tester")->findOneByCreds($project->getTeamleader());
+                }
+                elseif ($role==$designerrole["role"]) {
+                    $Teamleader=$em->getRepository("AcmtoolAppBundle:Designer")->findOneByCreds($project->getTeamleader());
+                }
+                elseif ($role==$sysadminrole["role"]) {
+                    $Teamleader=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneByCreds($project->getTeamleader());
+                }
+                $mess["teamLeader"]=array("id"=>$Teamleader->getId(),"surname"=>$Teamleader->getSurname(),"name"=>$Teamleader->getName(),"email"=>$Teamleader->getEmail(),"photo"=>$Teamleader->getPhoto());
+                
+            }
             foreach ($project->getDevelopers() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::Developer(),"order"=>$i);
+                if($Teamleader!=null)
+                    if($key->getId()==$Teamleader->getId())
+                        $team[$i]["isTeamLeader"]=true;
+                    else
+                        $team[$i]["isTeamLeader"]=false;
+                else
+                    $team[$i]["isTeamLeader"]=false;
                 $i++;
             }           
             
             foreach ($project->getTesters() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::Tester(),"order"=>$i);
+                 if($Teamleader!=null)
+                    if($key->getId()==$Teamleader->getId())
+                        $team[$i]["isTeamLeader"]=true;
+                    else
+                        $team[$i]["isTeamLeader"]=false;
+                else
+                    $team[$i]["isTeamLeader"]=false;
                 $i++;
             }  
            
             foreach ($project->getDesigners() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>ROLES::Designer(),"order"=>$i);
+                 if($Teamleader!=null)
+                    if($key->getId()==$Teamleader->getId())
+                        $team[$i]["isTeamLeader"]=true;
+                    else
+                        $team[$i]["isTeamLeader"]=false;
+                else
+                    $team[$i]["isTeamLeader"]=false;
                 $i++;
             }  
 
             foreach ($project->getSysadmins() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::SysAdmin(),"order"=>$i);
+                if($Teamleader!=null)
+                    if($key->getId()==$Teamleader->getId())
+                        $team[$i]["isTeamLeader"]=true;
+                    else
+                        $team[$i]["isTeamLeader"]=false;
+                else
+                    $team[$i]["isTeamLeader"]=false;
                 $i++;
             }  
             $mess["team"]=$team;
@@ -460,8 +509,6 @@ class ProjectController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if($assignedto!=null)
                         $data["assignto"]=$assignedto;
-                    if($task->getOwner()!=null)
-                        $owner=array('id' =>$task->getOwner()->getId() ,"name"=>$task->getOwner()->getName(),"surname"=>$task->getOwner()->getSurname() );
                     $tasks[$j]=$data;
                     if($task->getIsFinished())
                         $finishedTasks++;
@@ -496,6 +543,7 @@ class ProjectController extends Controller
     }
     public function assignTeamLeaderAction()
     {
+
         $request = $this->get('request');
         $message = $request->getContent();
         $em = $this->getDoctrine()->getManager();
@@ -505,7 +553,7 @@ class ProjectController extends Controller
         else
         {
             $json=$result['json'];
-            if(!isset($json->{"project_id"}) || !isset($json->{"teamleader_id"}))
+            if(!isset($json->{"project_id"}) || !isset($json->{"teamleader_id"}) || !isset($json->{"teamleader_role"}))
             {
                 $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
@@ -514,23 +562,54 @@ class ProjectController extends Controller
             else
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
-                $TeamLeader=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($json->{"teamleader_id"});
-                if($project && $TeamLeader)
+                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                if($project->getTeamleader())
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
+                if($isadmin || $isTeamLeader)
                 {
-                    $project->setTeamleader($TeamLeader);
-                    $project->setState(ProjectStates::TEAMASSIGN);
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::TEAMLEADERASSIGNED);
-                    return $res;
+                   $role=$json->{"teamleader_role"};
+                    $Teamleader=null;
+                    $developerrole=Roles::Developer();
+                    $testerrole=Roles::Tester();
+                    $designerrole=Roles::Designer();
+                    $sysadminrole=Roles::SysAdmin();
+                    $id=$json->{"teamleader_id"};
+                    if ($role==$developerrole["role"]) {
+                        $Teamleader=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($id);
+                    }
+                    elseif ($role==$testerrole["role"]) {
+                        $Teamleader=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($id);
+                    }
+                    elseif ($role==$designerrole["role"]) {
+                        $Teamleader=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($id);
+                    }
+                    elseif ($role==$sysadminrole["role"]) {
+                        $Teamleader=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($id);
+                    }
+                    if($project && $Teamleader)
+                    {
+                        $project->setTeamleader($Teamleader->getCredentials());
+                        $project->setState(ProjectStates::TEAMASSIGN);
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::TEAMLEADERASSIGNED);
+                        return $res;
+                    }
+                    else
+                    {
+                        $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                        $response->headers->set('Content-Type', 'application/json');
+                        return $response;  
+                    } 
                 }
                 else
                 {
-                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-                    $response->headers->set('Content-Type', 'application/json');
-                    return $response;  
+                    return new Response(403);
                 }
+                
 
             }
         }
@@ -555,29 +634,40 @@ class ProjectController extends Controller
             else
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
-                if($project)
+                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                if($project->getTeamleader())
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
+                if($isadmin || $isTeamLeader)
                 {
-                    foreach ($json->{"developers"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key);
-                       if($member)
-                       {
-                            $project->addDeveloper($member);
-                            $member->addProject($project);
-                       }
+                    if($project)
+                    {
+                        foreach ($json->{"developers"} as $key) {
+                           $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key);
+                           if($member)
+                           {
+                                $project->addDeveloper($member);
+                                $member->addProject($project);
+                           }
+                        }
+                        
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERADDED);
+                        return $res;
                     }
-                    
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERADDED);
-                    return $res;
+                    else
+                    {    
+                        $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                        $response->headers->set('Content-Type', 'application/json');
+                        return $response;  
+                    }
                 }
                 else
-                {    
-                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-                    $response->headers->set('Content-Type', 'application/json');
-                    return $response;  
-                }
+                    return new Response(403);
+                
             }
 
         }
@@ -602,29 +692,38 @@ class ProjectController extends Controller
             else
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
-                if($project)
+                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                if($isadmin || $isTeamLeader)
                 {
-                    foreach ($json->{"designers"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key);
-                       if($member)
-                       {
-                            $project->addDesigner($member);
-                            $member->addProject($project);
-                       }
+                    if($project)
+                    {
+                        foreach ($json->{"designers"} as $key) {
+                           $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key);
+                           if($member)
+                           {
+                                $project->addDesigner($member);
+                                $member->addProject($project);
+                           }
+                        }
+                        
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERADDED);
+                        return $res;
                     }
-                    
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERADDED);
-                    return $res;
+                    else
+                    {    
+                        $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                        $response->headers->set('Content-Type', 'application/json');
+                        return $response;  
+                    }
                 }
                 else
-                {    
-                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-                    $response->headers->set('Content-Type', 'application/json');
-                    return $response;  
-                }
+                    return new Response(403);
+                
+
             }
 
         }
@@ -649,29 +748,37 @@ class ProjectController extends Controller
             else
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
-                if($project)
+                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                if($isadmin || $isTeamLeader)
                 {
-                    foreach ($json->{"testers"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key);
-                       if($member)
-                       {
-                            $project->addTester($member);
-                            $member->addProject($project);
-                       }
+                    if($project)
+                    {
+                        foreach ($json->{"testers"} as $key) {
+                           $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key);
+                           if($member)
+                           {
+                                $project->addTester($member);
+                                $member->addProject($project);
+                           }
+                        }
+                        
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERADDED);
+                        return $res;
                     }
-                    
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERADDED);
-                    return $res;
+                    else
+                    {    
+                        $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                        $response->headers->set('Content-Type', 'application/json');
+                        return $response;  
+                    }
                 }
                 else
-                {    
-                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-                    $response->headers->set('Content-Type', 'application/json');
-                    return $response;  
-                }
+                    return new Response(403);
+                
             }
 
         }
@@ -696,29 +803,37 @@ class ProjectController extends Controller
             else
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
-                if($project)
+                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                if($isadmin || $isTeamLeader)
                 {
-                    foreach ($json->{"sysadmins"} as $key) {
-                       $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key);
-                       if($member)
-                       {
-                            $project->addSysAdmin($member);
-                            $member->addProject($project);
-                       }
+                    if($project)
+                    {
+                        foreach ($json->{"sysadmins"} as $key) {
+                           $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key);
+                           if($member)
+                           {
+                                $project->addSysAdmin($member);
+                                $member->addProject($project);
+                           }
+                        }
+                        
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERADDED);
+                        return $res;
                     }
-                    
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERADDED);
-                    return $res;
+                    else
+                    {    
+                        $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                        $response->headers->set('Content-Type', 'application/json');
+                        return $response;  
+                    }
                 }
                 else
-                {    
-                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
-                    $response->headers->set('Content-Type', 'application/json');
-                    return $response;  
-                }
+                    return new Response(403);
+                
             }
 
         }
@@ -745,20 +860,27 @@ class ProjectController extends Controller
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
                 if($project)
                 {
-
-                    foreach ($json->{"developers"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key);
-                       if($member)
-                       {
-                        $project->removeDeveloper($member);
-                        $member->removeProject($project);
-                       }
+                    $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    if($isadmin || $isTeamLeader)
+                    {
+                        foreach ($json->{"developers"} as $key) {
+                            $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key);
+                           if($member)
+                           {
+                            $project->removeDeveloper($member);
+                            $member->removeProject($project);
+                           }
+                        }
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERDELETED);
+                        return $res;
                     }
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERDELETED);
-                    return $res;
+                    else
+                        return new Response(403);
+                    
                 }
                 else
                 {    
@@ -830,20 +952,28 @@ class ProjectController extends Controller
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
                 if($project)
                 {
-
-                    foreach ($json->{"designers"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key);
-                       if($member)
-                       {
-                        $project->removeDesigner($member);
-                        $member->removeProject($project);
-                       }
+                    $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    if($isadmin || $isTeamLeader)
+                    {
+                        foreach ($json->{"designers"} as $key) {
+                           $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key);
+                           if($member)
+                           {
+                            $project->removeDesigner($member);
+                            $member->removeProject($project);
+                           }
+                        }
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERDELETED);
+                        return $res;
                     }
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERDELETED);
-                    return $res;
+                    else
+                        return new Response(403);
+
+                    
                 }
                 else
                 {    
@@ -876,20 +1006,27 @@ class ProjectController extends Controller
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
                 if($project)
                 {
-
-                    foreach ($json->{"testers"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key);
-                       if($member)
-                       {
-                        $project->removeTester($member);
-                        $member->removeProject($project);
-                       }
+                    $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    if($isadmin || $isTeamLeader)
+                    {
+                       foreach ($json->{"testers"} as $key) {
+                            $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key);
+                           if($member)
+                           {
+                            $project->removeTester($member);
+                            $member->removeProject($project);
+                           }
+                        }
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERDELETED);
+                        return $res; 
                     }
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERDELETED);
-                    return $res;
+                    else
+                        return new Response(403);
+                    
                 }
                 else
                 {    
@@ -922,20 +1059,28 @@ class ProjectController extends Controller
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
                 if($project)
                 {
-
-                    foreach ($json->{"sysadmins"} as $key) {
-                        $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key);
-                       if($member)
-                       {
-                        $project->removeSysadmin($member);
-                        $member->removeProject($project);
-                       }
+                    $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    if($isadmin || $isTeamLeader)
+                    {
+                         foreach ($json->{"sysadmins"} as $key) {
+                            $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key);
+                           if($member)
+                           {
+                            $project->removeSysadmin($member);
+                            $member->removeProject($project);
+                           }
+                        }
+                        $em->flush();
+                        $res=new Response();
+                        $res->setStatusCode(200);
+                        $res->setContent(ConstValues::MEMBERDELETED);
+                        return $res;
                     }
-                    $em->flush();
-                    $res=new Response();
-                    $res->setStatusCode(200);
-                    $res->setContent(ConstValues::MEMBERDELETED);
-                    return $res;
+                    else
+                        return new Response(403);
+
+                   
                 }
                 else
                 {    
@@ -961,27 +1106,56 @@ class ProjectController extends Controller
                 $j=0;
                 $team=array();
 
-                if($key->getTeamleader())
-                    array_push($team, array("id"=>$key->getTeamleader()->getId(),"surname"=>$key->getTeamleader()->getSurname(),"name"=>$key->getTeamleader()->getName(),"email"=>$key->getTeamleader()->getEmail(),"photo"=>$key->getTeamleader()->getPhoto(),"role"=>Roles::Teamlead()));
-                $j++;
                 foreach ($key->getDevelopers() as $member) {
-                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer()));
+                    $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
+                    if($key->getTeamleader())
+                        if($key->getTeamleader()->getId()==$member->getCredentials()->getId())
+                            $memberdata["isTeamLeader"]=true;
+                        else
+                            $memberdata["isTeamLeader"]=false;
+                    else
+                        $memberdata["isTeamLeader"]=false;
+                    array_push($team,$memberdata);
                     $j++;
                 }           
                 
                 foreach ($key->getTesters() as $member) {
-                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Tester()));
+                    $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
+                    if($key->getTeamleader())
+                        if($key->getTeamleader()->getId()==$member->getCredentials()->getId())
+                            $memberdata["isTeamLeader"]=true;
+                        else
+                            $memberdata["isTeamLeader"]=false;
+                    else
+                        $memberdata["isTeamLeader"]=false;
+                    array_push($team,$memberdata);
                     $j++;
                 }  
                
                 foreach ($key->getDesigners() as $member) {
-                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>ROLES::Designer()));
+                   $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
+                    if($key->getTeamleader())
+                        if($key->getTeamleader()->getId()==$member->getCredentials()->getId())
+                            $memberdata["isTeamLeader"]=true;
+                        else
+                            $memberdata["isTeamLeader"]=false;
+                    else
+                        $memberdata["isTeamLeader"]=false;
+                    array_push($team,$memberdata);
                     $j++;
                 }  
 
                 foreach ($key->getSysadmins() as $member) {
-                    array_push($team,array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::SysAdmin()));
-                    $j++;          
+                    $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
+                    if($key->getTeamleader())
+                        if($key->getTeamleader()->getId()==$member->getCredentials()->getId())
+                            $memberdata["isTeamLeader"]=true;
+                        else
+                            $memberdata["isTeamLeader"]=false;
+                    else
+                        $memberdata["isTeamLeader"]=false;
+                    array_push($team,$memberdata);
+                    $j++;        
                 }  
                 $data["team"]=$team;
                 $mess[$i]=$data;
@@ -1037,6 +1211,98 @@ class ProjectController extends Controller
                     return $response;  
                 }
             }
+        }
+    }
+    public function generateTicketReportAction($month,$year,$project_id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        if($project)
+        {
+            $tickets=$project->getTickets();
+            $mess=array();
+            $i=0;
+            foreach ($tickets as $ticket) {
+               $tasks=$em->getRepository("AcmtoolAppBundle:Task")->getTasksByMonth($ticket,$month,$year);
+                if(count($tasks)>0)
+                {
+                    $ticketData=array("id"=>$ticket->getId(),"title"=>$ticket->getTitle());
+                   $tasksdata=array();
+                   $sum=0;
+                   $j=0;
+
+                   foreach ($tasks as $key) {
+                       $data=array("id"=>$key->getId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"date"=>date_format($key->getFinishdate(), 'Y-m-d'));
+                       $sum+=$key->getRealtime();
+                       $tasksdata[$j]=$data;
+                       $j++;
+
+                   }
+                   $ticketData["totalhours"]=$sum;
+                   $ticketData["stories"]=$tasksdata;
+                   $mess[$i]=$ticketData;
+                   $i++;
+                }
+               
+            }
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($mess));
+            $res->headers->set('Content-Type', 'application/json');
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+    public function generateDateReportAction($month,$year,$project_id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        if($project)
+        {
+            $tickets=$project->getTickets();
+            $mess=array();
+            $i=0;
+            $days=array();
+            foreach ($tickets as $ticket) {
+               $tasks=$em->getRepository("AcmtoolAppBundle:Task")->getTasksByMonth($ticket,$month,$year);
+                if(count($tasks)>0)
+                {
+                   foreach ($tasks as $key) {
+                       $data=array("id"=>$key->getId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"ticket"=>$ticket->getTitle());
+                       if(array_key_exists(date_format($key->getFinishdate(),'Y-m-d'),$days))
+                       {
+                            array_push($days[date_format($key->getFinishdate(),'Y-m-d')]["stories"], $data);
+                            $days[date_format($key->getFinishdate(),'Y-m-d')]["totalhours"]+=$key->getRealtime();
+                       }
+                       else
+                       {
+                            $days[date_format($key->getFinishdate(),'Y-m-d')]["stories"]=array();
+                            array_push($days[date_format($key->getFinishdate(),'Y-m-d')]["stories"], $data);
+                            $days[date_format($key->getFinishdate(),'Y-m-d')]["totalhours"]=$key->getRealtime();
+                            $days[date_format($key->getFinishdate(),'Y-m-d')]["date"]=date_format($key->getFinishdate(),'Y-m-d');
+                       }
+
+                    }
+                }
+               
+            }
+            $mess=array_values($days);
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($mess));
+            $res->headers->set('Content-Type', 'application/json');
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
         }
     }
 

@@ -99,7 +99,7 @@ class Project
     private $keyaccount;
      /**
     * @Assert\NotBlank
-    * @ORM\ManyToOne(targetEntity="TeamLeader", inversedBy="projects")
+    * @ORM\ManyToOne(targetEntity="Creds", inversedBy="projects")
     * @ORM\JoinColumn(name="teamleader_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $teamleader;
@@ -440,7 +440,7 @@ class Project
      * @param \Acmtool\AppBundle\Entity\TeamLeader $teamleader
      * @return Project
      */
-    public function setTeamleader(\Acmtool\AppBundle\Entity\TeamLeader $teamleader = null)
+    public function setTeamleader(\Acmtool\AppBundle\Entity\Creds $teamleader = null)
     {
         $this->teamleader = $teamleader;
     
@@ -450,7 +450,7 @@ class Project
     /**
      * Get teamleader
      *
-     * @return \Acmtool\AppBundle\Entity\TeamLeader 
+     * @return \Acmtool\AppBundle\Entity\Creds 
      */
     public function getTeamleader()
     {

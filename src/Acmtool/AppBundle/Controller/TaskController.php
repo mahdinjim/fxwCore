@@ -26,7 +26,7 @@ class TaskController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"owner"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
+        	if(isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
         		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($json->{"ticket_id"});
         		if($ticket)
@@ -35,7 +35,7 @@ class TaskController extends Controller
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
         			$task->setCreationdate(new \DateTime("UTC"));
-        			$owner=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($json->{"owner"});
+        			$owner=$ticket->getProject()->getTeamLeader();
         			$task->setOwner($owner);
         			$task->setTicket($ticket);
         			$displayid=$ticket->getDiplayId()."-".(count($ticket->getTasks())+1);
@@ -102,15 +102,13 @@ class TaskController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"owner"}) && isset($json->{"description"}) && isset($json->{"task_id"}))
+        	if(isset($json->{'title'}) && isset($json->{"assignedTo"})  && isset($json->{"description"}) && isset($json->{"task_id"}))
         	{
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
         		if($task)
         		{
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
-        			$owner=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findOneById($json->{"owner"});
-        			$task->setOwner($owner);
         			$developerrole=Roles::Developer();
 			        $testerrole=Roles::Tester();
 			        $designerrole=Roles::Designer();
@@ -180,8 +178,6 @@ class TaskController extends Controller
 					$assignedto=array("id"=>$key->getSysadmin()->getId(),"name"=>$key->getSysadmin()->getName(),"surname"=>$key->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
 				if( $assignedto!=null)
 					$data["assignto"]=$assignedto;
-				if($key->getOwner()!=null)
-					$owner=array('id' =>$key->getOwner()->getId() ,"name"=>$key->getOwner()->getName(),"surname"=>$key->getOwner()->getSurname() );
 				$mess[$i]=$data;
 				$i++;
 			}

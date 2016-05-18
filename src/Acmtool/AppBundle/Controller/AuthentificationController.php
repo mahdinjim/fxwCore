@@ -11,7 +11,7 @@ use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\TeamMember;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Customer;
-
+use Acmtool\AppBundle\Entity\CustomerUser;
 
 class AuthentificationController extends Controller
 {

@@ -498,8 +498,10 @@ class TaskController extends Controller
 	private function ifToday($date)
 	{
 		$today=new \DateTime("UTC");
-		$diff=$today->diff($date)->format('d');
-		return ($diff<1);
+        if($date->format("d")==$today->format("d") && $date->format("m")==$today->format("m") && $date->format("Y")==$today->format("Y"))
+            return true;
+        else
+            return false;
 
 	}
     private function weekOfMonth($date) {

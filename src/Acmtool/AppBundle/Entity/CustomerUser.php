@@ -82,7 +82,7 @@ class CustomerUser implements UserInterface, \Serializable
     private $company;
      /**
      * @ORM\OneToOne(targetEntity="Token")
-     * @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="id",onDelete="SET NULL")
      **/
     private $apitoken;
     /**

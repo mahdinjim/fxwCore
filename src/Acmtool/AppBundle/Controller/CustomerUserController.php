@@ -10,7 +10,7 @@ use Acmtool\AppBundle\Entity\CustomerUser;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
-
+use Acmtool\AppBundle\Entity\Customer;
 //TODO: Add controller management of the keyaccount 
 class CustomerUserController extends Controller
 {
@@ -50,7 +50,12 @@ class CustomerUserController extends Controller
                     $user->setTelnumber($json->{"phonenumber"});
                 $user->setTitle($json->{"title"});
                 $user->setPhonecode($json->{"phonecode"});
-                $user->setCompany($this->get('security.context')->getToken()->getUser());
+                $god=$this->get('security.context')->getToken()->getUser();
+                if($god instanceOf Customer)
+                    $company=$god;
+                else
+                    $company=$god->getCompany();
+                $user->setCompany($company);
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -191,14 +196,18 @@ class CustomerUserController extends Controller
 
     public function ListAction($page)
     {
-        if($this->get('security.context')->isGranted("ROLE_CUSTOMER"))
+        if($this->get('security.context')->isGranted("ROLE_CUSTOMER") || $this->get('security.context')->isGranted("ROLE_CUSER") )
         {
             $em = $this->getDoctrine()->getManager();
-            $customer=$this->get('security.context')->getToken()->getUser();
+            $user=$this->get('security.context')->getToken()->getUser();
+            if($user instanceOf Customer)
+                $customer=$user;
+            else
+                $customer=$user->getCompany();
             //$totalpages=ceil($em->getRepository("AcmtoolAppBundle:CustomerUser")->getCustomerUsersCount($customer)/ConstValues::COUNT);
             //$start=ConstValues::COUNT*($page-1);
             //$result=$em->getRepository("AcmtoolAppBundle:CustomerUser")->getUsersByKeyCustomer($customer,$start);
-            $result=$em->getRepository("AcmtoolAppBundle:CustomerUser")->findAll();
+            $result=$em->getRepository("AcmtoolAppBundle:CustomerUser")->getUsersByclient($customer);
             if(count($result)>0)
             {
                 $users=array();

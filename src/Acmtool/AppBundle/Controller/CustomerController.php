@@ -102,8 +102,8 @@ class CustomerController extends Controller
                     $response->setContent(json_encode(array("errors"=>$errosmsg)));
                     return $response;
                 } else {
-                    //$em->persist($user);
-                    //$em->flush();
+                    $em->persist($user);
+                    $em->flush();
                      if($json->{"isSent"})
                         $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember($json->{'email'},$json->{'password'},$json->{"login"},$json->{'name'},$json->{'surname'});
                     $res=new Response();

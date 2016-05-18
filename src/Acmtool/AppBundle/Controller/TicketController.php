@@ -204,7 +204,10 @@ class TicketController extends Controller
 		{
 			$project=$ticket->getProject();
 			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-            $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+			if($project->getTeamleader())
+            	$isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+            else
+            	$isTeamLeader=false;
             if($isadmin || $isTeamLeader)
             {
             	$ticket->setStatus(TicketStatus::GOPRODUCTION);
@@ -241,7 +244,10 @@ class TicketController extends Controller
 		{
 			$project=$ticket->getProject();
 			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-            $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+			if($project->getTeamleader())
+            	$isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+            else
+            	$isTeamLeader=false;
             if($isadmin || $isTeamLeader)
             {
             	$ticket->setStatus(TicketStatus::PRODUCTION);
@@ -272,7 +278,10 @@ class TicketController extends Controller
 		{
 			$project=$ticket->getProject();
 			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-            $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+			if($project->getTeamleader())
+            	$isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+            else
+            	$isTeamLeader=false;
             if($isadmin || $isTeamLeader)
             {
             	$done=true;

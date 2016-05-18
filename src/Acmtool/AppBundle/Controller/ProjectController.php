@@ -49,7 +49,11 @@ class ProjectController extends Controller
          	}
          	else
          	{
-         		$customer=$this->get("security.context")->getToken()->getUser();
+         		$user=$this->get("security.context")->getToken()->getUser();
+                if($user instanceOf Customer )
+                    $customer=$user;
+                else
+                    $customer=$user->getCompany();
          	}
          	if(!(isset($json->{'name'})))
             {
@@ -693,7 +697,10 @@ class ProjectController extends Controller
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-                $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                if($project->getTeamleader())
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
                 if($isadmin || $isTeamLeader)
                 {
                     if($project)
@@ -749,7 +756,10 @@ class ProjectController extends Controller
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-                $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                if($project->getTeamleader())
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
                 if($isadmin || $isTeamLeader)
                 {
                     if($project)
@@ -804,7 +814,10 @@ class ProjectController extends Controller
             {
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-                $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                if($project->getTeamleader())
+                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
                 if($isadmin || $isTeamLeader)
                 {
                     if($project)
@@ -861,7 +874,10 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
                     if($isadmin || $isTeamLeader)
                     {
                         foreach ($json->{"developers"} as $key) {
@@ -953,7 +969,10 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
                     if($isadmin || $isTeamLeader)
                     {
                         foreach ($json->{"designers"} as $key) {
@@ -1007,7 +1026,10 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                else
+                    $isTeamLeader=false;
                     if($isadmin || $isTeamLeader)
                     {
                        foreach ($json->{"testers"} as $key) {
@@ -1060,7 +1082,11 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+
+                    if($project->getTeamleader())
+                        $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    else
+                        $isTeamLeader=false;
                     if($isadmin || $isTeamLeader)
                     {
                          foreach ($json->{"sysadmins"} as $key) {

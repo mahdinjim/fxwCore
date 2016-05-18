@@ -12,6 +12,15 @@ use Acmtool\AppBundle\Entity\Titles;
  */
 class CustomerUserRepository extends EntityRepository
 {
+	public function getUsersByclient($customer)
+	{
+		$em=$this->getEntityManager();
+		$result=$em->createQuery('select c from AcmtoolAppBundle:CustomerUser c
+								WHERE c.company = :customer')
+						->setParameter("customer",$customer)
+                        ->getResult();
+        return $result;
+	}
 	/*public function getUsersByKeyCustomer($customer,$start)
 	{
 		$em=$this->getEntityManager();

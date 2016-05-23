@@ -20,7 +20,8 @@
         "sensio/generator-bundle": "2.3.*",
         "incenteev/composer-parameter-handler": "~2.0",
         "nelmio/cors-bundle": "~1.0",
-        "beberlei/DoctrineExtensions": "*"
+        "beberlei/DoctrineExtensions": "*",
+        "eventviva/php-image-resize": "1.5.*"
     },
     "scripts": {
         "post-install-cmd": [

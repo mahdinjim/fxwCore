@@ -11,6 +11,7 @@ use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Customer;
+use \Eventviva\ImageResize;
 //TODO: Add controller management of the keyaccount 
 class CustomerUserController extends Controller
 {
@@ -213,7 +214,7 @@ class CustomerUserController extends Controller
                 $users=array();
                 $i=0;
                 foreach ($result as $user) {
-                    $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"phonenumber"=>$user->getTelnumber(),"phonecode"=>$user->getPhonecode(),"title"=>$user->getTitle());
+                    $users[$i] = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"bigphoto"=>$user->getBigPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonenumber"=>$user->getTelnumber(),"phonecode"=>$user->getPhonecode(),"title"=>$user->getTitle());
                     $i++;
 
                 }
@@ -287,13 +288,24 @@ class CustomerUserController extends Controller
         $user=null;
         $user=$em->getRepository("AcmtoolAppBundle:CustomerUser")->findOneById($id);
         
-        if($user!=null)
+         if($user!=null)
         {
             $filename=$this->random_string(70);
             $result=file_put_contents($path."/".$filename.".".$extension, $data);
-            $photoUrl=$baseurl."/uploads/cuserphotos/".$filename.".".$extension;
+            
+            $bigfilename=$filename."_big";
+            $smallfilename=$filename."_small";
+            $filepath=$path."/".$filename.".".$extension;
+            $bigoutputfile=$path."/".$bigfilename.".".$extension;
+            $smalloutputfile=$path."/".$smallfilename.".".$extension;
+            $this->resizePhoto($filepath,300,300,$bigoutputfile);
+            $this->resizePhoto($filepath,100,100,$smalloutputfile);
+            $photoUrl=$baseurl."/uploads/cuserphotos/".$smallfilename.".".$extension;
+            $bigphotoUrl=$baseurl."/uploads/cuserphotos/".$bigfilename.".".$extension;
             $user->setPhoto($photoUrl);
+            $user->setBigPhoto($bigphotoUrl);
             $em->flush();
+            unlink($filepath);
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent("photo uplaoded successfully");
@@ -306,6 +318,12 @@ class CustomerUserController extends Controller
             return $res;
         }
         
+    }
+    private function resizePhoto($imagePath,$width,$height,$outputpath)
+    {
+        $imagick = new ImageResize($imagePath);
+        $imagick->resize($width, $height);
+        $imagick->save($outputpath);
     }
     private function random_string($length) {
         $key = '';

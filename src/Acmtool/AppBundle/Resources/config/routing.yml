@@ -1,5 +1,5 @@
 acmtool_app_homepage:
-    path:     /api/private/test
+    path:     /public/test
     defaults: { _controller: AcmtoolAppBundle:Default:index }
 
 _create:

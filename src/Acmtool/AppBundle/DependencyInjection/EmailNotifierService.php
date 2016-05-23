@@ -12,7 +12,7 @@ class EmailNotifierService
 	{
 		$message =\Swift_Message::newInstance()
 		->setSubject("Welcome to Slack")
-		->setFrom("noreply@flexwork.io")
+		->setFrom("noreplay@flexwork.io")
 		->setTo($email)
 		->setBody('<h1>Welcome to flexwork</h1>
 			<br/>
@@ -24,7 +24,8 @@ class EmailNotifierService
 
 			');
 		
-		$isent=$this->mailer->send($message);
+		$isent=$this->mailer->send($message,$failure);
+		var_dump($failure);
 		
 	}
 

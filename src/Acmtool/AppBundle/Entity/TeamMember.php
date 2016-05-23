@@ -75,6 +75,12 @@ class TeamMember
     /**
      * @var string
      *
+     * @ORM\Column(name="bigphoto", type="string", length=255,nullable=true)
+     */
+    protected $bigphoto;
+    /**
+     * @var string
+     *
      * @ORM\Column(name="state", type="string", length=255,nullable=true)
      */
     protected $state;
@@ -223,6 +229,28 @@ class TeamMember
     public function getPhoto()
     {
         return $this->photo;
+    }
+    /**
+     * Set bigphoto
+     *
+     * @param string $bigphoto
+     * @return TeamMember
+     */
+    public function setBigPhoto($bigphoto)
+    {
+        $this->bigphoto = $bigphoto;
+    
+        return $this;
+    }
+
+    /**
+     * Get bigphoto
+     *
+     * @return string 
+     */
+    public function getBigPhoto()
+    {
+        return $this->bigphoto;
     }
     /**
      * Set State

@@ -9,7 +9,16 @@ class DefaultController extends Controller
 {
     public function indexAction()
     {
-        echo "hello to controller";
-        return new Response("hello");
+       $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember("njimmahdi@gmail.com","123","mahdi","njim","mahdi");
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Contact enquiry from symblog')
+            ->setFrom('mn@flexwork.io')
+            ->setTo('njimmahdi@gmail.com')
+            ->setBody("hello");
+        $this->get('mailer')->send($message,$failure);
+        var_dump($failure);
+
+
+        return new Response("<html><body>hello</body>");
     }
 }

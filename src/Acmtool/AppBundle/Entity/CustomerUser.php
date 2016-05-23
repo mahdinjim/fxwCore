@@ -38,6 +38,12 @@ class CustomerUser implements UserInterface, \Serializable
      * @ORM\Column(name="photo", type="string", length=255,nullable=true)
      */
     private $photo;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="bigphoto", type="string", length=255,nullable=true)
+     */
+    protected $bigphoto;
 
     /**
      * @var string
@@ -192,6 +198,28 @@ class CustomerUser implements UserInterface, \Serializable
     public function getPhoto()
     {
         return $this->photo;
+    }
+    /**
+     * Set bigphoto
+     *
+     * @param string $bigphoto
+     * @return TeamMember
+     */
+    public function setBigPhoto($bigphoto)
+    {
+        $this->bigphoto = $bigphoto;
+    
+        return $this;
+    }
+
+    /**
+     * Get bigphoto
+     *
+     * @return string 
+     */
+    public function getBigPhoto()
+    {
+        return $this->bigphoto;
     }
 
     /**

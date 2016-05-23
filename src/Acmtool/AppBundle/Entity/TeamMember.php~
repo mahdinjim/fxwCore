@@ -75,6 +75,12 @@ class TeamMember
     /**
      * @var string
      *
+     * @ORM\Column(name="bigphoto", type="string", length=255,nullable=true)
+     */
+    protected $bigphoto;
+    /**
+     * @var string
+     *
      * @ORM\Column(name="state", type="string", length=255,nullable=true)
      */
     protected $state;
@@ -354,5 +360,78 @@ class TeamMember
     public function getPhonenumber()
     {
         return $this->phonenumber;
+    }
+    
+
+    /**
+     * Gets the value of language.
+     *
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    /**
+     * Sets the value of language.
+     *
+     * @param string $language the language
+     *
+     * @return self
+     */
+    public function setLanguage($language)
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of hourrate.
+     *
+     * @return float
+     */
+    public function getHourrate()
+    {
+        return $this->hourrate;
+    }
+
+    /**
+     * Sets the value of hourrate.
+     *
+     * @param float $hourrate the hourrate
+     *
+     * @return self
+     */
+    public function setHourrate($hourrate)
+    {
+        $this->hourrate = $hourrate;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of level.
+     *
+     * @return integer
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    /**
+     * Sets the value of level.
+     *
+     * @param integer $level the level
+     *
+     * @return self
+     */
+    public function setLevel($level)
+    {
+        $this->level = $level;
+
+        return $this;
     }
 }

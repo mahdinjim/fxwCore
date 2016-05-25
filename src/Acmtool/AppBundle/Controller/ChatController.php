@@ -78,9 +78,10 @@ class ChatController extends Controller
         {
         	$json=$result['json'];
         	if(isset($json->{"message"}) && isset($json->{"client"})){
+        		$clientname=preg_replace('/\s+/', '_', $json->{"client"});
 				$chatservice=$this->get("acmtool_app.messaging");
 				$chatprovider=$chatservice->CreateChatProvider();
-				$result=$chatprovider->sendMessage($json->{"message"},$group,$json->{"client"});
+				$result=$chatprovider->sendMessage($json->{"message"},$group,$clientname);
 				if($result->{"ok"})
 				{
 					$res=new Response();

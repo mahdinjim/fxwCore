@@ -83,7 +83,7 @@ class CustomerController extends Controller
                 $user->setAddress($address);
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
-                $crederrorlist=$validator->validate($user);
+                $crederrorlist=$validator->validate($user->getCredentials());
                 $addresserrorlist=$validator->validate($address);
 
                 if (count($errorList) > 0 || count($crederrorlist)>0 || count($addresserrorlist) >0) {
@@ -150,7 +150,8 @@ class CustomerController extends Controller
                             $keyaccount=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findOneById($json->{"keyaccount_id"});
                             $user->setKeyaccount($keyaccount);
                         }
-                        $user->getCredentials()->setLogin($json->{"login"});
+                        if($user->getCredentials()->getLogin()!=$json->{"login"})
+                            $user->getCredentials()->setLogin($json->{"login"});
                         if(isset($json->{'password'}))
                         {
                             $factory = $this->get('security.encoder_factory');
@@ -158,7 +159,8 @@ class CustomerController extends Controller
                             $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
                             $user->getCredentials()->setPassword($password);
                         }
-                        $user->setEmail($json->{'email'});
+                        if($user->getEmail()!=$json->{'email'})
+                            $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         if(isset($json->{'vat'}))
                             $user->setVat($json->{'vat'});

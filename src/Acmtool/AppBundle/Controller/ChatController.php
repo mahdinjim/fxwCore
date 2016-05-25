@@ -92,7 +92,7 @@ class ChatController extends Controller
 				{
 					$res=new Response();
 		            $res->setStatusCode(400);
-		            $res->setContent($result);
+		            $res->setContent(json_encode($result));
 		            return $res;
 				}
 			}

@@ -233,7 +233,7 @@ _detailsproject:
     defaults: { _controller: AcmtoolAppBundle:Project:details }
     methods: [GET,OPTIONS]
 _assignteamleadertoproject:
-    path:     /private/super/project/teamleader/assign
+    path:     /private/project/teamleader/assign
     defaults: { _controller: AcmtoolAppBundle:Project:assignTeamLeader }
     methods: [POST,OPTIONS]
 _adddevelopertoproject:

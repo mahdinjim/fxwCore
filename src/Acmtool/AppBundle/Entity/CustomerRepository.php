@@ -16,7 +16,7 @@ class CustomerRepository extends EntityRepository
 	{
 		$em=$this->getEntityManager();
 		$result=$em->createQuery('select c from AcmtoolAppBundle:Customer c
-								WHERE c.KeyAccount = :keyaccount')
+								WHERE c.keyAccount = :keyaccount')
 						->setParameter("keyaccount",$keyaccount)
                         ->setMaxResults(ConstValues::COUNT)
                         ->setFirstResult($start)
@@ -26,7 +26,7 @@ class CustomerRepository extends EntityRepository
 	public function getKeyAccountCustomersCount($keyaccount)
 	{
 		$em=$this->getEntityManager();
-		$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Customer c WHERE c.KeyAccount = :keyaccount")
+		$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Customer c WHERE c.keyAccount = :keyaccount")
 			->setParameter("keyaccount",$keyaccount)
             ->getSingleScalarResult();
         return $totalcount;

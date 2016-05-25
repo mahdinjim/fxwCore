@@ -24,7 +24,7 @@ class SlackMessaging implements IMessaging
 		}
 		else
 		{
-			return json_decode('{"ok":false}');
+			return json_decode('{"ok":false,"error":"'.$mess->{"error"}.'"}');
 		}
 	}
 	public function deleteMessage($mess,$group)

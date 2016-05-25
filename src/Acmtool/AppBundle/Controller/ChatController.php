@@ -92,7 +92,7 @@ class ChatController extends Controller
 				{
 					$res=new Response();
 		            $res->setStatusCode(400);
-		            $res->setContent('{"error":"impossible to send message"}');
+		            $res->setContent($result);
 		            return $res;
 				}
 			}

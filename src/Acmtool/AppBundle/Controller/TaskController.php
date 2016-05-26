@@ -44,6 +44,7 @@ class TaskController extends Controller
 			        $testerrole=Roles::Tester();
 			        $designerrole=Roles::Designer();
 			        $sysadminrole=Roles::SysAdmin();
+                    $assigned=null;
         			if($json->{"assignedTo"}->{"role"}==$developerrole["role"])
         			{
         				$assigned=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{"assignedTo"}->{"id"});
@@ -73,6 +74,11 @@ class TaskController extends Controller
         			$task->setStatus(TasksTypes::WAITING);
         			$em->persist($task);
 	                $em->flush();
+                    if($assigned)
+                    {
+                        $project=$ticket->getProject();
+                        $this->get("acmtool_app.email.notifier")->notifyAssignedToStory($assigned->getEmail(),$project->getName(),$assigned->getName(),$assigned->getSurname(),$task->getTitle());
+                    }
 	                $response=new Response('Task created',200);
 	                return $response;
         		}
@@ -107,12 +113,26 @@ class TaskController extends Controller
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
         		if($task)
         		{
+                    $oldassigned=null;
+                    if($task->getDeveloper()!=null){
+                        $oldassigned=$task->getDeveloper();
+                        $task->setDeveloper(null);
+                    }
+                    if($task->getTester()!=null){
+                        $oldassigned=$task->getTester();
+                        $task->setTester(null);
+                    }
+                    if($task->getSysadmin()!=null){
+                        $oldassigned=$task->getSysadmin();
+                        $task->setSysadmin(null);
+                    }
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
         			$developerrole=Roles::Developer();
 			        $testerrole=Roles::Tester();
 			        $designerrole=Roles::Designer();
 			        $sysadminrole=Roles::SysAdmin();
+                    $assigned=null;
         			if($json->{"assignedTo"}->{"role"}==$developerrole["role"])
         			{
         				$assigned=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{"assignedTo"}->{"id"});
@@ -138,6 +158,14 @@ class TaskController extends Controller
 
         			}
 	                $em->flush();
+                    if($assigned)
+                    {
+                        if($oldassigned->getEmail()!=$assigned->getEmail()){
+                            $ticket=$task->getTicket();
+                            $project=$ticket->getProject();
+                            $this->get("acmtool_app.email.notifier")->notifyAssignedToStory($assigned->getEmail(),$project->getName(),$assigned->getName(),$assigned->getSurname(),$task->getTitle());
+                        }
+                    }
 	                $response=new Response('Task updated',200);
 	                return $response;
         		}
@@ -212,6 +240,12 @@ class TaskController extends Controller
 	        		$task->setEstimation(floatval($json->{"estimation"}));
 	        		$task->setEstimateddate(new \DateTime("UTC"));
 	        		$em->flush();
+                    $name=$this->get('security.context')->getToken()->getUser()->getName();
+                    $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
+                    $project_name=$task->getTicket()->getProject()->getName();
+                    $project=$task->getTicket()->getProject();
+                    if($project->getTeamleader())
+                        $this->get("acmtool_app.email.notifier")->notifyStoryEstimated($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname,$json->{"estimation"});
 	        		$response=new Response('Estimation set',200);
 		            return $response;
 		        }
@@ -253,6 +287,12 @@ class TaskController extends Controller
 	        		$task->setRealtime(floatval($total));
 	        		$task->setRtsetdate(new \DateTime("UTC"));
 	        		$em->flush();
+                    $name=$this->get('security.context')->getToken()->getUser()->getName();
+                    $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
+                    $project_name=$task->getTicket()->getProject()->getName();
+                    $project=$task->getTicket()->getProject();
+                    if($project->getTeamleader())
+                        $this->get("acmtool_app.email.notifier")->notifyStoryRealtime($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname,$total);
 	        		$response=new Response('realtime set',200);
 		            return $response;
 		        }
@@ -452,6 +492,7 @@ class TaskController extends Controller
 			$task->setFinishdate(new \DateTime("UTC"));
 			$ticket=$task->getTicket();
 			$done=true;
+            $project=$ticket->getProject();
 			foreach ($ticket->getTasks() as $key) {
 				if($key->getId()!=$task_id)
 				{
@@ -463,9 +504,20 @@ class TaskController extends Controller
 			{
 				$ticket->setStatus(TicketStatus::TESTING);
 				$ticket->setTestingdate(new \DateTime("UTC"));
+                $company_name=$project->getOwner()->getCompanyname();
+                $emails=array();
+                array_push($emails, $project->getKeyaccount()->getEmail());
+                //Todo: add client notification
+                $this->get("acmtool_app.email.notifier")->notifyTicketinQA($emails,$project->getName(),$ticket->getTitle(),$company_name);
 			}
 			$mess=array("done"=>$done);
 			$em->flush();
+            $name=$this->get('security.context')->getToken()->getUser()->getName();
+            $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
+            $project_name=$task->getTicket()->getProject()->getName();
+            
+            if($project->getTeamleader())
+                $this->get("acmtool_app.email.notifier")->notifyStoryDone($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname);
 	        $response=new Response(json_encode($mess),200);
 		    return $response;
 

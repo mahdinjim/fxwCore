@@ -53,9 +53,9 @@ class Customer implements UserInterface, \Serializable
     private $companyname;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="vat", type="integer",nullable=true)
+     * @ORM\Column(name="vat", type="string",length=255,nullable=true)
      */
     private $vat;
     /**

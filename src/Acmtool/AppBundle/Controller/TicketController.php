@@ -57,6 +57,11 @@ class TicketController extends Controller
                     $ticket->setCreationDate($creationdate);
         			$em->persist($ticket);
 	                $em->flush();
+	                $emails=array();
+	                array_push($emails, $project->getKeyaccount()->getEmail());
+	                if($project->getTeamleader())
+	                	array_push($emails, $project->getTeamleader()->getLogin());
+	                $this->get("acmtool_app.email.notifier")->notifyTicketCreated($emails,$project->getName(),$ticket->getTitle());
 	                $response=new Response('Ticket created',200);
 	                return $response;
         		}
@@ -220,6 +225,10 @@ class TicketController extends Controller
 				$ticket->setEstimateddate(new \DateTime("UTC"));
 				$mess=array("estimation"=>$estimation);
 				$em->flush();
+				$emails=array();
+				//Todo:Add client email to notification email
+            	array_push($emails, $project->getKeyaccount()->getEmail());
+            	$this->get("acmtool_app.email.notifier")->notifyTicketEstimated($emails,$project->getName(),$ticket->getTitle(),$project->getOwner()->getCompanyname());
 				$res=new Response();
 		        $res->setStatusCode(200);
 		        $res->setContent(json_encode($mess));
@@ -254,6 +263,10 @@ class TicketController extends Controller
 				$ticket->setProductiondate(new \DateTime("UTC"));
 				$estimation=0;
 				$em->flush();
+				$emails=array();
+				//Todo:Add client email to notification email
+            	array_push($emails, $project->getKeyaccount()->getEmail());
+            	$this->get("acmtool_app.email.notifier")->notifyTicketinProduction($emails,$project->getName(),$ticket->getTitle(),$project->getOwner()->getCompanyname());
 				$res=new Response();
 		        $res->setStatusCode(200);
 		        $res->setContent("Ticket in production");
@@ -298,6 +311,10 @@ class TicketController extends Controller
 					$ticket->setDeliverydate(new \DateTime("UTC"));
 					$mess=array("realtime"=>$realtime);
 					$em->flush();
+					$emails=array();
+					//Todo:Add client email to notification email
+            		array_push($emails, $project->getKeyaccount()->getEmail());
+            		$this->get("acmtool_app.email.notifier")->notifyTicketDelivered($emails,$project->getName(),$ticket->getTitle(),$project->getOwner()->getCompanyname());
 					$res=new Response();
 			        $res->setStatusCode(200);
 			        $res->setContent(json_encode($mess));
@@ -331,6 +348,12 @@ class TicketController extends Controller
 			$ticket->setStatus(TicketStatus::ESTIMATION);
 			$ticket->setStarteddate(new \DateTime("UTC"));
 			$em->flush();
+			$project=$ticket->getProject();
+			$emails=array();
+            array_push($emails, $project->getKeyaccount()->getEmail());
+            if($project->getTeamleader())
+            	array_push($emails, $project->getTeamleader()->getLogin());
+            $this->get("acmtool_app.email.notifier")->notifyTicketStarted($emails,$project->getName(),$ticket->getTitle());
 			$res=new Response();
 	        $res->setStatusCode(200);
 	        $res->setContent("Ticket moved to estimation");
@@ -352,6 +375,12 @@ class TicketController extends Controller
 			$ticket->setStatus(TicketStatus::WAITING);
 			$ticket->setEstimateconfirmedddate(new \DateTime("UTC"));
 			$em->flush();
+			$emails=array();
+			$project=$ticket->getProject();
+            array_push($emails, $project->getKeyaccount()->getEmail());
+            if($project->getTeamleader())
+            	array_push($emails, $project->getTeamleader()->getLogin());
+            $this->get("acmtool_app.email.notifier")->notifyTicketEstimationAccepted($emails,$project->getName(),$ticket->getTitle());
 			$res=new Response();
 	        $res->setStatusCode(200);
 	        $res->setContent("Ticket moved to waiting for production");
@@ -392,6 +421,12 @@ class TicketController extends Controller
 			$ticket->setStatus(TicketStatus::DONE);
 			$ticket->setFinisheddate(new \DateTime("UTC"));
 			$em->flush();
+			$project=$ticket->getProject();
+			$emails=array();
+			array_push($emails, $project->getKeyaccount()->getEmail());
+	        if($project->getTeamleader())
+	            array_push($emails, $project->getTeamleader()->getLogin());
+	        $this->get("acmtool_app.email.notifier")->notifyTicketAccepted($emails,$project->getName(),$ticket->getTitle());
 			$res=new Response();
 	        $res->setStatusCode(200);
 	        $res->setContent("Ticket Accepted");
@@ -424,6 +459,12 @@ class TicketController extends Controller
 					$ticket->setRejecteddate(new \DateTime("UTC"));
 					$ticket->setRejectionmessage($json->{"message"});
 					$em->flush();
+					$project=$ticket->getProject();
+			$emails=array();
+			array_push($emails, $project->getKeyaccount()->getEmail());
+	        if($project->getTeamleader())
+	            array_push($emails, $project->getTeamleader()->getLogin());
+	        $this->get("acmtool_app.email.notifier")->notifyTicketRejected($emails,$project->getName(),$ticket->getTitle());
 					$res=new Response();
 			        $res->setStatusCode(200);
 			        $res->setContent("Ticket Rjected");

@@ -141,6 +141,13 @@ class ProjectController extends Controller
                 $project->setChannelid($result["id"]);
                 $em->persist($project);
                 $em->flush();
+                $emails=array();
+                $admins=$em->getRepository("AcmtoolAppBundle:Admin")->findAll();
+                foreach ($admins as $key) {
+                   array_push($emails, $key->getEmail());
+                }
+                array_push($emails, $project->getKeyaccount()->getEmail());
+                $this->get("acmtool_app.email.notifier")->notifyProjectCreated($emails,$project->getName(),$project->getOwner()->getCompanyname());
                 $response=new Response(ConstValues::PROJECTCREATED,200);
                 return $response;
 
@@ -597,6 +604,7 @@ class ProjectController extends Controller
                         $project->setTeamleader($Teamleader->getCredentials());
                         $project->setState(ProjectStates::TEAMASSIGN);
                         $em->flush();
+                        $this->get("acmtool_app.email.notifier")->notifyTeamLeader($Teamleader->getEmail(),$project->getName(),$Teamleader->getName(),$Teamleader->getSurname());
                         $res=new Response();
                         $res->setStatusCode(200);
                         $res->setContent(ConstValues::TEAMLEADERASSIGNED);
@@ -653,6 +661,7 @@ class ProjectController extends Controller
                            {
                                 $project->addDeveloper($member);
                                 $member->addProject($project);
+                                $this->get("acmtool_app.email.notifier")->notifyAssignedToProject($member->getEmail(),$project->getName(),$member->getName(),$member->getSurname());
                            }
                         }
                         
@@ -711,6 +720,7 @@ class ProjectController extends Controller
                            {
                                 $project->addDesigner($member);
                                 $member->addProject($project);
+                                $this->get("acmtool_app.email.notifier")->notifyAssignedToProject($member->getEmail(),$project->getName(),$member->getName(),$member->getSurname());
                            }
                         }
                         
@@ -770,6 +780,7 @@ class ProjectController extends Controller
                            {
                                 $project->addTester($member);
                                 $member->addProject($project);
+                                $this->get("acmtool_app.email.notifier")->notifyAssignedToProject($member->getEmail(),$project->getName(),$member->getName(),$member->getSurname());
                            }
                         }
                         
@@ -828,6 +839,7 @@ class ProjectController extends Controller
                            {
                                 $project->addSysAdmin($member);
                                 $member->addProject($project);
+                                $this->get("acmtool_app.email.notifier")->notifyAssignedToProject($member->getEmail(),$project->getName(),$member->getName(),$member->getSurname());
                            }
                         }
                         

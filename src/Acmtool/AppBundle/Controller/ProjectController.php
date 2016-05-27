@@ -435,7 +435,7 @@ class ProjectController extends Controller
             foreach ($project->getDevelopers() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::Developer(),"order"=>$i);
                 if($Teamleader!=null)
-                    if($key->getId()==$Teamleader->getId())
+                    if($key->getCredentials()->getId()==$Teamleader->getId())
                         $team[$i]["isTeamLeader"]=true;
                     else
                         $team[$i]["isTeamLeader"]=false;
@@ -447,7 +447,7 @@ class ProjectController extends Controller
             foreach ($project->getTesters() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::Tester(),"order"=>$i);
                  if($Teamleader!=null)
-                    if($key->getId()==$Teamleader->getId())
+                    if($key->getCredentials()->getId()==$Teamleader->getId())
                         $team[$i]["isTeamLeader"]=true;
                     else
                         $team[$i]["isTeamLeader"]=false;
@@ -459,7 +459,7 @@ class ProjectController extends Controller
             foreach ($project->getDesigners() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>ROLES::Designer(),"order"=>$i);
                  if($Teamleader!=null)
-                    if($key->getId()==$Teamleader->getId())
+                    if($key->getCredentials()->getId()==$Teamleader->getId())
                         $team[$i]["isTeamLeader"]=true;
                     else
                         $team[$i]["isTeamLeader"]=false;
@@ -471,7 +471,7 @@ class ProjectController extends Controller
             foreach ($project->getSysadmins() as $key) {
                 $team[$i]=array("id"=>$key->getId(),"surname"=>$key->getSurname(),"name"=>$key->getName(),"email"=>$key->getEmail(),"photo"=>$key->getPhoto(),"role"=>Roles::SysAdmin(),"order"=>$i);
                 if($Teamleader!=null)
-                    if($key->getId()==$Teamleader->getId())
+                    if($key->getCredentials()->getId()==$Teamleader->getId())
                         $team[$i]["isTeamLeader"]=true;
                     else
                         $team[$i]["isTeamLeader"]=false;

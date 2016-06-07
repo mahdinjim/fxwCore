@@ -561,9 +561,6 @@ class TaskController extends Controller
         $d = new \DateTime('first day of this month');
         //Apply above formula.
         $week=intval($date->format("W")) - intval($d->format("W"));
-        if($week==0)
-            return $week+1;
-        else
-            return $week;
+        return $week+1;
     }
 }

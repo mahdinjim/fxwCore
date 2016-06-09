@@ -29,7 +29,7 @@ monolog:
             handler: swift
         swift:
             type:       swift_mailer
-            from_email: 'mn@flexwork.io'
+            from_email: 'bb8@flexwork.io'
             to_email:   'mn@flexwork.io'
             subject:    An Error Occurred!
             level:      debug

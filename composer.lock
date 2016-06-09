@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "04a15812f8ca208100851a9ad277d3dc",
-    "content-hash": "cd007af66cdd278e07a11d87285be47b",
+    "hash": "b277317257b0cff697f449c1cf3d0b1b",
+    "content-hash": "6c6c38a24884df1ce602aa6ad8415377",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",

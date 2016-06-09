@@ -39,6 +39,12 @@ try:
 	    s.prompt()
 	    #get the new code from git branch for this version we assume that you are either using ssh key or already stored your creds in server
 	    s.sendline("git pull origin "+data[target]['git_branch'])
+	    #update composer
+	    s.sendline("composer update --no-dev --optimize-autoloader")
+	    #update database
+	    s.sendline("php app/console doctrine:schema:update --force")
+	    #clear cache
+	    s.sendline("php app/console cache:clear --env=prod --no-debug")
 	    s.prompt()
 	    #production ready
 	    print("Build done")

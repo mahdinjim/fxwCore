@@ -48,12 +48,15 @@ class AuthentificationController extends Controller
                     {
                         $token=$result["token"];
                         if($user instanceOf Admin)
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'tel'=>$user->getTel(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
+                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
+                            
                         elseif ($user instanceOf Customer) {
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"signed"=>$user->getSignedContract(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
+                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"signed"=>$user->getSignedContract(),"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
+                            $address=array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState());
+                            $UserInfo["address"]=$address;
                         }
                         elseif ($user instanceOf CustomerUser) {
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
+                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
                         }
                         elseif ($user instanceOf TeamMember) {
                             $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
@@ -85,6 +88,51 @@ class AuthentificationController extends Controller
                 $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
+            }
+        }
+    }
+    public function changePasswordAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(isset($json->{"login"}) && isset($json->{"new_password"}) && isset($json->{"current_password"}))
+            {
+                $username=$json->{"login"};
+                $user = $em->getRepository('AcmtoolAppBundle:Creds')->getUserByUsername($username);
+                if($user)
+                {
+                    $authservice=$this->get('acmtool_app.authentication');
+                    $password=$json->{"current_password"};
+                    $result=$authservice->Authentificate($user,$password);
+
+                    if($result["auth"])
+                    {
+                        $factory = $this->get('security.encoder_factory');
+                        $encoder = $factory->getEncoder($user->getCredentials());
+                        $password = $encoder->encodePassword($json->{'new_password'}, $user->getSalt());
+                        $user->getCredentials()->setPassword($password);
+                        $em->flush();
+                        return new Response("password updated",200);
+                    }
+                    else
+                    {
+                        return new Response('Go away',403);
+                    }
+                }
+                else
+                {
+                    return new Response('bad request',400);
+                }
+            }
+            else{
+                return new Response('bad request',400);
             }
         }
     }

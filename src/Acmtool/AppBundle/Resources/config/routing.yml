@@ -16,6 +16,10 @@ _api_authentification:
     path:     /public/login
     defaults: { _controller: AcmtoolAppBundle:Authentification:ApiAuthentification }
     methods:  [OPTIONS,POST]
+_password_change:
+    path:     /private/password/change
+    defaults: { _controller: AcmtoolAppBundle:Authentification:changePassword }
+    methods:  [OPTIONS,PUT]
 _is_expired:
     path:     /private/token/expired
     defaults: { _controller: AcmtoolAppBundle:Authentification:isTokenExpired }

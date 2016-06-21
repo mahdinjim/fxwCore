@@ -15,21 +15,9 @@ monolog:
     handlers:
         main:
             type:         fingers_crossed
-            action_level: critical
-            handler:      grouped
-        grouped:
-            type:    group
-            members: [streamed, buffered]
-        streamed:
+            action_level: error
+            handler:      nested
+        nested:
             type:  stream
-            path:  %kernel.logs_dir%/%kernel.environment%.log'
+            path:  %kernel.logs_dir%/%kernel.environment%.log
             level: debug
-        buffered:
-            type:    buffer
-            handler: swift
-        swift:
-            type:       swift_mailer
-            from_email: 'mn@flexwork.io'
-            to_email:   'mn@flexwork.io'
-            subject:    An Error Occurred!
-            level:      debug

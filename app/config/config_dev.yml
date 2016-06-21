@@ -22,7 +22,7 @@ monolog:
             members: [streamed, buffered]
         streamed:
             type:  stream
-            path:  '%kernel.logs_dir%/%kernel.environment%.log'
+            path:  %kernel.logs_dir%/%kernel.environment%.log
             level: debug
         buffered:
             type:    buffer

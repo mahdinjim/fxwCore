@@ -45,6 +45,9 @@ try:
 	    s.sendline("php app/console doctrine:schema:update --force")
 	    #clear cache
 	    s.sendline("php app/console cache:clear --env=prod --no-debug")
+	    #give permission
+	    s.sendline("chmod -R 777 app/cache")
+	    s.sendline("chmod -R 777 app/logs")
 	    s.prompt()
 	    #production ready
 	    print("Build done")

@@ -162,6 +162,7 @@ class CustomerController extends Controller
                         if($user->getEmail()!=$json->{'email'})
                             $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
+                         $user->setSurname($json->{'surname'});
                         if(isset($json->{'vat'}))
                             $user->setVat($json->{'vat'});
                         $user->setPhonecode($json->{'phonecode'});

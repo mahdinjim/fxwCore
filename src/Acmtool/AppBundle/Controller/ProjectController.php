@@ -342,12 +342,15 @@ class ProjectController extends Controller
             $j=0;
 
             foreach ($result as $key) {
-                $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
-                if($key->getChannelid()!=null){
-                    $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getId());
-                    $j++;
+                if($key->getOwner()!=null)
+                {
+                    $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
+                    if($key->getChannelid()!=null){
+                        $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getId());
+                        $j++;
+                    }
+                    $i++;
                 }
-                $i++;
             }
             $mess["current_page"]=$page;
             $mess["projects"]=$projects;

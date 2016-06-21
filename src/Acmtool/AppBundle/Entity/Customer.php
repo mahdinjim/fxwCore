@@ -112,7 +112,7 @@ class Customer implements UserInterface, \Serializable
      */
     private $isActive;
     /**
-    * @ORM\OneToMany(targetEntity="CustomerUser", mappedBy="company")
+    * @ORM\OneToMany(targetEntity="CustomerUser", mappedBy="company",cascade={"persist", "remove"})
     */
     private $users;
     /**

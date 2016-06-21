@@ -139,7 +139,7 @@ class EmailNotifierService
 		->setTo($email)
 		->setBody($body);
 		
-		$isent=$this->mailer->send($message);
+		//$isent=$this->mailer->send($message);
 	}
 
 

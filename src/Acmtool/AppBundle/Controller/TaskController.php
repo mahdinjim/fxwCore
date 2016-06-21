@@ -118,6 +118,10 @@ class TaskController extends Controller
                         $oldassigned=$task->getDeveloper();
                         $task->setDeveloper(null);
                     }
+                    if($task->getDesigner()!=null){
+                        $oldassigned=$task->getDesigner();
+                        $task->setDesigner(null);
+                    }
                     if($task->getTester()!=null){
                         $oldassigned=$task->getTester();
                         $task->setTester(null);

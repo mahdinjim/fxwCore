@@ -14,15 +14,13 @@ web_profiler:
 monolog:
     handlers:
         main:
+            type:         fingers_crossed
+            action_level: error
+            handler:      nested
+        nested:
             type:  stream
-            path:  %kernel.logs_dir%/%kernel.environment%.log
+            path:  "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-        firephp:
-            type:  firephp
-            level: info
-        chromephp:
-            type:  chromephp
-            level: info
 
 assetic:
     use_controller: true

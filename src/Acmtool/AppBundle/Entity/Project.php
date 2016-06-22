@@ -604,7 +604,7 @@ class Project
      */
     public function getTickets()
     {
-        return $this->tickets;
+        return array_reverse($this->tickets->toArray());
     }
 
     /**

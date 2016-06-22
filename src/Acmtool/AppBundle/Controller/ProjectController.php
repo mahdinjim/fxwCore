@@ -494,6 +494,7 @@ class ProjectController extends Controller
             $mess['docs']=$dosc;
             $tickets=array();
             $i=0;
+
             foreach ($project->getTickets() as $key) {
                 $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),

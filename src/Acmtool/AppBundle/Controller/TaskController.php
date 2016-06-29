@@ -29,7 +29,9 @@ class TaskController extends Controller
         	if(isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
         		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($json->{"ticket_id"});
-        		if($ticket)
+                $user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+        		if($ticket && $project)
         		{
         			$task=new Task();
         			$task->setTitle($json->{"title"});
@@ -186,7 +188,9 @@ class TaskController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
 			$mess=array();
 			$i=0;
@@ -240,14 +244,15 @@ class TaskController extends Controller
         	if(isset($json->{"task_id"}) && isset($json->{"estimation"}))
         	{
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
-        		if($task){
+                $user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+        		if($task && $project){
 	        		$task->setEstimation(floatval($json->{"estimation"}));
 	        		$task->setEstimateddate(new \DateTime("UTC"));
 	        		$em->flush();
                     $name=$this->get('security.context')->getToken()->getUser()->getName();
                     $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
-                    $project_name=$task->getTicket()->getProject()->getName();
-                    $project=$task->getTicket()->getProject();
+                    $project_name=$project->getName();
                     if($project->getTeamleader())
                         $this->get("acmtool_app.email.notifier")->notifyStoryEstimated($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname,$json->{"estimation"});
 	        		$response=new Response('Estimation set',200);
@@ -283,7 +288,9 @@ class TaskController extends Controller
         	if(isset($json->{"task_id"}))
         	{
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
-        		if($task){
+                $user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+        		if($task && $project){
         			$total=0;
         			foreach ($task->getRealtimes() as $key ) {
         				$total+=$key->getTime();
@@ -293,8 +300,7 @@ class TaskController extends Controller
 	        		$em->flush();
                     $name=$this->get('security.context')->getToken()->getUser()->getName();
                     $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
-                    $project_name=$task->getTicket()->getProject()->getName();
-                    $project=$task->getTicket()->getProject();
+                    $project_name=$project->getName();
                     if($project->getTeamleader())
                         $this->get("acmtool_app.email.notifier")->notifyStoryRealtime($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname,$total);
 	        		$response=new Response('realtime set',200);
@@ -330,7 +336,9 @@ class TaskController extends Controller
         	if(isset($json->{"task_id"}) && isset($json->{"realtime"}))
         	{
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
-        		if($task){
+                $user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+        		if($task && $project){
         			$realtime=new Realtime();
         			$now=new \DateTime('UTC');
         			$realtime->setDate($now);
@@ -387,7 +395,9 @@ class TaskController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$realtime=$em->getRepository("AcmtoolAppBundle:Realtime")->findOneById($realtime_id);
-		if($realtime)
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$realtime->getTask()->getTicket()->getProject()->getDisplayId());
+		if($realtime && $project)
 		{
 			$em->remove($realtime);
 			$em->flush();
@@ -415,7 +425,9 @@ class TaskController extends Controller
         	if(isset($json->{"realtime_id"}) && isset($json->{"realtime"}))
         	{
         		$realtime=$em->getRepository("AcmtoolAppBundle:Realtime")->findOneById($json->{"realtime_id"});
-        		if($realtime){
+                $user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$realtime->getTask()->getTicket()->getProject()->getDisplayId());
+        		if($realtime && $project){
         			$realtime->setTime(floatval($json->{"realtime"}));
         			$worked=$realtime->getWorkedHours();
         			$worked->setWorkedhour(floatval($json->{"realtime"}));
@@ -443,7 +455,9 @@ class TaskController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($task_id);
-		if($task)
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+		if($task && $project)
 		{
 			$mess=array();
 			$i=0;
@@ -470,7 +484,9 @@ class TaskController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($task_id);
-		if($task)
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+		if($task && $project)
 		{
 			$task->setIsStarted(true);
 			$task->setStarteddate(new \DateTime("UTC"));
@@ -490,7 +506,9 @@ class TaskController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($task_id);
-		if($task)
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+		if($task && $project)
 		{
 			$task->setisFinished(true);
 			$task->setFinishdate(new \DateTime("UTC"));
@@ -537,7 +555,9 @@ class TaskController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($task_id);
-		if($task)
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+		if($task && $project)
 		{
 			$em->remove($task);
 			$em->flush();

@@ -99,7 +99,7 @@ class Project
     private $keyaccount;
      /**
     * @Assert\NotBlank
-    * @ORM\ManyToOne(targetEntity="TeamLeader", inversedBy="projects")
+    * @ORM\ManyToOne(targetEntity="Creds", inversedBy="projects")
     * @ORM\JoinColumn(name="teamleader_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $teamleader;
@@ -171,6 +171,12 @@ class Project
      * @ORM\Column(name="projectSkills", type="string", length=1000,nullable=true)
      */
     private $projectSkills;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="displayid", type="string", length=255)
+     */
+    private $displayid;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -440,7 +446,7 @@ class Project
      * @param \Acmtool\AppBundle\Entity\TeamLeader $teamleader
      * @return Project
      */
-    public function setTeamleader(\Acmtool\AppBundle\Entity\TeamLeader $teamleader = null)
+    public function setTeamleader(\Acmtool\AppBundle\Entity\Creds $teamleader = null)
     {
         $this->teamleader = $teamleader;
     
@@ -450,7 +456,7 @@ class Project
     /**
      * Get teamleader
      *
-     * @return \Acmtool\AppBundle\Entity\TeamLeader 
+     * @return \Acmtool\AppBundle\Entity\Creds 
      */
     public function getTeamleader()
     {
@@ -604,7 +610,7 @@ class Project
      */
     public function getTickets()
     {
-        return $this->tickets;
+        return array_reverse($this->tickets->toArray());
     }
 
     /**
@@ -832,5 +838,74 @@ class Project
     public function getSignedContract()
     {
         return $this->signedContract;
+    }
+
+    /**
+     * Set signaturedate
+     *
+     * @param \DateTime $signaturedate
+     * @return Project
+     */
+    public function setSignaturedate($signaturedate)
+    {
+        $this->signaturedate = $signaturedate;
+    
+        return $this;
+    }
+
+    /**
+     * Get signaturedate
+     *
+     * @return \DateTime 
+     */
+    public function getSignaturedate()
+    {
+        return $this->signaturedate;
+    }
+
+    /**
+     * Set rate
+     *
+     * @param float $rate
+     * @return Project
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+    
+        return $this;
+    }
+
+    /**
+     * Get rate
+     *
+     * @return float 
+     */
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    /**
+     * Set hash
+     *
+     * @param string $hash
+     * @return Project
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    
+        return $this;
+    }
+
+    /**
+     * Get hash
+     *
+     * @return string 
+     */
+    public function getHash()
+    {
+        return $this->hash;
     }
 }

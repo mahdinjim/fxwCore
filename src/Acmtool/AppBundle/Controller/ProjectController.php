@@ -19,6 +19,7 @@ use Acmtool\AppBundle\Entity\Project;
 use Acmtool\AppBundle\Entity\ProjectStates;
 use Acmtool\AppBundle\Entity\Roles;
 use Acmtool\AppBundle\Entity\TicketStatus;
+use Acmtool\AppBundle\Entity\Admin;
 class ProjectController extends Controller
 {
 	public function createAction()
@@ -130,33 +131,42 @@ class ProjectController extends Controller
                     $member->addProject($project);
                 }
             }
+            $owner_id =$project->getOwner()->getId();
+            if($owner_id<10){
+                $owner_id='00'.$owner_id;
+            }
+            elseif ($owner_id>=10 && $owner_id<100) {
+                $owner_id='0'.$owner_id;
+            }
+            $projectCount=count($project->getOwner()->getProjects())+1;
+            if($projectCount<10){
+                $projectCount="00".$projectCount;
+            }
+            elseif ($projectCount>=10 && $projectCount<100) {
+                $projectCount="0".$projectCount;
+            }
+            $displayid=$owner_id.$projectCount;
+            $project->setDisplayid($displayid);
+            //$chatservice=$this->get("acmtool_app.messaging");
+            //$chatprovider=$chatservice->CreateChatProvider();
             
-            $chatservice=$this->get("acmtool_app.messaging");
-            $chatprovider=$chatservice->CreateChatProvider();
-            $em->persist($project);
-            $em->flush();
-            $result=$chatprovider->createGroupForProject(preg_replace('/\s+/', '_', $project->getName()));
+            //$result=$chatprovider->createGroupForProject(preg_replace('/\s+/', '_', $project->getName()));
             if($result["result"])
             {
                 $project->setChannelid($result["id"]);
-                $em->persist($project);
-                $em->flush();
-                $emails=array();
-                $admins=$em->getRepository("AcmtoolAppBundle:Admin")->findAll();
-                foreach ($admins as $key) {
-                   array_push($emails, $key->getEmail());
-                }
-                array_push($emails, $project->getKeyaccount()->getEmail());
-                $this->get("acmtool_app.email.notifier")->notifyProjectCreated($emails,$project->getName(),$project->getOwner()->getCompanyname());
-                $response=new Response(ConstValues::PROJECTCREATED,200);
-                return $response;
+            }
+            $em->persist($project);
+            $em->flush();
+            $emails=array();
+            $admins=$em->getRepository("AcmtoolAppBundle:Admin")->findAll();
+            foreach ($admins as $key) {
+               array_push($emails, $key->getEmail());
+            }
+            array_push($emails, $project->getKeyaccount()->getEmail());
+            $this->get("acmtool_app.email.notifier")->notifyProjectCreated($emails,$project->getName(),$project->getOwner()->getCompanyname());
+            $response=new Response(ConstValues::PROJECTCREATED,200);
+            return $response;
 
-            }
-            else
-            {
-                $response=new Response($result["reason"],400);
-                return $response;
-            }
            
 
 
@@ -182,7 +192,15 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $user=$this->get("security.context")->getToken()->getUser();
+
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$json->{"project_id"});
+                if($project==null)
+                {
+                    $response=new Response('{"err":"'.ConstValues::INVALIDDATE.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;
+                }
                 if((isset($json->{'name'})))
                 {
                     $project->setName($json->{'name'});
@@ -344,7 +362,7 @@ class ProjectController extends Controller
             foreach ($result as $key) {
                 if($key->getOwner()!=null)
                 {
-                    $projects[$i]=array("id"=>$key->getId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
+                    $projects[$i]=array("id"=>$key->getDisplayId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
                     if($key->getChannelid()!=null){
                         $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getId());
                         $j++;
@@ -401,7 +419,10 @@ class ProjectController extends Controller
     {
         $request = $this->get('request');
         $em = $this->getDoctrine()->getManager();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($id);
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$id);
+
         if($project)
         {
             $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract());
@@ -576,7 +597,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
@@ -649,7 +671,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
@@ -708,7 +731,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
@@ -768,7 +792,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
@@ -827,7 +852,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
@@ -886,7 +912,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+               $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
@@ -942,7 +969,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 if($project)
                 {
 
@@ -981,7 +1009,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
@@ -1038,7 +1067,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
@@ -1094,7 +1124,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
@@ -1235,7 +1266,8 @@ class ProjectController extends Controller
             }
             else
             {
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 if($project)
                 {
 
@@ -1258,7 +1290,8 @@ class ProjectController extends Controller
     public function generateTicketReportAction($month,$year,$project_id)
     {
         $em = $this->getDoctrine()->getManager();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
         if($project)
         {
             $tickets=$project->getTickets();
@@ -1303,7 +1336,8 @@ class ProjectController extends Controller
     public function generateDateReportAction($month,$year,$project_id)
     {
         $em = $this->getDoctrine()->getManager();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
         if($project)
         {
             $tickets=$project->getTickets();

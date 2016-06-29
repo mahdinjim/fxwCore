@@ -3,6 +3,16 @@
 namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Acmtool\AppBundle\Entity\Admin;
+use Acmtool\AppBundle\Entity\Creds;
+use Acmtool\AppBundle\Entity\TeamMember;
+use Acmtool\AppBundle\Entity\ConstValues;
+use Acmtool\AppBundle\Entity\Customer;
+use Acmtool\AppBundle\Entity\CustomerUser;
+use Acmtool\AppBundle\Entity\Developer;
+use Acmtool\AppBundle\Entity\Designer;
+use Acmtool\AppBundle\Entity\Tester;
+use Acmtool\AppBundle\Entity\SystemAdmin;
 
 /**
  * ProjectRepository
@@ -84,5 +94,79 @@ class ProjectRepository extends EntityRepository
 	                        ->setFirstResult($start)
 	                        ->getResult();
         return $result;	
+	}
+	public function getProjectByLoggedUser($user,$display_id)
+	{
+		$project=null;
+		if($user instanceOf Admin)
+		{
+			$project=$this->findOneBy(array("displayid"=>$display_id));
+		}
+		elseif ($user instanceOf Customer) {
+			$project=$this->findOneBy(array("displayid"=>$display_id,"owner"=>$user));
+		}
+		elseif($user instanceOf CustomerUser){
+			$project=$this->findOneBy(array("displayid"=>$display_id,"owner"=>$user->getCompany()));
+		}
+		elseif ($user instanceOf TeamLeader) {
+			$project=$this->findOneBy(array("displayid"=>$display_id,"teamleader"=>$user->getCredentials()));
+		}
+		elseif($user instanceOf Developer)
+		{
+			try{
+			 $project = $this->createQueryBuilder('p')
+                ->innerJoin('p.developers', 'd')
+                ->where('d.id = :user_id and p.displayid= :display_id')
+                ->setParameter('user_id', $user->getId())
+                ->setParameter('display_id',$display_id)
+                ->getQuery()->getSingleResult();
+            }
+             catch(\Doctrine\ORM\NoResultException $e) {
+        		$project=null;
+    		}
+		}
+		elseif($user instanceOf Designer)
+		{
+			try{
+			 $project = $this->createQueryBuilder('p')
+                ->innerJoin('p.designers', 'd')
+                ->where('d.id = :user_id and p.displayid= :display_id')
+                ->setParameter('user_id', $user->getId())
+                ->setParameter('display_id',$display_id)
+                ->getQuery()->getSingleResult();
+            }
+             catch(\Doctrine\ORM\NoResultException $e) {
+        		$project=null;
+    		}
+		}
+		elseif($user instanceOf Tester)
+		{
+			try{
+			 $project = $this->createQueryBuilder('p')
+                ->innerJoin('p.testers', 'd')
+                ->where('d.id = :user_id and p.displayid= :display_id')
+                ->setParameter('user_id', $user->getId())
+                ->setParameter('display_id',$display_id)
+                ->getQuery()->getSingleResult();
+            }
+             catch(\Doctrine\ORM\NoResultException $e) {
+        		$project=null;
+    		}
+		}
+		elseif($user instanceOf SystemAdmin)
+		{
+			try{
+			 $project = $this->createQueryBuilder('p')
+                ->innerJoin('p.sysadmins', 'd')
+                ->where('d.id = :user_id and p.displayid= :display_id')
+                ->setParameter('user_id', $user->getId())
+                ->setParameter('display_id',$display_id)
+                ->getQuery()->getSingleResult();
+            }
+             catch(\Doctrine\ORM\NoResultException $e) {
+        		$project=null;
+    		}
+		}
+		return $project;
 	}
 }

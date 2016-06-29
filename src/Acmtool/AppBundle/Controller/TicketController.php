@@ -26,7 +26,8 @@ class TicketController extends Controller
         	$json=$result['json'];
         	if(isset($json->{"type"}) && isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"project_id"}) && isset($json->{"createdby"}))
         	{
-        		$project=$em->getRepository("AcmtoolAppBundle:project")->findOneById($json->{"project_id"});
+        		$user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$json->{"project_id"});
         		if($project){
         			$ticket=new Ticket();
         			$ticket->setType($json->{"type"});
@@ -35,17 +36,17 @@ class TicketController extends Controller
         			$ticket->setTitle($json->{"title"});
         			$project_id=$project->getId();
         			if($project_id<10){
-        				$project_id=$project_id."00";
+        				$project_id='00'.$project_id;
         			}
         			elseif ($project_id>=10 && $project_id<100) {
-        				$project_id=$project_id."0";
+        				$project_id='0'.$project_id;
         			}
         			$ticketCount=count($project->getTickets())+1;
         			if($ticketCount<10){
-        				$ticketCount=$ticketCount."00";
+        				$ticketCount="00".$ticketCount;
         			}
         			elseif ($ticketCount>=10 && $ticketCount<100) {
-        				$ticketCount=$ticketCount."0";
+        				$ticketCount="0".$ticketCount;
         			}
         			$displayid=$project_id.$ticketCount;
         			$ticket->setDiplayId($displayid);
@@ -97,7 +98,9 @@ class TicketController extends Controller
         	if(isset($json->{"type"}) && isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
         		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($json->{"ticket_id"});
-        		if($ticket){
+        		$user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+        		if($ticket && $project){
         			$ticket->setType($json->{"type"});
         			$ticket->setDescription($json->{"description"});
         			$ticket->setTitle($json->{"title"});
@@ -126,7 +129,8 @@ class TicketController extends Controller
 	public function ticketListAction($project_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$project_id);
 		if($project)
 		{
 			$i=0;
@@ -187,7 +191,9 @@ class TicketController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
 			$em->remove($ticket);
 			$em->flush();
@@ -205,9 +211,10 @@ class TicketController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
-			$project=$ticket->getProject();
 			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
 			if($project->getTeamleader())
             	$isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
@@ -249,9 +256,10 @@ class TicketController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
-			$project=$ticket->getProject();
 			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
 			if($project->getTeamleader())
             	$isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
@@ -287,7 +295,9 @@ class TicketController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
 			$project=$ticket->getProject();
 			$isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
@@ -343,12 +353,13 @@ class TicketController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
 			$ticket->setStatus(TicketStatus::ESTIMATION);
 			$ticket->setStarteddate(new \DateTime("UTC"));
 			$em->flush();
-			$project=$ticket->getProject();
 			$emails=array();
             array_push($emails, $project->getKeyaccount()->getEmail());
             if($project->getTeamleader())
@@ -370,13 +381,14 @@ class TicketController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
 			$ticket->setStatus(TicketStatus::WAITING);
 			$ticket->setEstimateconfirmedddate(new \DateTime("UTC"));
 			$em->flush();
 			$emails=array();
-			$project=$ticket->getProject();
             array_push($emails, $project->getKeyaccount()->getEmail());
             if($project->getTeamleader())
             	array_push($emails, $project->getTeamleader()->getLogin());
@@ -397,7 +409,9 @@ class TicketController extends Controller
 	{
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
 			$ticket->setStatus(TicketStatus::ESTIMATION);
 			$em->flush();
@@ -416,12 +430,13 @@ class TicketController extends Controller
 	public function acceptTicketAction($ticket_id){
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
-		if($ticket)
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+		if($ticket && $project)
 		{
 			$ticket->setStatus(TicketStatus::DONE);
 			$ticket->setFinisheddate(new \DateTime("UTC"));
 			$em->flush();
-			$project=$ticket->getProject();
 			$emails=array();
 			array_push($emails, $project->getKeyaccount()->getEmail());
 	        if($project->getTeamleader())
@@ -453,18 +468,19 @@ class TicketController extends Controller
         	if(isset($json->{"ticket_id"}) && isset($json->{"message"}))
         	{
         		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($json->{"ticket_id"});
-				if($ticket)
+        		$user=$this->get("security.context")->getToken()->getUser();
+        		$project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+				if($ticket && $project)
 				{
 					$ticket->setStatus(TicketStatus::REJECT);
 					$ticket->setRejecteddate(new \DateTime("UTC"));
 					$ticket->setRejectionmessage($json->{"message"});
 					$em->flush();
-					$project=$ticket->getProject();
-			$emails=array();
-			array_push($emails, $project->getKeyaccount()->getEmail());
-	        if($project->getTeamleader())
-	            array_push($emails, $project->getTeamleader()->getLogin());
-	        $this->get("acmtool_app.email.notifier")->notifyTicketRejected($emails,$project->getName(),$ticket->getTitle());
+					$emails=array();
+					array_push($emails, $project->getKeyaccount()->getEmail());
+	        		if($project->getTeamleader())
+	            		array_push($emails, $project->getTeamleader()->getLogin());
+	        		$this->get("acmtool_app.email.notifier")->notifyTicketRejected($emails,$project->getName(),$ticket->getTitle());
 					$res=new Response();
 			        $res->setStatusCode(200);
 			        $res->setContent("Ticket Rjected");

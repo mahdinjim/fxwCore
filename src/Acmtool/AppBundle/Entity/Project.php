@@ -171,6 +171,12 @@ class Project
      * @ORM\Column(name="projectSkills", type="string", length=1000,nullable=true)
      */
     private $projectSkills;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="displayid", type="string", length=255)
+     */
+    private $displayid;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -878,5 +884,51 @@ class Project
     public function getRate()
     {
         return $this->rate;
+    }
+
+    /**
+     * Set hash
+     *
+     * @param string $hash
+     * @return Project
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    
+        return $this;
+    }
+
+    /**
+     * Get hash
+     *
+     * @return string 
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
+     * Set displayid
+     *
+     * @param string $displayid
+     * @return Project
+     */
+    public function setDisplayid($displayid)
+    {
+        $this->displayid = $displayid;
+    
+        return $this;
+    }
+
+    /**
+     * Get displayid
+     *
+     * @return string 
+     */
+    public function getDisplayid()
+    {
+        return $this->displayid;
     }
 }

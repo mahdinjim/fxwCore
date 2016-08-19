@@ -131,6 +131,17 @@ class ProjectController extends Controller
                     $member->addProject($project);
                 }
             }
+            $chatservice=$this->get("acmtool_app.messaging");
+            $chatprovider=$chatservice->CreateChatProvider();
+            
+            $result=$chatprovider->createGroupForProject(preg_replace('/\s+/', '_', $project->getName()));
+            if($result["result"])
+            {
+                $project->setChannelid($result["id"]);
+            }
+            $project->setDisplayid("-1");
+            $em->persist($project);
+            $em->flush();
             $owner_id =$project->getOwner()->getId();
             if($owner_id<10){
                 $owner_id='00'.$owner_id;
@@ -138,7 +149,7 @@ class ProjectController extends Controller
             elseif ($owner_id>=10 && $owner_id<100) {
                 $owner_id='0'.$owner_id;
             }
-            $projectCount=count($project->getOwner()->getProjects())+1;
+            $projectCount=$project->getId();
             if($projectCount<10){
                 $projectCount="00".$projectCount;
             }
@@ -147,15 +158,6 @@ class ProjectController extends Controller
             }
             $displayid=$owner_id.$projectCount;
             $project->setDisplayid($displayid);
-            //$chatservice=$this->get("acmtool_app.messaging");
-            //$chatprovider=$chatservice->CreateChatProvider();
-            
-            //$result=$chatprovider->createGroupForProject(preg_replace('/\s+/', '_', $project->getName()));
-            if($result["result"])
-            {
-                $project->setChannelid($result["id"]);
-            }
-            $em->persist($project);
             $em->flush();
             $emails=array();
             $admins=$em->getRepository("AcmtoolAppBundle:Admin")->findAll();
@@ -197,7 +199,7 @@ class ProjectController extends Controller
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$json->{"project_id"});
                 if($project==null)
                 {
-                    $response=new Response('{"err":"'.ConstValues::INVALIDDATE.'"}',400);
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                     $response->headers->set('Content-Type', 'application/json');
                     return $response;
                 }
@@ -240,7 +242,8 @@ class ProjectController extends Controller
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($id);
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$id);
         if($project){
             $em->remove($project);
             $em->flush();
@@ -364,7 +367,7 @@ class ProjectController extends Controller
                 {
                     $projects[$i]=array("id"=>$key->getDisplayId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
                     if($key->getChannelid()!=null){
-                        $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getId());
+                        $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getDisplayId(),"newmessages"=>0);
                         $j++;
                     }
                     $i++;
@@ -395,7 +398,8 @@ class ProjectController extends Controller
     public function acceptContractAction($project_id)
     {
         $em = $this->getDoctrine()->getManager();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        $user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$project_id);
         if($project)
         {
             $project->setSignedContract(true);
@@ -425,7 +429,7 @@ class ProjectController extends Controller
 
         if($project)
         {
-            $mess=array("id"=>$project->getId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract());
+            $mess=array("id"=>$project->getDisplayId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract());
             $user=$project->getOwner();
             $mess["client"]=array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"logo"=>$user->getLogo(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"tel"=>$user->getTelnumber(),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
             $mess["keyaccount"]=array("id"=>$project->getKeyAccount()->getId(),"surname"=>$project->getKeyAccount()->getSurname(),"name"=>$project->getKeyAccount()->getName(),"email"=>$project->getKeyAccount()->getEmail(),"photo"=>$project->getKeyAccount()->getPhoto());
@@ -517,7 +521,7 @@ class ProjectController extends Controller
             $i=0;
 
             foreach ($project->getTickets() as $key) {
-                $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDiplayId(),
+                $tickets[$i]=array("id"=>$key->getDiplayId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
                     "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
                 if($key->getStatus()==TicketStatus::REJECT)
@@ -1173,7 +1177,7 @@ class ProjectController extends Controller
             $mess=array();
             $i=0;
             foreach ($client->getProjects() as $key) {
-                $data=array("id"=>$key->getId(),"name"=>$key->getName(),"description"=>$key->getDescription(),"skills"=>$key->getProjectSkills(),"budget"=>$key->getBudget(),"signed"=>$key->getSignedContract(),"ticketcount"=>count($key->getTickets()),"creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'),"rate"=>$key->getRate());
+                $data=array("id"=>$key->getDisplayId(),"name"=>$key->getName(),"description"=>$key->getDescription(),"skills"=>$key->getProjectSkills(),"budget"=>$key->getBudget(),"signed"=>$key->getSignedContract(),"ticketcount"=>count($key->getTickets()),"creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'),"rate"=>$key->getRate());
                 if($key->getSignedContract())
                     $data["signaturedate"]=date_format($key->getSignaturedate(),"Y-m-d");
                 $j=0;
@@ -1291,7 +1295,7 @@ class ProjectController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $loggeduser=$this->get("security.context")->getToken()->getUser();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$project_id);
         if($project)
         {
             $tickets=$project->getTickets();
@@ -1337,7 +1341,7 @@ class ProjectController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $loggeduser=$this->get("security.context")->getToken()->getUser();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$project_id);
         if($project)
         {
             $tickets=$project->getTickets();

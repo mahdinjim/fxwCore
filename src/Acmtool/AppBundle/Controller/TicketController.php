@@ -34,14 +34,24 @@ class TicketController extends Controller
         			$ticket->setProject($project);
         			$ticket->setDescription($json->{"description"});
         			$ticket->setTitle($json->{"title"});
-        			$project_id=$project->getId();
+        			
+        			$ticket->setStatus(TicketStatus::DRAFT);
+        			$ticket->setCreatedBy($json->{"createdby"});
+        			$project->AddTicket($ticket);
+        			$format = 'Y-m-d';
+                    $creationdate = new \DateTime('UTC');
+                    $ticket->setCreationDate($creationdate);
+                    $ticket->setDiplayId("-1");
+        			$em->persist($ticket);
+	                $em->flush();
+	                $project_id=$project->getId();
         			if($project_id<10){
         				$project_id='00'.$project_id;
         			}
         			elseif ($project_id>=10 && $project_id<100) {
         				$project_id='0'.$project_id;
         			}
-        			$ticketCount=count($project->getTickets())+1;
+        			$ticketCount=$ticket->getId();
         			if($ticketCount<10){
         				$ticketCount="00".$ticketCount;
         			}
@@ -50,14 +60,7 @@ class TicketController extends Controller
         			}
         			$displayid=$project_id.$ticketCount;
         			$ticket->setDiplayId($displayid);
-        			$ticket->setStatus(TicketStatus::DRAFT);
-        			$ticket->setCreatedBy($json->{"createdby"});
-        			$project->AddTicket($ticket);
-        			$format = 'Y-m-d';
-                    $creationdate = new \DateTime('UTC');
-                    $ticket->setCreationDate($creationdate);
-        			$em->persist($ticket);
-	                $em->flush();
+        			$em->flush();
 	                $emails=array();
 	                array_push($emails, $project->getKeyaccount()->getEmail());
 	                if($project->getTeamleader())
@@ -97,7 +100,7 @@ class TicketController extends Controller
         	$json=$result['json'];
         	if(isset($json->{"type"}) && isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
-        		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($json->{"ticket_id"});
+        		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($json->{"ticket_id"});
         		$user=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
         		if($ticket && $project){
@@ -136,7 +139,7 @@ class TicketController extends Controller
 			$i=0;
 			$tickets=array();
             foreach ($project->getTickets() as $key) {
-                $tickets[$i]=array("id"=>$key->getId(),"displayId"=>$key->getDiplayId(),
+                $tickets[$i]=array("id"=>$key->getDiplayId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
                     "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
                 if($key->getStatus()==TicketStatus::REJECT)
@@ -190,7 +193,7 @@ class TicketController extends Controller
 	public function deleteTicketAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -210,7 +213,7 @@ class TicketController extends Controller
 	public function sendToClientAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -255,7 +258,7 @@ class TicketController extends Controller
 	public function sendToProdAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -294,7 +297,7 @@ class TicketController extends Controller
 	public function deliverToClientAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -352,7 +355,7 @@ class TicketController extends Controller
 	public function startEstimationAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -380,7 +383,7 @@ class TicketController extends Controller
 	public function acceptEstimationAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -408,7 +411,7 @@ class TicketController extends Controller
 	public function rejectEstimationAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -429,7 +432,7 @@ class TicketController extends Controller
 	}
 	public function acceptTicketAction($ticket_id){
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
 		$user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
@@ -467,7 +470,7 @@ class TicketController extends Controller
         	$json=$result['json'];
         	if(isset($json->{"ticket_id"}) && isset($json->{"message"}))
         	{
-        		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($json->{"ticket_id"});
+        		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($json->{"ticket_id"});
         		$user=$this->get("security.context")->getToken()->getUser();
         		$project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 				if($ticket && $project)

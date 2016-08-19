@@ -17,7 +17,8 @@ class ProjectDocumentController extends Controller
 	{
 		$request = $this->get('request');
 		$em = $this->getDoctrine()->getManager();
-    	$project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+    	$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$project_id);
     	if($project)
     	{
 	    	$fileBag = $request->files;
@@ -61,7 +62,8 @@ class ProjectDocumentController extends Controller
 	{
 		$request = $this->get('request');
 		$em = $this->getDoctrine()->getManager();
-    	$project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+    	$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$project_id);
     	if($project)
     	{
     		$baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();

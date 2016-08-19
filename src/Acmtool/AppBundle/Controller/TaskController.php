@@ -28,7 +28,7 @@ class TaskController extends Controller
         	$json=$result['json'];
         	if(isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
-        		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($json->{"ticket_id"});
+        		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($json->{"ticket_id"});
                 $user=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
         		if($ticket && $project)
@@ -187,17 +187,22 @@ class TaskController extends Controller
 	public function listAction($ticket_id)
 	{
 		$em = $this->getDoctrine()->getManager();
-		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneById($ticket_id);
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
         $user=$this->get("security.context")->getToken()->getUser();
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
 		{
-			$mess=array();
 			$i=0;
 			$developerrole=Roles::Developer();
 	        $testerrole=Roles::Tester();
 	        $designerrole=Roles::Designer();
 	        $sysadminrole=Roles::SysAdmin();
+            $mess=array("id"=>$ticket->getDiplayId(),"displayId"=>$ticket->getDiplayId(),
+                    "title"=>$ticket->getTitle(),"estimation"=>$ticket->getEstimation(),
+                    "status"=>$ticket->getStatus(),"type"=>$ticket->getType(),"description"=>$ticket->getDescription(),"createdby"=>$ticket->getCreatedBy(),"creationdate"=>date_format($ticket->getCreationdate(), 'Y-m-d'),"realtime"=>$ticket->getRealtime());
+            $mess["tasks"]=array();
+            $mess["finishedtasks"]=0;
+            $mess["taskscount"]=count($ticket->getTasks());
 			foreach ($ticket->getTasks() as $key) {
 				$workedhours=0;
 				foreach ($key->getRealtimes() as $realtime) {
@@ -214,8 +219,10 @@ class TaskController extends Controller
 					$assignedto=array("id"=>$key->getSysadmin()->getId(),"name"=>$key->getSysadmin()->getName(),"surname"=>$key->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
 				if( $assignedto!=null)
 					$data["assignto"]=$assignedto;
-				$mess[$i]=$data;
+				$mess["tasks"][$i]=$data;
 				$i++;
+                if($key->getIsFinished())
+                    $mess["finishedtasks"]+=1;
 			}
 			$res=new Response();
             $res->setStatusCode(200);

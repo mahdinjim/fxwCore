@@ -183,24 +183,50 @@ class ChatController extends Controller
 		}
 
 	}
-	public function getNewMessagesNumberAction($group)
+	public function getNewMessagesNumberAction()
 	{
-		$chatservice=$this->get("acmtool_app.messaging");
-		$chatprovider=$chatservice->CreateChatProvider();
-		$result=$chatprovider->getNewMessagesNumber($group);
-		if($result)
-		{
-			$res=new Response();
-            $res->setStatusCode(200);
-            $res->setContent(json_encode($result));
-            return $res;
-		}
-		else
-		{
-			$res=new Response();
-            $res->setStatusCode(400);
-            $res->setContent('{"error":"impossible to get new messages number"}');
-            return $res;
+		$request = $this->get('request');
+		$message = $request->getContent();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+        	$json=$result['json'];
+        	if(isset($json->{"groups"}))
+        	{
+        		$chatservice=$this->get("acmtool_app.messaging");
+				$chatprovider=$chatservice->CreateChatProvider();
+				$mess=array();
+				$count=0;
+				$newmess=array();
+				$i=0;
+				foreach ($json->{"groups"} as $key) {
+					$result=$chatprovider->getNewMessagesNumber($key->{"group_id"});
+					if($result["result"])
+					{
+						$newmess[$i]=array('group_id' => $key->{"group_id"},"count"=>$result["undread_count"] );
+						$count+=$result["undread_count"];
+					}
+					else
+						$newmess[$i]=array('group_id' => $key->{"group_id"},"count"=>0 );
+					$i++;
+				}
+				$mess["groups"]=$newmess;
+				$mess["total"]=$count;
+				$res=new Response();
+	            $res->setStatusCode(200);
+	            $res->setContent(json_encode($mess));
+	            return $res;
+        	}
+        	else
+			{
+				$res=new Response();
+		        $res->setStatusCode(400);
+		        $res->setContent('{"error":"bad request"}');
+		        return $res;
+			}
+			
 		}		
 	}
 }

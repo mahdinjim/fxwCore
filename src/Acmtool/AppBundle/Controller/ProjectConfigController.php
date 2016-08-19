@@ -31,18 +31,28 @@ class ProjectConfigController extends Controller
             }
             else
             {
-            	$project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{'project_id'});
-            	$config=new ProjectConfig();
-                $config->setTitle($json->{'title'});
-            	$config->setConfig($json->{'config'});
-            	$config->setProject($project);
-            	$project->addConfig($config);
-            	$em->persist($config);
-            	$em->flush();
-            	$res=new Response();
-                $res->setStatusCode(200);
-                $res->setContent(ConstValues::CONFIGADDED);
-                return $res;
+            	$loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{'project_id'});
+                if($project)
+                {
+                   $config=new ProjectConfig();
+                    $config->setTitle($json->{'title'});
+                    $config->setConfig($json->{'config'});
+                    $config->setProject($project);
+                    $project->addConfig($config);
+                    $em->persist($config);
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::CONFIGADDED);
+                    return $res; 
+                }
+            	else
+                {
+                    $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;
+                }
 
             }
         }
@@ -50,7 +60,8 @@ class ProjectConfigController extends Controller
     public function getAllProjectConfigsAction($project_id)
     {
         $em = $this->getDoctrine()->getManager();
-        $project=$em->getRepository("AcmtoolAppBundle:Project")->findOneById($project_id);
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$project_id);
         if($project)
         {
             $qb = $em->createQueryBuilder();
@@ -99,13 +110,25 @@ class ProjectConfigController extends Controller
             else
             {
                 $config=$em->getRepository("AcmtoolAppBundle:ProjectConfig")->findOneById($json->{'config_id'});
-                $config->setConfig($json->{'config'});
-                 $config->setTitle($json->{'title'});
-                $em->flush();
-                $res=new Response();
-                $res->setStatusCode(200);
-                $res->setContent(ConstValues::CONFIGUPDATED);
-                return $res;
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$config->getProject()->getDisplayId());
+                if($project)
+                {
+                    $config->setConfig($json->{'config'});
+                    $config->setTitle($json->{'title'});
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent(ConstValues::CONFIGUPDATED);
+                    return $res; 
+                }
+                else
+                {
+                    $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;
+                }
+                
 
             }
         }
@@ -114,7 +137,9 @@ class ProjectConfigController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $config=$em->getRepository("AcmtoolAppBundle:ProjectConfig")->findOneById($config_id);
-        if($config)
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$config->getProject()->getDisplayId());
+        if($config && $project)
         {
             $em->remove($config);
             $em->flush();

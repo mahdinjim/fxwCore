@@ -175,6 +175,19 @@ class TicketController extends Controller
 				$tickets[$i]["finishedtasks"]=$finishedTasks;
 				$tickets[$i]["taskscount"]=$tasksnumber;
 				$tickets[$i]["tasks"]=$tasks;
+				$tickets[$i]["open"]=false;
+				$tickets[$i]["billed"]=false;
+				$tickets[$i]["payed"]=false;
+				if($key->getIsPayed())
+				{
+					$tickets[$i]["payed"]=true;
+				}
+				elseif($key->getIsBilled())
+				{
+					$tickets[$i]["billed"]=true;
+				}
+				else
+					$tickets[$i]["open"]=true;
 				$i++;
             }
             $res=new Response();
@@ -503,6 +516,78 @@ class TicketController extends Controller
 	            return $response;
 			}
         }
+	}
+	public function markAsBilledAction($ticket_id)
+	{
+		$em = $this->getDoctrine()->getManager();
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+        if($ticket && $project)
+        {
+        	$ticket->setIsBilled(true);
+        	$ticket->setIsPayed(false);
+        	$em->flush();
+        	$res=new Response();
+	        $res->setStatusCode(200);
+	        $res->setContent("Ticket billed");
+	        return $res;
+
+        }
+        else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+		}
+	}
+	public function markAsPayedAction($ticket_id)
+	{
+		$em = $this->getDoctrine()->getManager();
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+        if($ticket && $project)
+        {
+        	$ticket->setIsBilled(true);
+        	$ticket->setIsPayed(true);
+        	$em->flush();
+        	$res=new Response();
+	        $res->setStatusCode(200);
+	        $res->setContent("Ticket payed");
+	        return $res;
+
+        }
+        else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+		}
+	}
+	public function markAsOpenAction($ticket_id)
+	{
+		$em = $this->getDoctrine()->getManager();
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+        if($ticket && $project)
+        {
+        	$ticket->setIsBilled(false);
+        	$ticket->setIsPayed(false);
+        	$em->flush();
+        	$res=new Response();
+	        $res->setStatusCode(200);
+	        $res->setContent("Ticket open");
+	        return $res;
+
+        }
+        else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+		}
 	}
 	public function getTicketTypesAction()
 	{

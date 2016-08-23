@@ -476,3 +476,15 @@ _datereportbymonth:
     path:     /private/project/restricted/report/date/{month}/{year}/{project_id}
     defaults: { _controller: AcmtoolAppBundle:Project:generateDateReport }
     methods: [GET,OPTIONS]
+_billedticket:
+    path:     /private/management/project/ticket/billed/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:markAsBilled }
+    methods: [GET,OPTIONS]
+_payedticket:
+    path:     /private/management/project/ticket/payed/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:markAsPayed }
+    methods: [GET,OPTIONS]
+_openticket:
+    path:     /private/management/project/ticket/open/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:markAsOpen }
+    methods: [GET,OPTIONS]

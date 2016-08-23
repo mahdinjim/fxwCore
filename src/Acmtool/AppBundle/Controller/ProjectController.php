@@ -557,6 +557,19 @@ class ProjectController extends Controller
                 $tickets[$i]["finishedtasks"]=$finishedTasks;
                 $tickets[$i]["taskscount"]=$tasksnumber;
                 $tickets[$i]["tasks"]=$tasks;
+                $tickets[$i]["open"]=false;
+                $tickets[$i]["billed"]=false;
+                $tickets[$i]["payed"]=false;
+                if($key->getIsPayed())
+                {
+                    $tickets[$i]["payed"]=true;
+                }
+                elseif($key->getIsBilled())
+                {
+                    $tickets[$i]["billed"]=true;
+                }
+                else
+                    $tickets[$i]["open"]=true;
                 $i++;
             }
             $mess["tickets"]=$tickets;

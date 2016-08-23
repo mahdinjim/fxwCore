@@ -160,6 +160,18 @@ class Ticket
     */
     private $tasks;
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isBilled", type="boolean",nullable=true)
+     */
+    private $isBilled=false;
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isPayed", type="boolean",nullable=true)
+     */
+    private $isPayed=false;
+    /**
      * Get id
      *
      * @return integer 
@@ -689,5 +701,51 @@ class Ticket
     public function getRejecteddate()
     {
         return $this->rejecteddate;
+    }
+
+    /**
+     * Set isBilled
+     *
+     * @param boolean $isBilled
+     * @return Ticket
+     */
+    public function setIsBilled($isBilled)
+    {
+        $this->isBilled = $isBilled;
+
+        return $this;
+    }
+
+    /**
+     * Get isBilled
+     *
+     * @return boolean 
+     */
+    public function getIsBilled()
+    {
+        return $this->isBilled;
+    }
+
+    /**
+     * Set isPayed
+     *
+     * @param boolean $isPayed
+     * @return Ticket
+     */
+    public function setIsPayed($isPayed)
+    {
+        $this->isPayed = $isPayed;
+
+        return $this;
+    }
+
+    /**
+     * Get isPayed
+     *
+     * @return boolean 
+     */
+    public function getIsPayed()
+    {
+        return $this->isPayed;
     }
 }

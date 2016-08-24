@@ -13,7 +13,7 @@ use Acmtool\AppBundle\Entity\Developer;
 use Acmtool\AppBundle\Entity\Designer;
 use Acmtool\AppBundle\Entity\Tester;
 use Acmtool\AppBundle\Entity\SystemAdmin;
-
+use Acmtool\AppBundle\Entity\KeyAccount;
 /**
  * ProjectRepository
  *
@@ -110,6 +110,9 @@ class ProjectRepository extends EntityRepository
 		}
 		elseif ($user instanceOf TeamLeader) {
 			$project=$this->findOneBy(array("displayid"=>$display_id,"teamleader"=>$user->getCredentials()));
+		}
+		elseif ($user instanceOf KeyAccount) {
+			$project=$this->findOneBy(array("displayid"=>$display_id,"keyaccount"=>$user));
 		}
 		elseif($user instanceOf Developer)
 		{

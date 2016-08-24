@@ -139,6 +139,18 @@ class Task
     */
 
     private $realtimes;
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isFe", type="boolean",nullable=true)
+     */
+    private $isFe;
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isFe", type="boolean",nullable=true)
+     */
+    private $isBe;
 
     /**
      * Get id

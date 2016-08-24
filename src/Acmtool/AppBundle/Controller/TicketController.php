@@ -589,6 +589,43 @@ class TicketController extends Controller
             return $response;
 		}
 	}
+	public function markManyAsBilledAction()
+	{
+		$request = $this->get('request');
+		$message = $request->getContent();
+		$em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        $user=$this->get("security.context")->getToken()->getUser();
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+        	$json=$result['json'];
+        	if(isset($json->{"tickets"}))
+        	{
+        		foreach ($json->{"tickets"} as $key) {
+        			$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($key);
+        			$project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+        			if($ticket && $project)
+			        {
+			        	$ticket->setIsBilled(true);
+			        	$ticket->setIsPayed(false);
+			        }
+        		}
+        		$em->flush();
+	        	$res=new Response();
+		        $res->setStatusCode(200);
+		        $res->setContent("Ticket open");
+		        return $res;
+        	}
+        	else
+			{
+				$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+	            $response->headers->set('Content-Type', 'application/json');
+	            return $response;
+			}
+        }
+	}
 	public function getTicketTypesAction()
 	{
 		$types=array(TicketType::All(),TicketType::Feature(),TicketType::Bug(),TicketType::Concept(),TicketType::Design());

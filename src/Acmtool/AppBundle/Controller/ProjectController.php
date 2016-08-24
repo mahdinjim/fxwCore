@@ -426,7 +426,6 @@ class ProjectController extends Controller
         $loggeduser=$this->get("security.context")->getToken()->getUser();
         
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$id);
-
         if($project)
         {
             $mess=array("id"=>$project->getDisplayId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract());
@@ -1314,25 +1313,46 @@ class ProjectController extends Controller
             $tickets=$project->getTickets();
             $mess=array();
             $i=0;
+            $mess["totalestimated"]=0;
+            $mess["totalrealtime"]=0;
+            $mess["data"]=array();
             foreach ($tickets as $ticket) {
                $tasks=$em->getRepository("AcmtoolAppBundle:Task")->getTasksByMonth($ticket,$month,$year);
                 if(count($tasks)>0)
                 {
-                    $ticketData=array("id"=>$ticket->getId(),"title"=>$ticket->getTitle());
+                    $ticketData=array("id"=>$ticket->getDiplayId(),"title"=>$ticket->getTitle(),"status"=>$ticket->getStatus());
+                    $ticketData["payed"]=false;
+                    $ticketData["billed"]=false;
+                    $ticketData["open"]=false;
+                    if($ticket->getIsPayed())
+                    {
+                        $ticketData["payed"]=true;
+                    }
+                    elseif($ticket->getIsBilled())
+                    {
+                        $ticketData["billed"]=true;
+                    }
+                    else
+                        $ticketData["open"]=true;
                    $tasksdata=array();
                    $sum=0;
                    $j=0;
-
+                   $sumestimated=0;
                    foreach ($tasks as $key) {
-                       $data=array("id"=>$key->getId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"date"=>date_format($key->getFinishdate(), 'Y-m-d'));
+                       $data=array("id"=>$key->getId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
+                        "realtime"=>$key->getRealtime(),"date"=>date_format($key->getFinishdate(), 'Y-m-d'));
                        $sum+=$key->getRealtime();
+                       $sumestimated+=$key->getEstimation();
                        $tasksdata[$j]=$data;
                        $j++;
 
                    }
+                   $mess["totalrealtime"]+=$sum;
+                   $mess["totalestimated"]+=$sumestimated;
                    $ticketData["totalhours"]=$sum;
+                   $ticketData["totalestimatedhours"]=$sumestimated;
                    $ticketData["stories"]=$tasksdata;
-                   $mess[$i]=$ticketData;
+                   $mess["data"][$i]=$ticketData;
                    $i++;
                 }
                
@@ -1359,6 +1379,8 @@ class ProjectController extends Controller
         {
             $tickets=$project->getTickets();
             $mess=array();
+            $mess["totalestimated"]=0;
+            $mess["totalrealtime"]=0;
             $i=0;
             $days=array();
             foreach ($tickets as $ticket) {
@@ -1366,25 +1388,31 @@ class ProjectController extends Controller
                 if(count($tasks)>0)
                 {
                    foreach ($tasks as $key) {
-                       $data=array("id"=>$key->getId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"ticket"=>$ticket->getTitle());
+                       $data=array("id"=>$key->getDiplayId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"ticket"=>$ticket->getTitle());
                        if(array_key_exists(date_format($key->getFinishdate(),'Y-m-d'),$days))
                        {
                             array_push($days[date_format($key->getFinishdate(),'Y-m-d')]["stories"], $data);
                             $days[date_format($key->getFinishdate(),'Y-m-d')]["totalhours"]+=$key->getRealtime();
+                            $days[date_format($key->getFinishdate(),'Y-m-d')]["totalestimatedhours"]+=$key->getEstimation();
+                            $mess["totalestimated"]+=$key->getEstimation();
+                            $mess["totalrealtime"]+=$key->getRealtime();
                        }
                        else
                        {
                             $days[date_format($key->getFinishdate(),'Y-m-d')]["stories"]=array();
                             array_push($days[date_format($key->getFinishdate(),'Y-m-d')]["stories"], $data);
                             $days[date_format($key->getFinishdate(),'Y-m-d')]["totalhours"]=$key->getRealtime();
+                            $days[date_format($key->getFinishdate(),'Y-m-d')]["totalestimatedhours"]=$key->getEstimation();
                             $days[date_format($key->getFinishdate(),'Y-m-d')]["date"]=date_format($key->getFinishdate(),'Y-m-d');
+                            $mess["totalestimated"]+=$key->getEstimation();
+                            $mess["totalrealtime"]+=$key->getRealtime();
                        }
 
                     }
                 }
                
             }
-            $mess=array_values($days);
+            $mess["data"]=array_values($days);
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent(json_encode($mess));

@@ -144,13 +144,13 @@ class Task
      *
      * @ORM\Column(name="isFe", type="boolean",nullable=true)
      */
-    private $isFe;
+    private $isFe=false;
     /**
      * @var boolean
      *
-     * @ORM\Column(name="isFe", type="boolean",nullable=true)
+     * @ORM\Column(name="isBe", type="boolean",nullable=true)
      */
-    private $isBe;
+    private $isBe=false;
 
     /**
      * Get id
@@ -637,5 +637,51 @@ class Task
     public function getCreationdate()
     {
         return $this->creationdate;
+    }
+
+    /**
+     * Set isFe
+     *
+     * @param boolean $isFe
+     * @return Task
+     */
+    public function setIsFe($isFe)
+    {
+        $this->isFe = $isFe;
+
+        return $this;
+    }
+
+    /**
+     * Get isFe
+     *
+     * @return boolean 
+     */
+    public function getIsFe()
+    {
+        return $this->isFe;
+    }
+
+    /**
+     * Set isBe
+     *
+     * @param boolean $isBe
+     * @return Task
+     */
+    public function setIsBe($isBe)
+    {
+        $this->isBe = $isBe;
+
+        return $this;
+    }
+
+    /**
+     * Get isBe
+     *
+     * @return boolean 
+     */
+    public function getIsBe()
+    {
+        return $this->isBe;
     }
 }

@@ -167,6 +167,14 @@ class TicketController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if( $assignedto!=null)
 						$data["assignto"]=$assignedto;
+					if($task->getIsFe()!=null)
+	                {
+	                    $data["frontend"]=$task->getIsFe();
+	                }
+	                if($task->getIsBe()!=null)
+	                {
+	                    $data["backend"]=$task->getIsBe();
+	                }
 					$tasks[$j]=$data;
 					if($task->getIsFinished())
 						$finishedTasks++;

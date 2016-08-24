@@ -36,6 +36,8 @@ class TaskController extends Controller
         			$task=new Task();
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
+                    $task->setIsFe($json->{"frontend"});
+                    $task->setIsBe($json->{"backend"});
         			$task->setCreationdate(new \DateTime("UTC"));
         			$owner=$ticket->getProject()->getTeamLeader();
         			$task->setOwner($owner);
@@ -134,6 +136,8 @@ class TaskController extends Controller
                     }
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
+                    $task->setIsFe($json->{"frontend"});
+                    $task->setIsBe($json->{"backend"});
         			$developerrole=Roles::Developer();
 			        $testerrole=Roles::Tester();
 			        $designerrole=Roles::Designer();
@@ -219,6 +223,14 @@ class TaskController extends Controller
 					$assignedto=array("id"=>$key->getSysadmin()->getId(),"name"=>$key->getSysadmin()->getName(),"surname"=>$key->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
 				if( $assignedto!=null)
 					$data["assignto"]=$assignedto;
+                if($key->getIsFe()!=null)
+                {
+                    $data["frontend"]=$key->getIsFe();
+                }
+                if($key->getIsBe()!=null)
+                {
+                    $data["backend"]=$key->getIsBe();
+                }
 				$mess["tasks"][$i]=$data;
 				$i++;
                 if($key->getIsFinished())

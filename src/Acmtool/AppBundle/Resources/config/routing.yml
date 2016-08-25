@@ -16,6 +16,10 @@ _api_authentification:
     path:     /public/login
     defaults: { _controller: AcmtoolAppBundle:Authentification:ApiAuthentification }
     methods:  [OPTIONS,POST]
+_api_logout:
+    path:     /private/logout
+    defaults: { _controller: AcmtoolAppBundle:Authentification:logout }
+    methods:  [OPTIONS,GET]
 _password_change:
     path:     /private/password/change
     defaults: { _controller: AcmtoolAppBundle:Authentification:changePassword }

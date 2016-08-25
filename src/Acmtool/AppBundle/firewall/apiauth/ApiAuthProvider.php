@@ -31,6 +31,7 @@ class ApiAuthProvider implements AuthenticationProviderInterface
             {
                 $authenticatedToken=new ApiToken($user->getRoles());
                 $authenticatedToken->setUser($user);
+                $authenticatedToken->setTokenDig($token->getTokenDig());
                 return $authenticatedToken;
             }
             else
@@ -54,6 +55,9 @@ class ApiAuthProvider implements AuthenticationProviderInterface
             }
             else
             {
+                $em=$this->doctrine->getEntityManager();
+                $em->remove($apitoken);
+                $em->flush();
                 return false;
             }
         }

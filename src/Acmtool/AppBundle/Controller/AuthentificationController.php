@@ -12,7 +12,7 @@ use Acmtool\AppBundle\Entity\TeamMember;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Customer;
 use Acmtool\AppBundle\Entity\CustomerUser;
-
+use Acmtool\AppBundle\Entity\Token;
 class AuthentificationController extends Controller
 {
     public function ApiAuthentificationAction()
@@ -26,7 +26,7 @@ class AuthentificationController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{"grant_type"}) && isset($json->{"login"}) && isset($json->{"password"})))
+            if(!(isset($json->{"grant_type"}) && isset($json->{"login"}) && isset($json->{"password"}) && isset($json->{"stayloggedin"})))
             {
                 $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
@@ -43,7 +43,7 @@ class AuthentificationController extends Controller
                 {
                     $authservice=$this->get('acmtool_app.authentication');
                     $password=$json->{"password"};
-                    $result=$authservice->Authentificate($user,$password);
+                    $result=$authservice->Authentificate($user,$password,$json->{"stayloggedin"});
                     if($result["auth"])
                     {
                         $token=$result["token"];
@@ -135,6 +135,21 @@ class AuthentificationController extends Controller
                 return new Response('bad request',400);
             }
         }
+    }
+    public function logoutAction()
+    {
+        $user = $this->get('security.context')->getToken()->getUser();
+        $token=$user->getApitoken();
+        if($token)
+        {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($token);
+            $em->flush();
+            return new Response('{"loggout":true}',200);
+        }
+        else
+            return new Response('bad request',400);
+
     }
     public function isTokenExpiredAction()
     {

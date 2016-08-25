@@ -13,7 +13,7 @@ class AuthentificationService
 		$this->factory=$factory;
 		$this->crfProvider=$crfProvider;
 	}
-	public function Authentificate($user,$password)
+	public function Authentificate($user,$password,$isstayedloggedin=false)
 	{
 		$result=[];
 		$username=$user->getUsername();
@@ -35,7 +35,10 @@ class AuthentificationService
             	{
             		$token=new Token();
                     $today =new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE));
-                    $token->setCreationdate($today);
+                    if($isstayedloggedin)
+                        $token->setCreationdate($today->add(new \DateInterval('P1Y')));
+                    else
+                        $token->setCreationdate($today);
                     $token->setTokendig($this->generateToken($user,$today));
                     $userroles=$user->getRoles();
                     $token->setUserrole($userroles[0]);

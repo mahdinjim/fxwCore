@@ -25,16 +25,28 @@ class Project
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="description", type="string", length=255,nullable=true)
+     * this field is for client breifing of the project
+     * @ORM\Column(name="description", type="text",nullable=true)
      */
     private $description;
+    /**
+     * @var string
+     * this field is for flexwork agent to add it's own description of the project and that description will be used in contract
+     * @ORM\Column(name="descriptioncontract", type="text",nullable=true)
+     */
+    private $descriptionContract;
      /**
      * @var boolean
      *
      * @ORM\Column(name="signedContract", type="boolean",nullable=true)
      */
     private $signedContract=false;
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="contractPrepared", type="boolean",nullable=true)
+     */
+    private $contractPrepared=false;
     /**
      * @var string
      * @Assert\NotBlank(message="The name field is required")
@@ -930,5 +942,51 @@ class Project
     public function getDisplayid()
     {
         return $this->displayid;
+    }
+
+    /**
+     * Set descriptionContract
+     *
+     * @param string $descriptionContract
+     * @return Project
+     */
+    public function setDescriptionContract($descriptionContract)
+    {
+        $this->descriptionContract = $descriptionContract;
+
+        return $this;
+    }
+
+    /**
+     * Get descriptionContract
+     *
+     * @return string 
+     */
+    public function getDescriptionContract()
+    {
+        return $this->descriptionContract;
+    }
+
+    /**
+     * Set contractPrepared
+     *
+     * @param boolean $contractPrepared
+     * @return Project
+     */
+    public function setContractPrepared($contractPrepared)
+    {
+        $this->contractPrepared = $contractPrepared;
+
+        return $this;
+    }
+
+    /**
+     * Get contractPrepared
+     *
+     * @return boolean 
+     */
+    public function getContractPrepared()
+    {
+        return $this->contractPrepared;
     }
 }

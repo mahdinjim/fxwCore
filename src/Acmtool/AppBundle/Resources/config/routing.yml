@@ -469,7 +469,7 @@ _listfile:
     defaults: { _controller: AcmtoolAppBundle:ProjectDocument:listDocuments }
     methods: [GET,OPTIONS]
 _listprojectbyclient:
-    path:     /private/super/project/client/list/{client_id}
+    path:     /private/management/project/client/list/{client_id}
     defaults: { _controller: AcmtoolAppBundle:Project:listbyClient }
     methods: [GET,OPTIONS]
 _ticketreportbymonth:
@@ -492,7 +492,7 @@ _openticket:
     path:     /private/management/project/ticket/open/{ticket_id}
     defaults: { _controller: AcmtoolAppBundle:Ticket:markAsOpen }
     methods: [GET,OPTIONS]
-_manybilled:
-    path:     /private/management/project/ticket/manybilled
-    defaults: { _controller: AcmtoolAppBundle:Ticket:markManyAsBilled }
+_preparecontract:
+    path:     /private/management/project/contract
+    defaults: { _controller: AcmtoolAppBundle:Project:prepareContract }
     methods: [POST,OPTIONS]

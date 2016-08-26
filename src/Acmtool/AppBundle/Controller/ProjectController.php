@@ -67,12 +67,13 @@ class ProjectController extends Controller
             $project->setOwner($customer);
             $project->setKeyaccount($customer->getKeyAccount());
             $project->setName($json->{'name'});
+            $project->setContractPrepared(false);
             if(isset($json->{"skills"}))
             {
                 $project->setProjectSkills($json->{"skills"});
             }
-            if(isset($json->{"description"}))
-            	$project->setDescription($json->{"description"});
+            if(isset($json->{"briefing"}))
+            	$project->setDescription($json->{"briefing"});
             if(isset($json->{'startingdate'}))
             {
             	if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$json->{'startingdate'}))
@@ -207,9 +208,9 @@ class ProjectController extends Controller
                 {
                     $project->setName($json->{'name'});
                 }
-                if(isset($json->{"description"}))
+                if(isset($json->{"briefing"}))
                 {
-                    $project->setDescription($json->{"description"});
+                    $project->setDescription($json->{"briefing"});
                 }
                 if(isset($json->{'startingdate'}))
                 {
@@ -428,7 +429,11 @@ class ProjectController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$id);
         if($project)
         {
-            $mess=array("id"=>$project->getDisplayId(),"name"=>$project->getName(),"description"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract());
+            $mess=array("id"=>$project->getDisplayId(),"name"=>$project->getName(),"briefing"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract(),"description"=>$project->getDescriptionContract());
+            if($project->getContractPrepared()===null)
+                $mess["contractprepared"]=true;
+            else
+                $mess["contractprepared"]=$project->getContractPrepared();
             $user=$project->getOwner();
             $mess["client"]=array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"logo"=>$user->getLogo(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"tel"=>$user->getTelnumber(),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
             $mess["keyaccount"]=array("id"=>$project->getKeyAccount()->getId(),"surname"=>$project->getKeyAccount()->getSurname(),"name"=>$project->getKeyAccount()->getName(),"email"=>$project->getKeyAccount()->getEmail(),"photo"=>$project->getKeyAccount()->getPhoto());
@@ -1197,7 +1202,12 @@ class ProjectController extends Controller
             $mess=array();
             $i=0;
             foreach ($client->getProjects() as $key) {
-                $data=array("id"=>$key->getDisplayId(),"name"=>$key->getName(),"description"=>$key->getDescription(),"skills"=>$key->getProjectSkills(),"budget"=>$key->getBudget(),"signed"=>$key->getSignedContract(),"ticketcount"=>count($key->getTickets()),"creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'),"rate"=>$key->getRate());
+                $data=array("id"=>$key->getDisplayId(),"name"=>$key->getName(),"briefing"=>$key->getDescription(),"skills"=>$key->getProjectSkills(),"budget"=>$key->getBudget(),"signed"=>$key->getSignedContract(),"ticketcount"=>count($key->getTickets()),"creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'),"rate"=>$key->getRate(),"description"=>$key->getDescriptionContract());
+                if($key->getContractPrepared()===null)
+                    $data["contractprepared"]=true;
+                else
+                    $data["contractprepared"]=$key->getContractPrepared();
+                 // $data["contractprepared"]=$key->getContractPrepared();
                 if($key->getSignedContract())
                     $data["signaturedate"]=date_format($key->getSignaturedate(),"Y-m-d");
                 $j=0;
@@ -1308,6 +1318,47 @@ class ProjectController extends Controller
                     $response->headers->set('Content-Type', 'application/json');
                     return $response;  
                 }
+            }
+        }
+    }
+    public function prepareContractAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(!(isset($json->{"project_id"}) && isset($json->{"rate"}) && isset($json->{"description"})))
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;  
+            }
+            else
+            {
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
+                if($project)
+                {
+                    $project->setRate($json->{"rate"});
+                    $project->setDescriptionContract($json->{"description"});
+                    $project->setContractPrepared(true);
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent("contract ready");
+                    return $res;
+                }
+                else
+                {    
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;  
+                } 
             }
         }
     }

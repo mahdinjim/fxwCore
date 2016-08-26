@@ -4,7 +4,7 @@
 import json
 from pprint import pprint
 import sys
-import pxssh
+from pexpect import pxssh
 import getpass
 
 
@@ -43,6 +43,7 @@ try:
 	    #s.sendline("composer update --no-dev --optimize-autoloader")
 	    #update database
 	    s.sendline("php app/console doctrine:schema:update --force")
+	    #s.sendline("php app/console dbsync:displayid")
 	    #clear cache
 	    s.sendline("php app/console cache:clear --env=prod --no-debug")
 	    #give permission

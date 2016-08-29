@@ -69,8 +69,7 @@ class Task
 
     /**
      * @var string
-     * @Assert\NotBlank(message="The status field is required")
-     * @ORM\Column(name="status", type="string", length=255)
+     * @ORM\Column(name="status", type="string", length=255,nullable=true)
      */
     private $status;
     /**
@@ -139,18 +138,18 @@ class Task
     */
 
     private $realtimes;
+   
+    /**
+     * @var string
+     * @ORM\Column(name="type", type="string", length=255,nullable=true)
+     */
+    private $type;
     /**
      * @var boolean
      *
-     * @ORM\Column(name="isFe", type="boolean",nullable=true)
+     * @ORM\Column(name="isaccepted", type="boolean",nullable=true)
      */
-    private $isFe=false;
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="isBe", type="boolean",nullable=true)
-     */
-    private $isBe=false;
+    private $isAccepted;
 
     /**
      * Get id
@@ -640,48 +639,48 @@ class Task
     }
 
     /**
-     * Set isFe
+     * Set type
      *
-     * @param boolean $isFe
+     * @param string $type
      * @return Task
      */
-    public function setIsFe($isFe)
+    public function setType($type)
     {
-        $this->isFe = $isFe;
+        $this->type = $type;
 
         return $this;
     }
 
     /**
-     * Get isFe
+     * Get type
      *
-     * @return boolean 
+     * @return string 
      */
-    public function getIsFe()
+    public function getType()
     {
-        return $this->isFe;
+        return $this->type;
     }
 
     /**
-     * Set isBe
+     * Set isAccepted
      *
-     * @param boolean $isBe
+     * @param boolean $isAccepted
      * @return Task
      */
-    public function setIsBe($isBe)
+    public function setIsAccepted($isAccepted)
     {
-        $this->isBe = $isBe;
+        $this->isAccepted = $isAccepted;
 
         return $this;
     }
 
     /**
-     * Get isBe
+     * Get isAccepted
      *
      * @return boolean 
      */
-    public function getIsBe()
+    public function getIsAccepted()
     {
-        return $this->isBe;
+        return $this->isAccepted;
     }
 }

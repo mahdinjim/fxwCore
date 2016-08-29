@@ -20,6 +20,7 @@ use Acmtool\AppBundle\Entity\ProjectStates;
 use Acmtool\AppBundle\Entity\Roles;
 use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\Admin;
+use Acmtool\AppBundle\Entity\TaskTypes;
 class ProjectController extends Controller
 {
 	public function createAction()
@@ -527,7 +528,7 @@ class ProjectController extends Controller
             foreach ($project->getTickets() as $key) {
                 $tickets[$i]=array("id"=>$key->getDiplayId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
-                    "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
+                    "status"=>$key->getStatus(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
                 if($key->getStatus()==TicketStatus::REJECT)
                 {
                     $tickets[$i]["rejectionmessage"]=$key->getRejectionmessage();
@@ -553,14 +554,14 @@ class ProjectController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if($assignedto!=null)
                         $data["assignto"]=$assignedto;
-                    if($task->getIsFe()!=null)
-                    {
-                        $data["frontend"]=$task->getIsFe();
-                    }
-                    if($task->getIsBe()!=null)
-                    {
-                        $data["backend"]=$task->getIsBe();
-                    }
+                    if($task->getType()==null)
+                        $data["type"]=TaskTypes::$BACKEND['type'];
+                    else
+                        $data["type"]=$task->getType();
+                    if($task->getIsAccepted()===null)
+                        $data["accepted"]=true;
+                    else
+                        $data["accepted"]=$task->getIsAccepted();
                     $tasks[$j]=$data;
                     if($task->getIsFinished())
                         $finishedTasks++;
@@ -1447,7 +1448,7 @@ class ProjectController extends Controller
                 if(count($tasks)>0)
                 {
                    foreach ($tasks as $key) {
-                       $data=array("id"=>$key->getDiplayId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"ticket"=>$ticket->getTitle());
+                       $data=array("id"=>$key->getId(),"title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"ticket"=>$ticket->getTitle());
                        if(array_key_exists(date_format($key->getFinishdate(),'Y-m-d'),$days))
                        {
                             array_push($days[date_format($key->getFinishdate(),'Y-m-d')]["stories"], $data);

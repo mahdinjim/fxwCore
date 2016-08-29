@@ -9,10 +9,12 @@ use Symfony\Component\Httpfoundation\Response;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Task;
 use Acmtool\AppBundle\Entity\Roles;
-use Acmtool\AppBundle\Entity\TasksTypes;
+use Acmtool\AppBundle\Entity\TaskTypes;
 use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\Realtime;
 use Acmtool\AppBundle\Entity\WorkedHours;
+use Acmtool\AppBundle\Entity\Ticket;
+
 class TaskController extends Controller
 {
 	public function createAction()
@@ -26,7 +28,7 @@ class TaskController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
+        	if(isset($json->{"type"}) && isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
         		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($json->{"ticket_id"});
                 $user=$this->get("security.context")->getToken()->getUser();
@@ -36,8 +38,11 @@ class TaskController extends Controller
         			$task=new Task();
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
-                    $task->setIsFe($json->{"frontend"});
-                    $task->setIsBe($json->{"backend"});
+                    $task->setType($json->{'type'});
+                    if($json->{'type'}==TaskTypes::BUG["type"])
+                        $task->setIsAccepted(false);
+                    else
+                         $task->setIsAccepted(true);
         			$task->setCreationdate(new \DateTime("UTC"));
         			$owner=$ticket->getProject()->getTeamLeader();
         			$task->setOwner($owner);
@@ -75,7 +80,6 @@ class TaskController extends Controller
         			}
         			$task->setIsStarted(false);
         			$task->setisFinished(false);
-        			$task->setStatus(TasksTypes::WAITING);
         			$em->persist($task);
 	                $em->flush();
                     if($assigned)
@@ -112,7 +116,7 @@ class TaskController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{'title'}) && isset($json->{"assignedTo"})  && isset($json->{"description"}) && isset($json->{"task_id"}))
+        	if(isset($json->{"type"}) && isset($json->{'title'}) && isset($json->{"assignedTo"})  && isset($json->{"description"}) && isset($json->{"task_id"}))
         	{
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
         		if($task)
@@ -134,6 +138,11 @@ class TaskController extends Controller
                         $oldassigned=$task->getSysadmin();
                         $task->setSysadmin(null);
                     }
+                    $task->setType($json->{'type'});
+                    if($json->{'type'}==TaskTypes::$BUG["type"])
+                        $task->setIsAccepted(false);
+                    else
+                         $task->setIsAccepted(true);
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
                     $task->setIsFe($json->{"frontend"});
@@ -231,6 +240,15 @@ class TaskController extends Controller
                 {
                     $data["backend"]=$key->getIsBe();
                 }
+                if($key->getType()==null)
+                    $data["type"]=TaskTypes::$BACKEND['type'];
+                else
+                    $data["type"]=$key->getType();
+                if($key->getIsAccepted()===null)
+                    $data["accepted"]=true;
+                else
+                    $data["accepted"]=$key->getIsAccepted();
+
 				$mess["tasks"][$i]=$data;
 				$i++;
                 if($key->getIsFinished())
@@ -590,6 +608,90 @@ class TaskController extends Controller
             return $response;
 		}
 	}
+    public function acceptTaskAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            if(isset($json->{"task_id"}) && isset($json->{"accept"}))
+            {
+                $task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
+                $user=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
+                $haveaccess=false;
+                if($this->get('security.context')->isGranted("ROLE_ADMIN"))
+                    $haveaccess=true;
+                else
+                    if($project->getTeamleader()->getId()==$user->getCreds()->getId())
+                        $haveaccess=true;
+                    else
+                        $haveaccess=false;
+                if($task && $project && $haveaccess)
+                {
+                   if($json->{"accept"})
+                   {
+                        $task->setIsAccepted(true);
+                        $em->flush();
+                        $response=new Response('Task accepted',200);
+                        return $response;
+                   }
+                   else
+                   {
+                        if(isset($json->{"reason"}))
+                        {
+                            $ticket=new Ticket();
+                            $ticket->setProject($project);
+                            $ticket->setDescription("flexwork comment:\n".$json->{"reason"}."\n".$task->getDescription());
+                            $ticket->setTitle($Task->getTitle());
+                            
+                            $ticket->setStatus(TicketStatus::DRAFT);
+                            $ticket->setCreatedBy($user->getName()." ".$user->getSurname());
+                            $project->AddTicket($ticket);
+                            $format = 'Y-m-d';
+                            $creationdate = new \DateTime('UTC');
+                            $ticket->setCreationDate($creationdate);
+                            $ticket->setDiplayId("-1");
+                            $em->persist($ticket);
+                            $em->flush();
+                            $project_id=$project->getId();
+                            if($project_id<10){
+                                $project_id='00'.$project_id;
+                            }
+                            elseif ($project_id>=10 && $project_id<100) {
+                                $project_id='0'.$project_id;
+                            }
+                            $ticketCount=$ticket->getId();
+                            if($ticketCount<10){
+                                $ticketCount="00".$ticketCount;
+                            }
+                            elseif ($ticketCount>=10 && $ticketCount<100) {
+                                $ticketCount="0".$ticketCount;
+                            }
+                            $displayid=$project_id.$ticketCount;
+                            $ticket->setDiplayId($displayid);
+                            $em->flush();
+                            $response=new Response('Task converted to ticket',200);
+                            return $response;
+                        }
+                   }
+               }
+
+            }
+            $response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+    private function getTaskTypesAction()
+    {
+        $mess= TaskTypes::serialize();
+        new Response(json_encode($mess),200);
+    }
 	private function ifToday($date)
 	{
 		$today=new \DateTime("UTC");

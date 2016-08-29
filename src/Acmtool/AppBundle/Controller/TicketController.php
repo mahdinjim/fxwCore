@@ -11,6 +11,7 @@ use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\TicketType;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Roles;
+use Acmtool\AppBundle\Entity\TaskTypes;
 class TicketController extends Controller
 {
 	public function createAction()
@@ -24,13 +25,12 @@ class TicketController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{"type"}) && isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"project_id"}) && isset($json->{"createdby"}))
+        	if(isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"project_id"}) && isset($json->{"createdby"}))
         	{
         		$user=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$json->{"project_id"});
         		if($project){
         			$ticket=new Ticket();
-        			$ticket->setType($json->{"type"});
         			$ticket->setProject($project);
         			$ticket->setDescription($json->{"description"});
         			$ticket->setTitle($json->{"title"});
@@ -98,13 +98,12 @@ class TicketController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{"type"}) && isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
+        	if(isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
         		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($json->{"ticket_id"});
         		$user=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
         		if($ticket && $project){
-        			$ticket->setType($json->{"type"});
         			$ticket->setDescription($json->{"description"});
         			$ticket->setTitle($json->{"title"});
         			$em->flush();
@@ -141,7 +140,7 @@ class TicketController extends Controller
             foreach ($project->getTickets() as $key) {
                 $tickets[$i]=array("id"=>$key->getDiplayId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
-                    "status"=>$key->getStatus(),"type"=>$key->getType(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
+                    "status"=>$key->getStatus(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
                 if($key->getStatus()==TicketStatus::REJECT)
                 {
                 	$tickets[$i]["rejectionmessage"]=$key->getRejectionmessage();
@@ -167,14 +166,14 @@ class TicketController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if( $assignedto!=null)
 						$data["assignto"]=$assignedto;
-					if($task->getIsFe()!=null)
-	                {
-	                    $data["frontend"]=$task->getIsFe();
-	                }
-	                if($task->getIsBe()!=null)
-	                {
-	                    $data["backend"]=$task->getIsBe();
-	                }
+	                if($task->getType()==null)
+                    	$data["type"]=TaskTypes::$BACKEND['type'];
+	                else
+	                    $data["type"]=$task->getType();
+	                if($task->getIsAccepted()===null)
+                    	$data["accepted"]=true;
+                	else
+                    	$data["accepted"]=$task->getIsAccepted();
 					$tasks[$j]=$data;
 					if($task->getIsFinished())
 						$finishedTasks++;

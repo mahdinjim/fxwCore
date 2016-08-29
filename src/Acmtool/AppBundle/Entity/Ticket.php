@@ -79,8 +79,8 @@ class Ticket
     private $project;
       /**
      * @var string
-     * @Assert\NotBlank(message="The type field is required")
-     * @ORM\Column(name="type", type="string", length=255)
+     * 
+     * @ORM\Column(name="type", type="string", length=255,nullable=true)
      */
     private $type;
     /**

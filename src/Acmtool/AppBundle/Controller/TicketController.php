@@ -155,7 +155,7 @@ class TicketController extends Controller
 		        $finishedTasks=0;
 				foreach ($key->getTasks() as $task) {
 					$data=array("id"=>$task->getId(),"displayid"=>$task->getDisplayId(),"title"=>$task->getTitle(),"description"=>$task->getDescription(),"estimation"=>$task->getEstimation(),"realtime"=>$task->getRealtime(),"isstarted"=>$task->getIsStarted(),"finished"=>$task->getIsFinished());
-					 $assignedto=null;
+					$assignto=null;
 					if($task->getDeveloper()!=null)
                         $assignedto=array("id"=>$task->getDeveloper()->getId(),"name"=>$task->getDeveloper()->getName(),"surname"=>$task->getDeveloper()->getSurname(),"role"=>array("role"=>$developerrole["role"]));
                     elseif($task->getDesigner()!=null)
@@ -166,6 +166,8 @@ class TicketController extends Controller
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
                     if( $assignedto!=null)
 						$data["assignto"]=$assignedto;
+					else
+						$data["assignto"]=null;
 	                if($task->getType()==null)
                     	$data["type"]=TaskTypes::$BACKEND['type'];
 	                else
@@ -436,7 +438,7 @@ class TicketController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
 		{
-			$ticket->setStatus(TicketStatus::ESTIMATION);
+			$ticket->setStatus(TicketStatus::DRAFT);
 			$em->flush();
 			$res=new Response();
 	        $res->setStatusCode(200);

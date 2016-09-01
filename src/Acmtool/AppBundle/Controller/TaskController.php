@@ -28,7 +28,7 @@ class TaskController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{"type"}) && isset($json->{'title'}) && isset($json->{"assignedTo"}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
+        	if(isset($json->{"type"}) && isset($json->{'title'}) && isset($json->{"description"}) && isset($json->{"ticket_id"}))
         	{
         		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($json->{"ticket_id"});
                 $user=$this->get("security.context")->getToken()->getUser();
@@ -39,7 +39,7 @@ class TaskController extends Controller
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
                     $task->setType($json->{'type'});
-                    if($json->{'type'}==TaskTypes::BUG["type"])
+                    if($json->{'type'}==TaskTypes::$BUG["type"] && $user->getCredentials()->getId()!=$project->getTeamLeader()->getId())
                         $task->setIsAccepted(false);
                     else
                          $task->setIsAccepted(true);
@@ -54,30 +54,34 @@ class TaskController extends Controller
 			        $designerrole=Roles::Designer();
 			        $sysadminrole=Roles::SysAdmin();
                     $assigned=null;
-        			if($json->{"assignedTo"}->{"role"}==$developerrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setDeveloper($assigned);
+                    if(isset($json->{"assignedTo"}))
+                    {
+                        if($json->{"assignedTo"}->{"role"}==$developerrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setDeveloper($assigned);
 
-        			}
-        			elseif($json->{"assignedTo"}->{"role"}==$testerrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setTester($assigned);
+                        }
+                        elseif($json->{"assignedTo"}->{"role"}==$testerrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setTester($assigned);
 
-        			}
-        			elseif($json->{"assignedTo"}->{"role"}==$designerrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setDesigner($assigned);
+                        }
+                        elseif($json->{"assignedTo"}->{"role"}==$designerrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setDesigner($assigned);
 
-        			}
-        			elseif($json->{"assignedTo"}->{"role"}==$sysadminrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setSysadmin($assigned);
+                        }
+                        elseif($json->{"assignedTo"}->{"role"}==$sysadminrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setSysadmin($assigned);
 
-        			}
+                        }  
+                    }
+        			
         			$task->setIsStarted(false);
         			$task->setisFinished(false);
         			$em->persist($task);
@@ -116,7 +120,7 @@ class TaskController extends Controller
         else
         {
         	$json=$result['json'];
-        	if(isset($json->{"type"}) && isset($json->{'title'}) && isset($json->{"assignedTo"})  && isset($json->{"description"}) && isset($json->{"task_id"}))
+        	if(isset($json->{"type"}) && isset($json->{'title'}) && isset($json->{"description"}) && isset($json->{"task_id"}))
         	{
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
         		if($task)
@@ -139,51 +143,49 @@ class TaskController extends Controller
                         $task->setSysadmin(null);
                     }
                     $task->setType($json->{'type'});
-                    if($json->{'type'}==TaskTypes::$BUG["type"])
-                        $task->setIsAccepted(false);
-                    else
-                         $task->setIsAccepted(true);
         			$task->setTitle($json->{"title"});
         			$task->setDescription($json->{"description"});
-                    $task->setIsFe($json->{"frontend"});
-                    $task->setIsBe($json->{"backend"});
         			$developerrole=Roles::Developer();
 			        $testerrole=Roles::Tester();
 			        $designerrole=Roles::Designer();
 			        $sysadminrole=Roles::SysAdmin();
                     $assigned=null;
-        			if($json->{"assignedTo"}->{"role"}==$developerrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setDeveloper($assigned);
+        			if(isset($json->{"assignedTo"}))
+                    {
+                        if($json->{"assignedTo"}->{"role"}==$developerrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setDeveloper($assigned);
 
-        			}
-        			elseif($json->{"assignedTo"}->{"role"}==$testerrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setTester($assigned);
+                        }
+                        elseif($json->{"assignedTo"}->{"role"}==$testerrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setTester($assigned);
 
-        			}
-        			elseif($json->{"assignedTo"}->{"role"}==$designerrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setDesigner($assigned);
+                        }
+                        elseif($json->{"assignedTo"}->{"role"}==$designerrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setDesigner($assigned);
 
-        			}
-        			elseif($json->{"assignedTo"}->{"role"}==$sysadminrole["role"])
-        			{
-        				$assigned=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($json->{"assignedTo"}->{"id"});
-        				$task->setSysadmin($assigned);
+                        }
+                        elseif($json->{"assignedTo"}->{"role"}==$sysadminrole["role"])
+                        {
+                            $assigned=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($json->{"assignedTo"}->{"id"});
+                            $task->setSysadmin($assigned);
 
-        			}
+                        }  
+                    }
 	                $em->flush();
                     if($assigned)
                     {
-                        if($oldassigned->getEmail()!=$assigned->getEmail()){
+                        if($oldassigned==null || $oldassigned->getEmail()!=$assigned->getEmail()){
                             $ticket=$task->getTicket();
                             $project=$ticket->getProject();
                             $this->get("acmtool_app.email.notifier")->notifyAssignedToStory($assigned->getEmail(),$project->getName(),$assigned->getName(),$assigned->getSurname(),$task->getTitle());
                         }
+
                     }
 	                $response=new Response('Task updated',200);
 	                return $response;
@@ -221,6 +223,7 @@ class TaskController extends Controller
 				foreach ($key->getRealtimes() as $realtime) {
 					$workedhours+=$realtime->getTime();
 				}
+                $assignedto=null;
 				$data=array("id"=>$key->getId(),"displayid"=>$key->getDisplayId(),"title"=>$key->getTitle(),"description"=>$key->getDescription(),"estimation"=>$key->getEstimation(),"realtime"=>$key->getRealtime(),"isstarted"=>$key->getIsStarted(),"finished"=>$key->getIsFinished(),"workedhours"=>$workedhours);
 				if($key->getDeveloper()!=null)
 					$assignedto=array("id"=>$key->getDeveloper()->getId(),"name"=>$key->getDeveloper()->getName(),"surname"=>$key->getDeveloper()->getSurname(),"role"=>array("role"=>$developerrole["role"]));
@@ -232,19 +235,13 @@ class TaskController extends Controller
 					$assignedto=array("id"=>$key->getSysadmin()->getId(),"name"=>$key->getSysadmin()->getName(),"surname"=>$key->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
 				if( $assignedto!=null)
 					$data["assignto"]=$assignedto;
-                if($key->getIsFe()!=null)
-                {
-                    $data["frontend"]=$key->getIsFe();
-                }
-                if($key->getIsBe()!=null)
-                {
-                    $data["backend"]=$key->getIsBe();
-                }
+                else
+                    $data["assignto"]=null;
                 if($key->getType()==null)
                     $data["type"]=TaskTypes::$BACKEND['type'];
                 else
                     $data["type"]=$key->getType();
-                if($key->getIsAccepted()===null)
+                if($key->getIsAccepted()===null )
                     $data["accepted"]=true;
                 else
                     $data["accepted"]=$key->getIsAccepted();
@@ -334,10 +331,13 @@ class TaskController extends Controller
         			}
 	        		$task->setRealtime(floatval($total));
 	        		$task->setRtsetdate(new \DateTime("UTC"));
+                    $ticketrealtime=$task->getTicket()->getRealtime()+floatval($total);
+                    $task->getTicket()->setRealtime($ticketrealtime);
 	        		$em->flush();
                     $name=$this->get('security.context')->getToken()->getUser()->getName();
                     $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
                     $project_name=$project->getName();
+
                     if($project->getTeamleader())
                         $this->get("acmtool_app.email.notifier")->notifyStoryRealtime($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname,$total);
 	        		$response=new Response('realtime set',200);
@@ -618,6 +618,7 @@ class TaskController extends Controller
             return $result['response'];
         else
         {
+            $json=$result['json'];
             if(isset($json->{"task_id"}) && isset($json->{"accept"}))
             {
                 $task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
@@ -627,7 +628,7 @@ class TaskController extends Controller
                 if($this->get('security.context')->isGranted("ROLE_ADMIN"))
                     $haveaccess=true;
                 else
-                    if($project->getTeamleader()->getId()==$user->getCreds()->getId())
+                    if($project->getTeamleader()->getId()==$user->getCredentials()->getId())
                         $haveaccess=true;
                     else
                         $haveaccess=false;
@@ -646,8 +647,8 @@ class TaskController extends Controller
                         {
                             $ticket=new Ticket();
                             $ticket->setProject($project);
-                            $ticket->setDescription("flexwork comment:\n".$json->{"reason"}."\n".$task->getDescription());
-                            $ticket->setTitle($Task->getTitle());
+                            $ticket->setDescription("--flexwork comment:\n".$json->{"reason"}."--\n".$task->getDescription());
+                            $ticket->setTitle($task->getTitle());
                             
                             $ticket->setStatus(TicketStatus::DRAFT);
                             $ticket->setCreatedBy($user->getName()." ".$user->getSurname());
@@ -674,6 +675,7 @@ class TaskController extends Controller
                             }
                             $displayid=$project_id.$ticketCount;
                             $ticket->setDiplayId($displayid);
+                            $em->remove($task);
                             $em->flush();
                             $response=new Response('Task converted to ticket',200);
                             return $response;
@@ -687,10 +689,10 @@ class TaskController extends Controller
             return $response;
         }
     }
-    private function getTaskTypesAction()
+    public function getTaskTypesAction()
     {
         $mess= TaskTypes::serialize();
-        new Response(json_encode($mess),200);
+        return new Response(json_encode($mess),200);
     }
 	private function ifToday($date)
 	{

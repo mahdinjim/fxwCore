@@ -552,8 +552,10 @@ class ProjectController extends Controller
                         $assignedto=array("id"=>$task->getTester()->getId(),"name"=>$task->getTester()->getName(),"surname"=>$task->getTester()->getSurname(),"role"=>array("role"=>$testerrole["role"]));
                     elseif($task->getSysadmin()!=null)
                         $assignedto=array("id"=>$task->getSysadmin()->getId(),"name"=>$task->getSysadmin()->getName(),"surname"=>$task->getSysadmin()->getSurname(),"role"=>array("role"=>$sysadminrole["role"]));
-                    if($assignedto!=null)
-                        $data["assignto"]=$assignedto;
+                    if( $assignedto!=null)
+                    $data["assignto"]=$assignedto;
+                    else
+                        $data["assignto"]=null;
                     if($task->getType()==null)
                         $data["type"]=TaskTypes::$BACKEND['type'];
                     else

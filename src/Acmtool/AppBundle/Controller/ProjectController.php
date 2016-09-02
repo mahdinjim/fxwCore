@@ -430,7 +430,7 @@ class ProjectController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$id);
         if($project)
         {
-            $mess=array("id"=>$project->getDisplayId(),"name"=>$project->getName(),"briefing"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract(),"description"=>$project->getDescriptionContract());
+            $mess=array("id"=>$project->getDisplayId(),"name"=>$project->getName(),"briefing"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract(),"description"=>$project->getDescriptionContract(),"rate"=>$project->getRate());
             if($project->getContractPrepared()===null)
                 $mess["contractprepared"]=true;
             else

@@ -36,6 +36,10 @@ security:
             entity: {class: AcmtoolAppBundle:Tester}
 
     firewalls:
+        email_secured:
+            pattern: ^/notification/
+            stateless: true
+            Email_Auth: true
         api_secured:
             pattern:  ^/api/private/
             stateless:  true

@@ -46,6 +46,10 @@ class Creds implements \Serializable
     * @ORM\OneToMany(targetEntity="Project", mappedBy="teamleader")
     */
     private $projects;
+      /**
+    * @ORM\OneToMany(targetEntity="EmailToken", mappedBy="user")
+    */
+    private $emailtokens;
     /**
     * @ORM\OneToMany(targetEntity="Task", mappedBy="owner")
     */

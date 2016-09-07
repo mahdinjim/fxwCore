@@ -631,12 +631,13 @@ class ProjectController extends Controller
             {
                 $loggeduser=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
-                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
                 else
                     $isTeamLeader=false;
-                if($isadmin || $isTeamLeader)
+                if($isadmin || $isTeamLeader || $iskeyaccount)
                 {
                    $role=$json->{"teamleader_role"};
                     $Teamleader=null;
@@ -706,11 +707,13 @@ class ProjectController extends Controller
                 $loggeduser=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
                 else
                     $isTeamLeader=false;
-                if($isadmin || $isTeamLeader)
+                if($isadmin || $isTeamLeader || $iskeyaccount)
                 {
                     if($project)
                     {
@@ -765,12 +768,13 @@ class ProjectController extends Controller
             {
                 $loggeduser=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
-                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
                 else
                     $isTeamLeader=false;
-                if($isadmin || $isTeamLeader)
+                if($isadmin || $isTeamLeader || $iskeyaccount)
                 {
                     if($project)
                     {
@@ -826,12 +830,13 @@ class ProjectController extends Controller
             {
                 $loggeduser=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
-                $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
                 else
                     $isTeamLeader=false;
-                if($isadmin || $isTeamLeader)
+                if($isadmin || $isTeamLeader || $iskeyaccount)
                 {
                     if($project)
                     {
@@ -887,11 +892,12 @@ class ProjectController extends Controller
                 $loggeduser=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
                 $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                 if($project->getTeamleader())
                     $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
                 else
                     $isTeamLeader=false;
-                if($isadmin || $isTeamLeader)
+                if($isadmin || $isTeamLeader || $iskeyaccount)
                 {
                     if($project)
                     {
@@ -949,11 +955,12 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                     if($project->getTeamleader())
-                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
-                else
-                    $isTeamLeader=false;
-                    if($isadmin || $isTeamLeader)
+                        $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    else
+                        $isTeamLeader=false;
+                    if($isadmin || $isTeamLeader || $iskeyaccount)
                     {
                         foreach ($json->{"developers"} as $key) {
                             $member=$em->getRepository("AcmtoolAppBundle:Developer")->findOneById($key);
@@ -1046,11 +1053,12 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-                if($project->getTeamleader())
-                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
-                else
-                    $isTeamLeader=false;
-                    if($isadmin || $isTeamLeader)
+                    $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
+                    if($project->getTeamleader())
+                        $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    else
+                        $isTeamLeader=false;
+                    if($isadmin || $isTeamLeader || $iskeyaccount)
                     {
                         foreach ($json->{"designers"} as $key) {
                            $member=$em->getRepository("AcmtoolAppBundle:Designer")->findOneById($key);
@@ -1104,11 +1112,12 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
+                    $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                     if($project->getTeamleader())
-                    $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
-                else
-                    $isTeamLeader=false;
-                    if($isadmin || $isTeamLeader)
+                        $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
+                    else
+                        $isTeamLeader=false;
+                    if($isadmin || $isTeamLeader || $iskeyaccount)
                     {
                        foreach ($json->{"testers"} as $key) {
                             $member=$em->getRepository("AcmtoolAppBundle:Tester")->findOneById($key);
@@ -1161,12 +1170,12 @@ class ProjectController extends Controller
                 if($project)
                 {
                     $isadmin=$this->get('security.context')->isGranted("ROLE_ADMIN");
-
+                    $iskeyaccount=$this->get('security.context')->isGranted("ROLE_KEYACCOUNT");
                     if($project->getTeamleader())
                         $isTeamLeader=($project->getTeamleader()->getId()==$this->get('security.context')->getToken()->getUser()->getCredentials()->getID());
                     else
                         $isTeamLeader=false;
-                    if($isadmin || $isTeamLeader)
+                    if($isadmin || $isTeamLeader || $iskeyaccount)
                     {
                          foreach ($json->{"sysadmins"} as $key) {
                             $member=$em->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneById($key);
@@ -1230,7 +1239,7 @@ class ProjectController extends Controller
                 }           
                 
                 foreach ($key->getTesters() as $member) {
-                    $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
+                    $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Tester());
                     if($key->getTeamleader())
                         if($key->getTeamleader()->getId()==$member->getCredentials()->getId())
                             $memberdata["isTeamLeader"]=true;
@@ -1243,7 +1252,7 @@ class ProjectController extends Controller
                 }  
                
                 foreach ($key->getDesigners() as $member) {
-                   $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
+                   $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Designer());
                     if($key->getTeamleader())
                         if($key->getTeamleader()->getId()==$member->getCredentials()->getId())
                             $memberdata["isTeamLeader"]=true;
@@ -1256,7 +1265,7 @@ class ProjectController extends Controller
                 }  
 
                 foreach ($key->getSysadmins() as $member) {
-                    $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
+                    $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::SysAdmin());
                     if($key->getTeamleader())
                         if($key->getTeamleader()->getId()==$member->getCredentials()->getId())
                             $memberdata["isTeamLeader"]=true;

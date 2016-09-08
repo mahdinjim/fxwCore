@@ -62,7 +62,7 @@ class CustomerUser implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="telnumber", type="decimal",nullable=true)
+     * @ORM\Column(name="telnumber", type="string",nullable=true,length=255)
      */
     private $telnumber;
      /**

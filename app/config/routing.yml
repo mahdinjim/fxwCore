@@ -1,4 +1,6 @@
 acmtool_app:
     resource: "@AcmtoolAppBundle/Resources/config/routing.yml"
     prefix:   /api
-
+acmtool_notification:
+    resource: "@AcmtoolAppBundle/Resources/config/notificationrouting.yml"
+    prefix:   /notification

@@ -13,7 +13,7 @@ class EmailAuthFactory implements SecurityFactoryInterface
     {
         $providerId = 'security.authentication.provider.Email_Auth.'.$id;
         $container
-            ->setDefinition($providerId, new DefinitionDecorator('apiauth.security.authentication.provider'));
+            ->setDefinition($providerId, new DefinitionDecorator('emailauth.security.authentication.provider'));
 
         $listenerId = 'security.authentication.listener.Email_Auth.'.$id;
         $listener = $container->setDefinition($listenerId, new DefinitionDecorator('emailauth.security.authentication.listener'));

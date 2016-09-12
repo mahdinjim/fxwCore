@@ -1,12 +1,23 @@
 <?php
 
 namespace Acmtool\AppBundle\DependencyInjection;
-
+use Acmtool\AppBundle\Entity\EmailToken;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+Const PERIOD=30;
+Const TIMEZONE="Europe/Berlin";
 class EmailNotifierService
 {
 	private $mailer;
-	function __construct($mailer) {
+	private $twig;
+	private $doctrine;
+	private $router;
+	private $crfProvider;
+	function __construct($mailer,$twig,$doctrine,$router,$crfProvider) {
 		$this->mailer = $mailer;
+		$this->twig=$twig;
+		$this->doctrine=$doctrine;
+		$this->router=$router;
+		$this->crfProvider=$crfProvider;
 	}
 	public function notifyAddedTeamMember($email,$password,$login,$name,$surname)
 	{
@@ -140,6 +151,205 @@ class EmailNotifierService
 		->setBody($body);
 		
 		$isent=$this->mailer->send($message);
+	}
+	public function notifyClientDraftTicket($client,$ticket)
+	{
+		//step 1 create variables 
+		//step 2 create the action link
+		//step 3 pass tha variable to the twig 
+		//step 4 send email
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$token=$this->createEmailToken($client->getCredentials());
+		$link=$this->router->generate("_startticket",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
+		$subject="Start ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/draft.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date,'link'=>$link)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
+	public function notifyClientEstimatedTicket($client,$ticket)
+	{
+		//step 1 create variables 
+		//step 2 create the action link
+		//step 3 pass tha variable to the twig 
+		//step 4 send email
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$token=$this->createEmailToken($client->getCredentials());
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=$this->router->generate("_acceptticketestimation",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
+		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/estimation.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
+	public function notifyClientTicketInProduction($client,$ticket)
+	{
+		//step 1 create variables 
+		//step 2 create the action link
+		//step 3 pass tha variable to the twig 
+		//step 4 send email
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$subject="Ticket in production >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/production.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
+	public function notifyClientTicketInQA($client,$ticket)
+	{
+		//step 1 create variables 
+		//step 2 create the action link
+		//step 3 pass tha variable to the twig 
+		//step 4 send email
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$subject="Ticket in QA >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/qa.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
+	public function notifyClientTicketDelivred($client,$ticket)
+	{
+		//step 1 create variables 
+		//step 2 create the action link
+		//step 3 pass tha variable to the twig 
+		//step 4 send email
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$token=$this->createEmailToken($client->getCredentials());
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
+		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/delivered.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
+	public function notifyClientTicketDone($client,$ticket)
+	{
+		//step 1 create variables 
+		//step 2 create the action link
+		//step 3 pass tha variable to the twig 
+		//step 4 send email
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$subject="Ticket is closed >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/done.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
+	private function createEmailToken($user)
+	{
+		date_default_timezone_set(TIMEZONE);
+		$today =new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+        $expireDate=$today->add(new \DateInterval('P'.PERIOD.'D'));
+		$token= new EmailToken();
+		$token->setUser($user);
+		$token->setExpirationdate($expireDate);
+		$key=$this->createHashCode($today->format('Y-m-d H:i:s'));
+		$token->setTokendig($key);
+		$em=$this->doctrine->getEntityManager();
+		$em->persist($token);
+		$em->flush();
+		return $token;
+	}
+	private function createHashCode($identifier)
+	{
+		$random=$identifier.$this->random_string(14);
+		$csrfToken = $this->crfProvider->generateCsrfToken($random);
+        return $csrfToken;
+	}
+	private function random_string($length) {
+	    $key = '';
+	    $keys = array_merge(range(0, 9), range('a', 'z'));
+
+	    for ($i = 0; $i < $length; $i++) {
+	        $key .= $keys[array_rand($keys)];
+	    }
+
+	    return $key;
 	}
 
 

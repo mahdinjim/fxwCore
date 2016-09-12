@@ -1,0 +1,16 @@
+_startticket:
+    path:     /ticket/start/{ticket_id}/{token}
+    defaults: { _controller: AcmtoolAppBundle:EmailNotif:startTicket }
+    methods: [GET,OPTIONS]
+_acceptticketestimation:
+    path:     /ticket/estimation/accept/{ticket_id}/{token}
+    defaults: { _controller: AcmtoolAppBundle:EmailNotif:acceptTicketEstimation }
+    methods: [GET,OPTIONS]
+_rejectticketestimation:
+    path:     /ticket/estimation/reject/{ticket_id}/{token}
+    defaults: { _controller: AcmtoolAppBundle:EmailNotif:rejectTicketEstimation }
+    methods: [GET,OPTIONS]
+_acceptticketemail:
+    path:     /ticket/accept/{ticket_id}/{token}
+    defaults: { _controller: AcmtoolAppBundle:EmailNotif:acceptTicket }
+    methods: [GET,OPTIONS]

@@ -66,6 +66,7 @@ class TicketController extends Controller
 	                if($project->getTeamleader())
 	                	array_push($emails, $project->getTeamleader()->getLogin());
 	                $this->get("acmtool_app.email.notifier")->notifyTicketCreated($emails,$project->getName(),$ticket->getTitle());
+	                $this->get("acmtool_app.email.notifier")->notifyClientDraftTicket($project->getOwner(),$ticket);
 	                $response=new Response('Ticket created',200);
 	                return $response;
         		}
@@ -258,9 +259,9 @@ class TicketController extends Controller
 				$mess=array("estimation"=>$estimation);
 				$em->flush();
 				$emails=array();
-				//Todo:Add client email to notification email
             	array_push($emails, $project->getKeyaccount()->getEmail());
             	$this->get("acmtool_app.email.notifier")->notifyTicketEstimated($emails,$project->getName(),$ticket->getTitle(),$project->getOwner()->getCompanyname());
+				$this->get("acmtool_app.email.notifier")->notifyClientEstimatedTicket($project->getOwner(),$ticket);
 				$res=new Response();
 		        $res->setStatusCode(200);
 		        $res->setContent(json_encode($mess));
@@ -300,6 +301,7 @@ class TicketController extends Controller
 				//Todo:Add client email to notification email
             	array_push($emails, $project->getKeyaccount()->getEmail());
             	$this->get("acmtool_app.email.notifier")->notifyTicketinProduction($emails,$project->getName(),$ticket->getTitle(),$project->getOwner()->getCompanyname());
+				$this->get("acmtool_app.email.notifier")->notifyClientTicketInProduction($project->getOwner(),$ticket);
 				$res=new Response();
 		        $res->setStatusCode(200);
 		        $res->setContent("Ticket in production");
@@ -347,9 +349,9 @@ class TicketController extends Controller
 					$mess=array("realtime"=>$realtime);
 					$em->flush();
 					$emails=array();
-					//Todo:Add client email to notification email
             		array_push($emails, $project->getKeyaccount()->getEmail());
             		$this->get("acmtool_app.email.notifier")->notifyTicketDelivered($emails,$project->getName(),$ticket->getTitle(),$project->getOwner()->getCompanyname());
+					$this->get("acmtool_app.email.notifier")->notifyClientTicketDelivred($project->getOwner(),$ticket);
 					$res=new Response();
 			        $res->setStatusCode(200);
 			        $res->setContent(json_encode($mess));
@@ -467,6 +469,7 @@ class TicketController extends Controller
 	        if($project->getTeamleader())
 	            array_push($emails, $project->getTeamleader()->getLogin());
 	        $this->get("acmtool_app.email.notifier")->notifyTicketAccepted($emails,$project->getName(),$ticket->getTitle());
+			$this->get("acmtool_app.email.notifier")->notifyClientTicketDone($project->getOwner(),$ticket);
 			$res=new Response();
 	        $res->setStatusCode(200);
 	        $res->setContent("Ticket Accepted");

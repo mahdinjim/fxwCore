@@ -28,7 +28,7 @@ services:
      class:  '%acmtool_app.validation.json.class%'
     acmtool_app.email.notifier:
      class: '%acmtoo_app.email.notifier.class%'
-     arguments: ['@mailer']
+     arguments: ['@mailer','@twig','@doctrine','@router','@form.csrf_provider']
     acmtool_app.corss_listener:
      class: Acmtool\AppBundle\Listeners\CorssListener
      tags:

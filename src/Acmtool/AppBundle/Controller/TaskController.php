@@ -568,6 +568,7 @@ class TaskController extends Controller
                 array_push($emails, $project->getKeyaccount()->getEmail());
                 //Todo: add client notification
                 $this->get("acmtool_app.email.notifier")->notifyTicketinQA($emails,$project->getName(),$ticket->getTitle(),$company_name);
+                $this->get("acmtool_app.email.notifier")->notifyClientTicketInQA($project->getOwner(),$ticket);
 			}
 			$mess=array("done"=>$done);
 			$em->flush();

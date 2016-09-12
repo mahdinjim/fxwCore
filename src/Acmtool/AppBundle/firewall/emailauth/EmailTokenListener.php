@@ -29,7 +29,8 @@ class EmailTokenListener implements ListenerInterface
             $event->setResponse($response);
             return;
         }
-        if(!$request->get{"token"})
+
+        if(!$request->get("token"))
             {
                 $this->securityContext->setToken(null);
                 $response = new Response();
@@ -39,7 +40,7 @@ class EmailTokenListener implements ListenerInterface
             }
         else
         {
-        	$tokenstring=$request->get{"token"};
+        	$tokenstring=$request->get("token");
         	$emailtoken=new EmailToken();
         	$emailtoken->setTokenDig($tokenstring);
 

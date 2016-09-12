@@ -15,7 +15,7 @@ class EmailTokenRepository extends EntityRepository
 	public function getUser($emailtoken)
 	{
 		$creds=$emailtoken->getUser();
-		switch ($emailtoken->getTitle()) {
+		switch ($creds->getTitle()) {
 			case Titles::Admin:
 				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:Admin")->findOneBy(array("credentials"=>$creds));
 				break;

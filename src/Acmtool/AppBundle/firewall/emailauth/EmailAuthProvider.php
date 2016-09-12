@@ -23,13 +23,13 @@ class EmailAuthProvider implements AuthenticationProviderInterface
         $emailtoken = $em->getRepository('AcmtoolAppBundle:EmailToken')->findOneBy(array('tokendig' => $token->getTokenDig() ));
         
        
-        if($emailtoken && $this->validToken($apitoken))
+        if($emailtoken && $this->validToken($emailtoken))
         {
 
             $user=$em->getRepository('AcmtoolAppBundle:EmailToken')->getUser($emailtoken);
             if($user)
             {
-                $authenticatedToken=new ApiToken($user->getRoles());
+                $authenticatedToken=new EmailToken($user->getRoles());
                 $authenticatedToken->setUser($user);
                 $authenticatedToken->setTokenDig($token->getTokenDig());
                 return $authenticatedToken;

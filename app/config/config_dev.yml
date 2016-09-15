@@ -26,6 +26,6 @@ assetic:
     use_controller: true
 swiftmailer:
     disable_delivery: false
-    port: %mailer_port%
+    #port: %mailer_port%
 #swiftmailer:
 #    delivery_address: me@example.com

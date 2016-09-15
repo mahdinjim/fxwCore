@@ -320,6 +320,56 @@ class EmailNotifierService
 		$isent=$this->mailer->send($message);
 
 	}
+	public function notifyClientRejectEstimationTicket($client,$ticket)
+	{
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$token=$this->createEmailToken($client->getCredentials());
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=$this->router->generate("_startticket",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
+		$subject="Redit ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/rejectestimation.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
+	public function notifyClientBugRejected($client,$ticket,$reason)
+	{
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$token=$this->createEmailToken($client->getCredentials());
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=$this->router->generate("_startticket",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
+		$subject="Bug converted to ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/bugrejected.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date,"reason"=>$reason)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+
+	}
 	private function createEmailToken($user)
 	{
 		date_default_timezone_set(TIMEZONE);

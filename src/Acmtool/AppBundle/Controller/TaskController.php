@@ -201,6 +201,7 @@ class TaskController extends Controller
 	}
 	public function listAction($ticket_id)
 	{
+        $request = $this->get('request');
 		$em = $this->getDoctrine()->getManager();
 		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
         $user=$this->get("security.context")->getToken()->getUser();
@@ -251,6 +252,15 @@ class TaskController extends Controller
                 if($key->getIsFinished())
                     $mess["finishedtasks"]+=1;
 			}
+            $h=0;
+            $dosc=array();
+            $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+            foreach ($ticket->getDocuments() as $key) {
+                $data=array("id"=>$key->getId(),"name"=>$key->getName(),"link"=>$baseurl.$key->getPath());
+                $dosc[$h]=$data;
+                $h++;
+            }
+            $mess['docs']=$dosc;
 			$res=new Response();
             $res->setStatusCode(200);
 	        $res->headers->set('Content-Type', 'application/json');
@@ -678,6 +688,7 @@ class TaskController extends Controller
                             $ticket->setDiplayId($displayid);
                             $em->remove($task);
                             $em->flush();
+                            $this->get("acmtool_app.email.notifier")->notifyClientBugRejected($project->getOwner(),$ticket,$json->{"reason"});
                             $response=new Response('Task converted to ticket',200);
                             return $response;
                         }

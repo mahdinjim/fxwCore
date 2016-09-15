@@ -221,8 +221,17 @@ class TicketController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
 		{
+			$path=__DIR__.'/../../../../web'.'/uploads/pdocs/'.$project->getId()."/".$ticket->getId();
 			$em->remove($ticket);
 			$em->flush();
+			if(file_exists($path))
+			{
+				$files = array_diff(scandir($path), array('.','..')); 
+			    foreach ($files as $file) { 
+			      (is_dir("$path/$file")) ? delTree("$path/$file") : unlink("$path/$file"); 
+			    } 
+				rmdir($path);
+			}
 			$response=new Response('Ticket deleted',200);
 	        return $response;
 		}
@@ -445,6 +454,7 @@ class TicketController extends Controller
 			$res=new Response();
 	        $res->setStatusCode(200);
 	        $res->setContent("Estimation rejected");
+	        $this->get("acmtool_app.email.notifier")->notifyClientRejectEstimationTicket($project->getOwner(),$ticket);
 	        return $res;
 		}
 		else

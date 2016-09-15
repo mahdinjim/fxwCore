@@ -464,10 +464,18 @@ _uploadfile:
     path:     /private/project/restricted/file/uplaod/{project_id}
     defaults: { _controller: AcmtoolAppBundle:ProjectDocument:uploadFile }
     methods: [POST,OPTIONS]
+_uploadticketfile:
+    path:     /private/project/restricted/ticket/file/uplaod/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:ProjectDocument:uploadTicketFile }
+    methods: [POST,OPTIONS]
 _listfile:
     path:     /private/project/file/list/{project_id}
     defaults: { _controller: AcmtoolAppBundle:ProjectDocument:listDocuments }
     methods: [GET,OPTIONS]
+_deletefile:
+    path:     /private/project/file/delete/{file_id}
+    defaults: { _controller: AcmtoolAppBundle:ProjectDocument:deleteFile }
+    methods: [DELETE,OPTIONS]
 _listprojectbyclient:
     path:     /private/management/project/client/list/{client_id}
     defaults: { _controller: AcmtoolAppBundle:Project:listbyClient }

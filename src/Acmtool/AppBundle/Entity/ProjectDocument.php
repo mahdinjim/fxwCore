@@ -40,6 +40,12 @@ class ProjectDocument
     * @ORM\JoinColumn(name="project_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $project;
+    /**
+    * @Assert\NotBlank
+    * @ORM\ManyToOne(targetEntity="Ticket", inversedBy="documents")
+    * @ORM\JoinColumn(name="ticket_id",referencedColumnName="id",onDelete="SET NULL")
+    */
+    private $ticket;
 
     /**
      * Get id
@@ -120,5 +126,28 @@ class ProjectDocument
     public function getProject()
     {
         return $this->project;
+    }
+
+    /**
+     * Set ticket
+     *
+     * @param \Acmtool\AppBundle\Entity\Ticket $ticket
+     * @return ProjectDocument
+     */
+    public function setTicket(\Acmtool\AppBundle\Entity\Ticket $ticket = null)
+    {
+        $this->ticket = $ticket;
+
+        return $this;
+    }
+
+    /**
+     * Get ticket
+     *
+     * @return \Acmtool\AppBundle\Entity\Ticket 
+     */
+    public function getTicket()
+    {
+        return $this->ticket;
     }
 }

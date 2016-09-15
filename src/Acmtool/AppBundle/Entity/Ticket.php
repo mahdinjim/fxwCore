@@ -172,6 +172,10 @@ class Ticket
      */
     private $isPayed=false;
     /**
+    * @ORM\OneToMany(targetEntity="ProjectDocument", mappedBy="ticket")
+    */
+    private $documents;
+    /**
      * Get id
      *
      * @return integer 
@@ -747,5 +751,38 @@ class Ticket
     public function getIsPayed()
     {
         return $this->isPayed;
+    }
+
+    /**
+     * Add documents
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectDocument $documents
+     * @return Ticket
+     */
+    public function addDocument(\Acmtool\AppBundle\Entity\ProjectDocument $documents)
+    {
+        $this->documents[] = $documents;
+
+        return $this;
+    }
+
+    /**
+     * Remove documents
+     *
+     * @param \Acmtool\AppBundle\Entity\ProjectDocument $documents
+     */
+    public function removeDocument(\Acmtool\AppBundle\Entity\ProjectDocument $documents)
+    {
+        $this->documents->removeElement($documents);
+    }
+
+    /**
+     * Get documents
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
     }
 }

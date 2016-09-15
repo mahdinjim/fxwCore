@@ -58,6 +58,57 @@ class ProjectDocumentController extends Controller
 		}
     	
 	}
+	public function uploadTicketFileAction($ticket_id)
+	{
+		$request = $this->get('request');
+		$em = $this->getDoctrine()->getManager();
+    	$user=$this->get("security.context")->getToken()->getUser();
+    	$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+    	if($project && $ticket)
+    	{
+	    	$fileBag = $request->files;
+			$files=$fileBag->all();
+			$filename=str_replace(' ', '', $files['file']->getClientOriginalName());
+			$projectPath=__DIR__.'/../../../../web'.'/uploads/pdocs/'.$project->getId();
+			if(!file_exists($projectPath))
+			{
+				mkdir($projectPath);
+			}
+			$path=$projectPath.'/'.$ticket->getId();
+			if(!file_exists($path))
+			{
+				mkdir($path);
+			}
+			$filepath=$path."/".$filename;
+			if(!file_exists($filepath))
+			{
+				$files["file"]->move($path, $filename);
+				$doc=new ProjectDocument();
+				$doc->setName($filename);
+				$doc->setPath('/uploads/pdocs/'.$project->getId()."/".$ticket->getId()."/".$filename);
+				$doc->setTicket($ticket);
+				$ticket->addDocument($doc);
+				$em->persist($doc);
+				$em->flush();
+				$response=new Response("Document added",200);
+                return $response;
+
+			}
+			else
+			{
+				$response=new Response("Document already added",201);
+                return $response;
+			}
+    	}
+    	else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+        	$response->headers->set('Content-Type', 'application/json');
+        	return $response;
+		}
+    	
+	}
 	public function listDocumentsAction($project_id)
 	{
 		$request = $this->get('request');
@@ -79,11 +130,39 @@ class ProjectDocumentController extends Controller
         	return $response;
     	}
     	else
-	{
-		$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
-        	$response->headers->set('Content-Type', 'application/json');
-        	return $response;
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+	        	$response->headers->set('Content-Type', 'application/json');
+	        	return $response;
+		}
 	}
+	public function deleteFileAction($file_id)
+	{
+		$request = $this->get('request');
+		$em = $this->getDoctrine()->getManager();
+    	$user=$this->get("security.context")->getToken()->getUser();
+    	$document=$em->getRepository("AcmtoolAppBundle:ProjectDocument")->findOneById($file_id);
+    	if($document->getProject()!=null)
+    		$project_id=$document->getProject()->getDisplayId();
+    	else
+    		$project_id=$document->getTicket()->getProject()->getDisplayId();
+
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$project_id);
+    	if($project && $document)
+    	{
+    		$path=__DIR__.'/../../../../web'.$document->getPath();
+    		unlink($path);
+    		$em->remove($document);
+    		$em->flush();
+    		$response=new Response("document deleted",200);
+        	return $response;
+    	}
+    	else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+	        	$response->headers->set('Content-Type', 'application/json');
+	        	return $response;
+		}
 	}
 	
 }

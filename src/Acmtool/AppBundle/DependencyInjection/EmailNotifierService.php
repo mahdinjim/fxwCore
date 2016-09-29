@@ -1,5 +1,4 @@
 <?php
-
 namespace Acmtool\AppBundle\DependencyInjection;
 use Acmtool\AppBundle\Entity\EmailToken;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -178,7 +177,22 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+					'EmailTemplates/client/draft.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date,'link'=>$link)
+					),
+					'text/html'
+				);
+				$this->mailer->send($message);
+			}
 
 	}
 	public function notifyClientEstimatedTicket($client,$ticket)
@@ -208,6 +222,21 @@ class EmailNotifierService
 			);
 		
 		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+					'EmailTemplates/client/estimation.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+				),
+				'text/html'
+			);
+				$isent=$this->mailer->send($message);
+			}
 
 	}
 	public function notifyClientTicketInProduction($client,$ticket)
@@ -235,6 +264,21 @@ class EmailNotifierService
 			);
 		
 		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+					'EmailTemplates/client/production.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date)
+					),
+					'text/html'
+				);
+				$isent=$this->mailer->send($message);
+			}
 
 	}
 	public function notifyClientTicketInQA($client,$ticket)
@@ -262,6 +306,21 @@ class EmailNotifierService
 			);
 		
 		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+					'EmailTemplates/client/qa.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date)
+				),
+				'text/html'
+				);
+				$isent=$this->mailer->send($message);
+			}
 
 	}
 	public function notifyClientTicketDelivred($client,$ticket)
@@ -291,6 +350,21 @@ class EmailNotifierService
 			);
 		
 		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+							'EmailTemplates/client/delivered.html.twig',
+							array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+						),
+						'text/html'
+					);
+				$isent=$this->mailer->send($message);
+			}
 
 	}
 	public function notifyClientTicketDone($client,$ticket)
@@ -318,6 +392,21 @@ class EmailNotifierService
 			);
 		
 		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+					'EmailTemplates/client/done.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"date"=>$date)
+				),
+				'text/html'
+			);
+				$isent=$this->mailer->send($message);
+			}
 
 	}
 	public function notifyClientRejectEstimationTicket($client,$ticket)
@@ -343,6 +432,21 @@ class EmailNotifierService
 			);
 		
 		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+					'EmailTemplates/client/rejectestimation.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+				),
+				'text/html'
+			);
+				$isent=$this->mailer->send($message);
+			}
 
 	}
 	public function notifyClientBugRejected($client,$ticket,$reason)
@@ -368,6 +472,21 @@ class EmailNotifierService
 			);
 		
 		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+					'EmailTemplates/client/bugrejected.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date,"reason"=>$reason)
+				),
+				'text/html'
+				);
+				$isent=$this->mailer->send($message);
+			}
 
 	}
 	private function createEmailToken($user)

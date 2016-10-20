@@ -23,6 +23,8 @@ class TicketCloserCommand extends ContainerAwareCommand
     							->setParameter("ticketstatus",TicketStatus::ACCEPT)
     							->getResult();
     	$today =new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+        $closedTickets=0;
+        $ticketTitles=array();
     	foreach ($tickets as $key) {
     		$project=$key->getProject();
     		if($today>$key->getClosingdate())
@@ -31,6 +33,8 @@ class TicketCloserCommand extends ContainerAwareCommand
 				$key->setFinisheddate(new \DateTime("UTC"));
 				$em->flush();
 				$emails=array();
+                array_push($ticketTitles, $key->getTitle());
+                $closedTickets++;
 				array_push($emails, $project->getKeyaccount()->getEmail());
 		        if($project->getTeamleader())
 		            array_push($emails, $project->getTeamleader()->getLogin());
@@ -45,5 +49,12 @@ class TicketCloserCommand extends ContainerAwareCommand
     			$em->flush();
     		}
     	}
+        $body="Number of ticket closed: ".$closedTickets."\nTickets:\n".implode("\n", $ticketTitles);
+        $message =\Swift_Message::newInstance()
+            ->setSubject("closed tickets")
+            ->setFrom("bb8@flexwork.io")
+            ->setTo("mn@flexwork.io")
+            ->setBody($body);
+        $this->getContainer()->get('mailer')->send($message);
     }
 }

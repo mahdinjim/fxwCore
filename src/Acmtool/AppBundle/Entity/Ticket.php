@@ -176,6 +176,24 @@ class Ticket
     */
     private $documents;
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="closingdate", type="datetime",nullable=true)
+     */
+    private $closingdate;
+     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="bugopen", type="boolean",nullable=true)
+     */
+    private $bugopen=false;
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="closenotif", type="boolean",nullable=true)
+     */
+    private $closenotif=false;
+    /**
      * Get id
      *
      * @return integer 
@@ -784,5 +802,74 @@ class Ticket
     public function getDocuments()
     {
         return $this->documents;
+    }
+
+    /**
+     * Set closingdate
+     *
+     * @param \DateTime $closingdate
+     * @return Ticket
+     */
+    public function setClosingdate($closingdate)
+    {
+        $this->closingdate = $closingdate;
+
+        return $this;
+    }
+
+    /**
+     * Get closingdate
+     *
+     * @return \DateTime 
+     */
+    public function getClosingdate()
+    {
+        return $this->closingdate;
+    }
+
+    /**
+     * Set bugopen
+     *
+     * @param boolean $bugopen
+     * @return Ticket
+     */
+    public function setBugopen($bugopen)
+    {
+        $this->bugopen = $bugopen;
+
+        return $this;
+    }
+
+    /**
+     * Get bugopen
+     *
+     * @return boolean 
+     */
+    public function getBugopen()
+    {
+        return $this->bugopen;
+    }
+
+    /**
+     * Set closenotif
+     *
+     * @param boolean $closenotif
+     * @return Ticket
+     */
+    public function setClosenotif($closenotif)
+    {
+        $this->closenotif = $closenotif;
+
+        return $this;
+    }
+
+    /**
+     * Get closenotif
+     *
+     * @return boolean 
+     */
+    public function getClosenotif()
+    {
+        return $this->closenotif;
     }
 }

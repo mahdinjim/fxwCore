@@ -189,6 +189,18 @@ class Project
      * @ORM\Column(name="displayid", type="string", length=255)
      */
     private $displayid;
+    /**
+     * @var float
+     * 
+     * @ORM\Column(name="estimation", type="float",nullable=true)
+     */
+    private $estimation;
+    /**
+     * @var float
+     * 
+     * @ORM\Column(name="period", type="float",nullable=true)
+     */
+    private $period;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -988,5 +1000,51 @@ class Project
     public function getContractPrepared()
     {
         return $this->contractPrepared;
+    }
+
+    /**
+     * Set estimation
+     *
+     * @param float $estimation
+     * @return Project
+     */
+    public function setEstimation($estimation)
+    {
+        $this->estimation = $estimation;
+
+        return $this;
+    }
+
+    /**
+     * Get estimation
+     *
+     * @return float 
+     */
+    public function getEstimation()
+    {
+        return $this->estimation;
+    }
+
+    /**
+     * Set period
+     *
+     * @param float $period
+     * @return Project
+     */
+    public function setPeriod($period)
+    {
+        $this->period = $period;
+
+        return $this;
+    }
+
+    /**
+     * Get period
+     *
+     * @return float 
+     */
+    public function getPeriod()
+    {
+        return $this->period;
     }
 }

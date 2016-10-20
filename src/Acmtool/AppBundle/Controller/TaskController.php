@@ -42,7 +42,9 @@ class TaskController extends Controller
                     if($json->{'type'}==TaskTypes::$BUG["type"] && $user->getCredentials()->getId()!=$project->getTeamLeader()->getId())
                         $task->setIsAccepted(false);
                     else
-                         $task->setIsAccepted(true);
+                    {
+                        $task->setIsAccepted(true);
+                    } 
         			$task->setCreationdate(new \DateTime("UTC"));
         			$owner=$ticket->getProject()->getTeamLeader();
         			$task->setOwner($owner);
@@ -252,6 +254,7 @@ class TaskController extends Controller
                 if($key->getIsFinished())
                     $mess["finishedtasks"]+=1;
 			}
+            $mess["bugopen"]=$ticket->getBugopen();;
             $h=0;
             $dosc=array();
             $baseurl = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
@@ -569,7 +572,7 @@ class TaskController extends Controller
 						$done=false;
 				}
 			}
-			if($done)
+			if($done && $ticket->getStatus()==TicketStatus::PRODUCTION)
 			{
 				$ticket->setStatus(TicketStatus::TESTING);
 				$ticket->setTestingdate(new \DateTime("UTC"));
@@ -648,6 +651,9 @@ class TaskController extends Controller
                    if($json->{"accept"})
                    {
                         $task->setIsAccepted(true);
+                        $task->getTicket()->setClosingdate(null);
+                        $task->getTicket()->setBugopen(true);
+                        $task->setClosenotif(false);
                         $em->flush();
                         $response=new Response('Task accepted',200);
                         return $response;

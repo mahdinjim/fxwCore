@@ -3,7 +3,7 @@
 namespace Acmtool\AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
-
+use Acmtool\AppBundle\Entity\TicketStatus;
 /**
  * TicketRepository
  *
@@ -12,5 +12,31 @@ use Doctrine\ORM\EntityRepository;
  */
 class TicketRepository extends EntityRepository
 {
-	
+	public function getDoneTicketByMonth($project,$month)
+	{
+		$em=$this->getEntityManager();
+		$year="2016";
+		$day="1";
+		if($month==12)
+		{
+			$endMonth=1;
+			$endYear="2017";
+		}
+		else
+		{
+			$endMonth=$month+1;
+			$endYear="2016";
+		}
+		
+		$startDate=new \DateTime($year.'-'.$month.'-'.$day);
+		$endDate=new \DateTime($endYear.'-'.$endMonth.'-'.$day);
+		$result=$em->createQuery('SELECT t from AcmtoolAppBundle:Ticket t
+								WHERE t.project = :project AND t.status= :status AND t.finisheddate >= :startdate AND t.finisheddate< :enddate')
+						->setParameter("project",$project)
+						->setParameter("startdate",$startDate)
+						->setParameter("enddate",$endDate)
+						->setParameter("status",TicketStatus::DONE)
+                        ->getResult();
+        return $result;
+	}
 }

@@ -575,6 +575,7 @@ class ProjectController extends Controller
                 $tickets[$i]["open"]=false;
                 $tickets[$i]["billed"]=false;
                 $tickets[$i]["payed"]=false;
+                $tickets[$i]["bugopen"]=$key->getBugopen();
                 if($key->getIsPayed())
                 {
                     $tickets[$i]["payed"]=true;
@@ -1222,6 +1223,8 @@ class ProjectController extends Controller
                  // $data["contractprepared"]=$key->getContractPrepared();
                 if($key->getSignedContract())
                     $data["signaturedate"]=date_format($key->getSignaturedate(),"Y-m-d");
+                $data["estimation"]=$key->getEstimation();
+                $data["period"]=$key->getPeriod();
                 $j=0;
                 $team=array();
 
@@ -1386,6 +1389,7 @@ class ProjectController extends Controller
             $i=0;
             $mess["totalestimated"]=0;
             $mess["totalrealtime"]=0;
+            $mess["btime"]=0;
             $mess["data"]=array();
             foreach ($tickets as $ticket) {
                $tasks=$em->getRepository("AcmtoolAppBundle:Task")->getTasksByMonth($ticket,$month,$year);
@@ -1420,6 +1424,17 @@ class ProjectController extends Controller
                    }
                    $mess["totalrealtime"]+=$sum;
                    $mess["totalestimated"]+=$sumestimated;
+                   if($sum>$sumestimated)
+                   {
+                        $mess["btime"]+=$sumestimated;
+                        $ticketData["btime"]=$sumestimated;
+                   }    
+                    else
+                    {
+                        $mess["btime"]+=$sum;
+                        $ticketData["btime"]=$sum;
+                    }
+                        
                    $ticketData["totalhours"]=$sum;
                    $ticketData["totalestimatedhours"]=$sumestimated;
                    $ticketData["stories"]=$tasksdata;
@@ -1492,6 +1507,37 @@ class ProjectController extends Controller
         }
         else
         {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+    public function setProjectEstimationAction()
+    {
+        $request = $this->get('request');
+        $message = $request->getContent();
+        $em = $this->getDoctrine()->getManager();
+        $result = $this->get('acmtool_app.validation.json')->validate($message);
+        if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+            $json=$result['json'];
+            if(isset($json->{"project_id"}) && isset($json->{"estimation"}) && isset($json->{"period"}))
+            {
+                $loggeduser=$this->get("security.context")->getToken()->getUser();
+                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$json->{"project_id"});
+                if($project)
+                {
+                    $project->setEstimation($json->{"estimation"});
+                    $project->setPeriod($json->{"period"});
+                    $em->flush();
+                    $res=new Response();
+                    $res->setStatusCode(200);
+                    $res->setContent("Project estimation set");
+                    return $res;
+                }
+            }
             $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
             $response->headers->set('Content-Type', 'application/json');
             return $response;

@@ -512,3 +512,15 @@ _tasktypes:
     path:     /private/task/types
     defaults: { _controller: AcmtoolAppBundle:Task:getTaskTypes }
     methods: [GET,OPTIONS]
+_deliverbugs:
+    path:     /private/ticket/bug/deliver/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:deliverBugs }
+    methods: [GET,OPTIONS]
+_estimateproject:
+    path:     /private/project/estimation
+    defaults: { _controller: AcmtoolAppBundle:Project:setProjectEstimation }
+    methods: [POST,OPTIONS]
+_admindashboard:
+    path:     /private/super/dashboard
+    defaults: { _controller: AcmtoolAppBundle:Dashboard:adminDashboard }
+    methods: [GET,OPTIONS]

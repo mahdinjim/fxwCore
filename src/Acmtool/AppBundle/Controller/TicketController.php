@@ -188,6 +188,7 @@ class TicketController extends Controller
 				$tickets[$i]["open"]=false;
 				$tickets[$i]["billed"]=false;
 				$tickets[$i]["payed"]=false;
+				$tickets[$i]["bugopen"]=$key->getBugopen();
 				if($key->getIsPayed())
 				{
 					$tickets[$i]["payed"]=true;
@@ -356,6 +357,8 @@ class TicketController extends Controller
 					$ticket->setRealtime($realtime);
 					$ticket->setDeliverydate(new \DateTime("UTC"));
 					$mess=array("realtime"=>$realtime);
+					$today =new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE));
+                    $ticket->setClosingdate($today->add(new \DateInterval('P7D')));
 					$em->flush();
 					$emails=array();
             		array_push($emails, $project->getKeyaccount()->getEmail());
@@ -656,5 +659,41 @@ class TicketController extends Controller
         $res->headers->set('Content-Type', 'application/json');
         $res->setContent(json_encode($types));
         return $res;
+	}
+	public function deliverBugsAction($ticket_id)
+	{
+		$em = $this->getDoctrine()->getManager();
+		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($ticket_id);
+		$user=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
+        if($this->get('security.context')->isGranted("ROLE_ADMIN"))
+            $haveaccess=true;
+        else
+            if($project->getTeamleader()->getId()==$user->getCredentials()->getId())
+                $haveaccess=true;
+            else
+                 $haveaccess=false;
+        if($ticket && $project && $haveaccess)
+        {
+        	if($ticket->getStatus()==TicketStatus::ACCEPT)
+        	{
+        		$today =new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE));
+                $ticket->setClosingdate($today->add(new \DateInterval('P3D')));
+                $ticket->setBugopen(false);
+                $this->get("acmtool_app.email.notifier")->notifyClientBugsDone($project->getOwner(),$ticket);
+                $em->flush();
+        	}
+        	$res=new Response();
+	        $res->setStatusCode(200);
+	        $res->setContent("bugs delivered");
+	        return $res;
+
+        }
+        else
+		{
+			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+		}
 	}
 }

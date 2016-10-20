@@ -409,6 +409,86 @@ class EmailNotifierService
 			}
 
 	}
+	public function notifyClientBugsDone($client,$ticket)
+	{
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$token=$this->createEmailToken($client->getCredentials());
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
+		$subject="Ticket bugs are solved >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/bugfinish.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+							'EmailTemplates/client/bugfinish.html.twig',
+							array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+						),
+						'text/html'
+					);
+				$isent=$this->mailer->send($message);
+			}
+
+	}
+	public function notifyClientReminder($client,$ticket)
+	{
+		$client_email=$client->getEmail();
+		$client_name=$client->getName();
+		$ticket_id=$ticket->getDiplayId();
+		$token=$this->createEmailToken($client->getCredentials());
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
+		$subject="Reminder: 1 day left for acceptance >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/reminder.html.twig',
+					array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+				),
+				'text/html'
+			);
+		
+		$isent=$this->mailer->send($message);
+		foreach ($client->getUsers() as $user) {
+			$client->setName($user->getName());
+			$message =\Swift_Message::newInstance()
+				->setSubject($subject)
+				->setFrom("bb8@flexwork.io")
+				->setTo($user->getEmail())
+				->setBody(
+					$this->twig->render(
+							'EmailTemplates/client/bugfinish.html.twig',
+							array('ticket'=>$ticket,'client'=>$client,"link"=>$link,"date"=>$date)
+						),
+						'text/html'
+					);
+				$isent=$this->mailer->send($message);
+			}
+
+	}
 	public function notifyClientRejectEstimationTicket($client,$ticket)
 	{
 		$client_email=$client->getEmail();

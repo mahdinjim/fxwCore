@@ -49,12 +49,16 @@ class TicketCloserCommand extends ContainerAwareCommand
     			$em->flush();
     		}
     	}
-        $body="Number of ticket closed: ".$closedTickets."\nTickets:\n".implode("\n", $ticketTitles);
-        $message =\Swift_Message::newInstance()
-            ->setSubject("closed tickets")
-            ->setFrom("bb8@flexwork.io")
-            ->setTo("mn@flexwork.io")
-            ->setBody($body);
-        $this->getContainer()->get('mailer')->send($message);
+        if($closedTickets>0)
+        {
+            $body="Number of ticket closed: ".$closedTickets."\nTickets:\n".implode("\n", $ticketTitles);
+            $message =\Swift_Message::newInstance()
+                ->setSubject("closed tickets")
+                ->setFrom("bb8@flexwork.io")
+                ->setTo("mn@flexwork.io")
+                ->setBody($body);
+            $this->getContainer()->get('mailer')->send($message);
+        }
+        
     }
 }

@@ -569,6 +569,25 @@ class EmailNotifierService
 			}
 
 	}
+	public function sendClientCreds($client,$password)
+	{
+		$client_email=$client->getEmail();
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$subject="Welcome to flexwork";
+		$message =\Swift_Message::newInstance()
+		->setSubject($subject)
+		->setFrom("bb8@flexwork.io")
+		->setTo($client_email)
+		->setBody(
+			$this->twig->render(
+					'EmailTemplates/client/access.twig.html',
+					array('client'=>$client,"password"=>$password,"date"=>$date)
+				),
+				'text/html'
+			);
+		$isent=$this->mailer->send($message);
+	}
 	private function createEmailToken($user)
 	{
 		date_default_timezone_set(TIMEZONE);

@@ -105,7 +105,7 @@ class CustomerController extends Controller
                     $em->persist($user);
                     $em->flush();
                      if($json->{"isSent"})
-                        $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember($json->{'email'},$json->{'password'},$json->{"login"},$json->{'name'},$json->{'surname'});
+                        $this->get("acmtool_app.email.notifier")->sendClientCreds($user,$json->{'password'});
                     $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent(ConstValues::CUSCREATED);

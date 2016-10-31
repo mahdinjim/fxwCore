@@ -15,6 +15,8 @@
   p.ticketInfo{padding-bottom: 5px;}
   p.please{padding-top: 20px;}
   p.projectInfo{padding-bottom: 0px;}
+  .est-highlight{text-align:right;font-weight: bold;font-size: 14px;}
+  .rt{text-align:right;font-weight: normal;font-size: 14px;}
   .footer-text p a{ border: 0px; color: #aaa;}
    @media only screen and (max-width: 600px) {
      table {width:100%!important;padding:0px 10px;}
@@ -127,12 +129,32 @@
                               </tr>
                               <tr>
                                 <td>
-                                  <span>or</span>
+                                  <table style="width:100%;padding:10px 20px;margin:auto;text-align:left;font-size:12px;" align="left" valgin="top" border="0" cellpadding="0" cellspacing="0">
+                                      <tr>
+                                        <td>
+                                          <table bgcolor="#fff" style="width:100%;padding: 0px 10px;">
+                                            <tr>
+                                              <td width="60%" style="color:#676a6c;font-weight:bold;border-bottom:1px solid #e7eaec;">stories</td>
+                                              <td width="20%" style="color:#676a6c;font-weight:bold;border-bottom:1px solid #e7eaec;text-align:right;">estimation</td>
+                                              <td width="20%" style="color:#676a6c;font-weight:bold;border-bottom:1px solid #e7eaec;text-align:right;">real time</td>
+                                            </tr>
+                                            {% for story in ticket.tasks %}
+                                            <tr>
+                                                <td>{{ story.title }} </td>
+                                                <td class="est-highlight">{{ story.estimation }} h</td>
+                                                <td class="rt">{{ story.realtime }} h</td>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                        </td>
+                                      </tr>
+                                  </table>
                                 </td>
                               </tr>
+                              
                               <tr>
                                 <td style="height:25px;">
-                                  <p><a href="http://app.fxw.io" target="_blank" class="gotoApp">see details <img src="http://img.fxw.io/email/arrow-xs-right_2x.png" width="8" height="8" alt="&#187;" title="&#187;"></a></p>
+                                  <p><a href="http://app.fxw.io" target="_blank" class="gotoApp">go to app <img src="http://img.fxw.io/email/arrow-xs-right_2x.png" width="8" height="8" alt="&#187;" title="&#187;"></a></p>
                                 </td>
                               </tr>
                             </table>

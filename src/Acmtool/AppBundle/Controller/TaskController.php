@@ -653,7 +653,7 @@ class TaskController extends Controller
                         $task->setIsAccepted(true);
                         $task->getTicket()->setClosingdate(null);
                         $task->getTicket()->setBugopen(true);
-                        $task->setClosenotif(false);
+                        $task->getTicket()->setClosenotif(false);
                         $em->flush();
                         $response=new Response('Task accepted',200);
                         return $response;

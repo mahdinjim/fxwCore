@@ -53,4 +53,42 @@ class CredsRepository extends EntityRepository
 			return false;
 
 	}
+	public function getUserByCreds($creds)
+	{
+		if($creds)
+		switch ($creds->getTitle()) {
+			case Titles::Admin:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:Admin")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::Developer:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:Developer")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::Customer:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:Customer")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::CustomerUser:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:CustomerUser")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::Designer:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:Designer")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::KeyAccount:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:KeyAccount")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::SystemAdmin:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:SystemAdmin")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::TeamLeader:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:TeamLeader")->findOneBy(array("credentials"=>$creds));
+				break;
+			case Titles::Tester:
+				return $this->getEntityManager()->getRepository("AcmtoolAppBundle:Tester")->findOneBy(array("credentials"=>$creds));
+				break;
+			default:
+				return false;
+				break;
+		}
+		else
+			return false;
+	}
 }

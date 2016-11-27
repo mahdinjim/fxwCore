@@ -1,0 +1,33 @@
+{% extends 'email_base.html.twig' %}
+{% block greeting%}
+	<h2 style="margin-bottom: 5px;margin-top: 0px;">Hey {{name}}</h2>
+	<p class="projectInfo" style="margin-bottom: 5px;">welcome to <b>flexwork.io</b>.</p>
+{% endblock %}
+{% block body %}
+<tr>
+	 <td colspan="2" valign="top" style="padding: 20px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #f7fffd;border-top: 2px solid #e1fcf5;border-bottom: 2px solid #e1fcf5;">
+		<table width="100%">
+		  <tr>
+		    <td>
+		      <p class="ticketInfo">your credential information</p>
+		      <p style="font-size: 12px;color: #999;">E-Mail</p>
+		      <p class="ticketInfo"><b>{{login}}</b></a></p>
+		      <p style="font-size: 12px;color: #999;">Password</p>
+		      <p class="ticketInfo"><b>{{password}}</b></a></p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td style="height:50px;">
+		      <p><a href="http://app.fxw.io" target="_blank" class="fxwLink">login now <img src="http://img.fxw.io/email/arrow-right_2x.png" width="12" height="12" alt="&#187;" title="&#187;"></a></p>
+		    </td>
+		  </tr>
+		  <tr>
+		    <td style="height:50px;">
+		      <p style="font-size: 12px;color: #999;">*after first login you can change your password</p>
+		    </td>
+		  </tr>
+
+		</table>
+	</td>
+</tr>
+{% endblock %}

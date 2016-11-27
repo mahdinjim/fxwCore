@@ -35,16 +35,12 @@ class TicketCloserCommand extends ContainerAwareCommand
 				$emails=array();
                 array_push($ticketTitles, $key->getTitle());
                 $closedTickets++;
-				array_push($emails, $project->getKeyaccount()->getEmail());
-		        if($project->getTeamleader())
-		            array_push($emails, $project->getTeamleader()->getLogin());
-		        $this->getContainer()->get("acmtool_app.email.notifier")->notifyTicketAccepted($emails,$project->getName(),$key->getTitle());
-				$this->getContainer()->get("acmtool_app.email.notifier")->notifyClientTicketDone($project->getOwner(),$key);
+				$this->getContainer()->get("acmtool_app.notifier.handler")->ticketAccepted($key,null);
     		}
     		$notifDate=$key->getClosingdate()->sub(new \DateInterval("P1D"));
     		if(($today >= $notifDate) && !$key->getClosenotif())
     		{
-    			$this->getContainer()->get("acmtool_app.email.notifier")->notifyClientReminder($project->getOwner(),$key);
+    			$this->getContainer()->get("acmtool_app.notifier.handler")->ticketWillclose($key);
     			$key->setClosenotif(true);
     			$em->flush();
     		}

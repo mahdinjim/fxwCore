@@ -1,0 +1,56 @@
+{% extends 'email_base.html.twig' %}
+{% block greeting%}
+	<h2 style="margin-bottom: 5px;margin-top: 0px;">Hey {{name}}</h2>
+	<p class="projectInfo" style="margin-bottom: 5px;"><b>Good News!</b></p>
+{% endblock %}
+{% block body %}
+<tr>
+<td colspan="2" valign="top" style="padding: 10px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #fff7f7;border-top: 2px solid #ffe6e6;">
+    <table width="100%">
+      <tr>
+        <td>
+          <p class="ticketInfo">we have a <b>new project</b></p>
+        </td>
+      </tr>
+    </table>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" valign="top" style="padding: 10px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #f9f9f9;">
+    <table width="100%">
+      <tr>
+        <p class="projectInfo"><b>{{project_name}}</b></p>
+        <p style="font-size: 12px;color: #999;">{{client_name}}</p>
+        <p style="font-size: 12px;margin-top:5px;">created by {{creator}}</p>
+      </tr>
+    </table>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" valign="top" style="padding: 20px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #fff7f7;border-bottom: 2px solid #ffe6e6;">
+    <table width="100%">
+
+      <tr>
+        <td style="height:50px;">
+          <p>
+            <a href="{{link}}" target="_blank" class="fxwLink"><img src="http://img.fxw.io/email/plus-xs_2x.png" width="12" height="12" alt="&#187;" title="&#187;"> add team</a>
+            <a href="{{link}}" target="_blank" class="fxwLink"><img src="http://img.fxw.io/email/plus-xs_2x.png" width="12" height="12" alt="&#187;" title="&#187;"> add rate</a></p>
+        </td>
+      </tr>
+      <tr style="height:50px;">
+        <td>
+          <p>
+            <a href="tel:+{{client_tel}}" class="fxwLink"><img src="http://img.fxw.io/email/phone-xs_2x.png" width="12" height="12" alt="&#187;" title="&#187;"> call now</a>
+          </p>
+        </td>
+      </tr>
+    </table>
+</td>
+</tr>
+
+<tr>
+<td colspan="2" style="height:20px;" colspan="2"></td>
+</tr>
+{% endblock %}

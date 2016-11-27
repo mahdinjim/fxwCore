@@ -201,6 +201,10 @@ class Project
      * @ORM\Column(name="period", type="float",nullable=true)
      */
     private $period;
+     /**
+    * @ORM\OneToMany(targetEntity="Log", mappedBy="project")
+    */
+    private $logs;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -1046,5 +1050,38 @@ class Project
     public function getPeriod()
     {
         return $this->period;
+    }
+
+    /**
+     * Add logs
+     *
+     * @param \Acmtool\AppBundle\Entity\Log $logs
+     * @return Project
+     */
+    public function addLog(\Acmtool\AppBundle\Entity\Log $logs)
+    {
+        $this->logs[] = $logs;
+
+        return $this;
+    }
+
+    /**
+     * Remove logs
+     *
+     * @param \Acmtool\AppBundle\Entity\Log $logs
+     */
+    public function removeLog(\Acmtool\AppBundle\Entity\Log $logs)
+    {
+        $this->logs->removeElement($logs);
+    }
+
+    /**
+     * Get logs
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getLogs()
+    {
+        return $this->logs;
     }
 }

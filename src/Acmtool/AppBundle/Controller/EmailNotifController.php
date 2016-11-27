@@ -27,11 +27,7 @@ class EmailNotifController extends Controller
 					$ticket->setStatus(TicketStatus::ESTIMATION);
 					$ticket->setStarteddate(new \DateTime("UTC"));
 					$em->flush();
-					$emails=array();
-            		array_push($emails, $project->getKeyaccount()->getEmail());
-            		if($project->getTeamleader())
-            			array_push($emails, $project->getTeamleader()->getLogin());
-            		$this->get("acmtool_app.email.notifier")->notifyTicketStarted($emails,$project->getName(),$ticket->getTitle());
+					$this->get("acmtool_app.notifier.handler")->ticketStarted($ticket,$user);
             		return $this->render('NotificationResponse/success_start.html.twig', array("client" => $project->getOwner(),"ticket"=>$ticket));
 
 				}
@@ -63,11 +59,7 @@ class EmailNotifController extends Controller
 					$ticket->setStatus(TicketStatus::WAITING);
 					$ticket->setEstimateconfirmedddate(new \DateTime("UTC"));
 					$em->flush();
-					$emails=array();
-		            array_push($emails, $project->getKeyaccount()->getEmail());
-		            if($project->getTeamleader())
-		            	array_push($emails, $project->getTeamleader()->getLogin());
-		            $this->get("acmtool_app.email.notifier")->notifyTicketEstimationAccepted($emails,$project->getName(),$ticket->getTitle());
+		            $this->get("acmtool_app.notifier.handler")->ticketEstimationAcepted($ticket,$user);
 		            $message="estimation accepted";
             		return $this->render('NotificationResponse/success_estimation.html.twig', array("client" => $project->getOwner(),"ticket"=>$ticket));
 
@@ -120,12 +112,7 @@ class EmailNotifController extends Controller
 					$ticket->setStatus(TicketStatus::DONE);
 					$ticket->setFinisheddate(new \DateTime("UTC"));
 					$em->flush();
-					$emails=array();
-					array_push($emails, $project->getKeyaccount()->getEmail());
-	        		if($project->getTeamleader())
-	            		array_push($emails, $project->getTeamleader()->getLogin());
-	        		$this->get("acmtool_app.email.notifier")->notifyTicketAccepted($emails,$project->getName(),$ticket->getTitle());
-					$this->get("acmtool_app.email.notifier")->notifyClientTicketDone($project->getOwner(),$ticket);
+					$this->get("acmtool_app.notifier.handler")->ticketAccepted($ticket,$user);
 					$message="ticket accepted";
 					return $this->render('NotificationResponse/success_done.html.twig', array("client" => $project->getOwner(),"ticket"=>$ticket));
 

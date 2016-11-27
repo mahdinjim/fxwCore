@@ -2,6 +2,7 @@
 namespace Acmtool\AppBundle\DependencyInjection;
 use Acmtool\AppBundle\Entity\EmailToken;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Acmtool\AppBundle\Entity\ClientLinks;
 Const PERIOD=30;
 Const TIMEZONE="Europe/Berlin";
 class EmailNotifierService
@@ -18,136 +19,230 @@ class EmailNotifierService
 		$this->router=$router;
 		$this->crfProvider=$crfProvider;
 	}
-	public function notifyAddedTeamMember($email,$password,$login,$name,$surname)
+	public function notifyAddedTeamMember($email,$password,$name)
 	{
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
 		$subject="Welcome to flexwork";
-		$body="Welcome to flexwork\n\nDear ".$name." ".$surname."\nWelcome to flexwork your credential information are:\n"
-			."Login: ".$login
-			."\nPassword: ".$password;
+		$body=$this->twig->render(
+					'EmailTemplates/team/access.html.twig',
+					array('login'=>$email,'password'=>$password,"date"=>$date,"name"=>$name)
+				);
 		$this->sendEmail($email,$subject,$body);
 	}
-	public function notifyProjectCreated($emails,$projectname,$client_name){
-		$subject="New project ".$projectname." created";
-		$body="Hi, good news,\n\nNew project ".$projectname." has been created by ".$client_name.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
-		
-	}
-	public function notifyTicketCreated($emails,$projectname,$ticket){
-		$subject="New ticket ".$ticket." created";
-		$body="Hi,\n\nNew ticket ".$ticket." has been created in the project ".$projectname.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
-		
-	}
-	public function notifyTicketStarted($emails,$projectname,$ticket){
-		$subject="Ticket ".$ticket." started";
-		$body="Hi,\n\nTicket ".$ticket." has been started in the project ".$projectname.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
-		
-	}
-	public function notifyTicketEstimated($emails,$projectname,$ticket,$company_name){
-		$subject="Ticket ".$ticket." estimated";
-		$body="Dear ".$company_name."\n\nTicket ".$ticket." has been estimated in the project ".$projectname."."
-			."\n Please confirm the etimation";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
-		
-	}
-	public function notifyTicketEstimationAccepted($email,$projectname,$ticket)
-	{
-		$subject="Ticket Estimation ".$ticket." accepted";
-		$body="Hi,\n\nTicket estimation ".$ticket." has been accepted in the project ".$projectname."."
-			."\n Please send it to production";
+	public function notifyProjectCreated($email,$name,$client,$project,$creator){
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$subject="New project ".$project->getName()." created";
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getClientProjectLink().$client->getId();
+		var_dump($link);die();
+		$body=$this->twig->render(
+					'EmailTemplates/team/newproject.html.twig',
+					array('client_name'=>$client->getCompanyname(),
+						'project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"creator"=>$creator,
+						"link"=>$link,
+						"client_tel"=>$client->getPhonecode().$client->getTelnumber())
+				);
 		$this->sendEmail($email,$subject,$body);
 	}
-	public function notifyTicketinProduction($emails,$projectname,$ticket,$company_name)
-	{
-		$subject="Ticket ".$ticket." is in production";
-		$body="Dear ".$company_name."\n\nTicket ".$ticket." moved to production in the project ".$projectname.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
+	public function notifyTicketCreated($email,$ticket,$client_name,$project,$name){
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$subject="New ticket ".$ticket->getTitle()." created";
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/draft.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle())
+				);
+		$this->sendEmail($email,$subject,$body);
+		
 	}
-	public function notifyTicketinQA($emails,$projectname,$ticket,$company_name)
-	{
-		$subject="Ticket ".$ticket." is in Q&A";
-		$body="Dear ".$company_name."\n\nTicket ".$ticket." moved to Q&A in the project ".$projectname.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
+	public function notifyTicketStarted($email,$ticket,$client_name,$project,$name){
+		$subject="Ticket ".$ticket->getTitle()." started";
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/started.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle())
+				);
+		$this->sendEmail($email,$subject,$body);
+		
 	}
-	public function notifyTicketDelivered($emails,$projectname,$ticket,$company_name)
-	{
-		$subject="Ticket ".$ticket." Delivered";
-		$body="Dear ".$company_name."\n\nTicket ".$ticket." delivered in the project ".$projectname.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
+	public function notifyTicketEstimated($email,$ticket,$client_name,$project,$name,$estimation){
+		$subject="Ticket ".$ticket->getTitle()." estimated";
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/estimated.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle(),
+						"estimation"=>$estimation)
+				);
+		$this->sendEmail($email,$subject,$body);
+		
 	}
-	public function notifyTicketAccepted($emails,$projectname,$ticket)
+	public function notifyTicketEstimationAccepted($email,$ticket,$client_name,$project,$name)
 	{
-		$subject="Ticket ".$ticket." Accepted";
-		$body="Hi, good job\n\nTicket ".$ticket." accepted by the client in the project ".$projectname.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
-	}
-	public function notifyTicketRejected($emails,$projectname,$ticket)
-	{
-		$subject="Ticket ".$ticket." Accepted";
-		$body="Hi, good job\n\nTicket ".$ticket." accepted by the client in the project ".$projectname.".";
-		foreach ($emails as $email) {
-			$this->sendEmail($email,$subject,$body);
-		}
-	}
-	public function notifyAssignedToProject($email,$projectname,$name,$surname){
-		$subject="You have been assigned to ".$projectname;
-		$body="Dear ".$name." ".$surname."\n\nYou have been assigned to new project ".$projectname.".";
+		$subject="Ticket Estimation ".$ticket->getTitle()." accepted";
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/est_accapted.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle())
+				);
 		$this->sendEmail($email,$subject,$body);
 	}
-	public function notifyTeamLeader($email,$projectname,$name,$surname){
-		$subject="You have been assigned to ".$projectname." As Team leader";
-		$body="Dear ".$name." ".$surname."\n\nYou have been assigned as team leader to new project ".$projectname.".";
+	public function notifyTicketinProduction($email,$ticket,$client_name,$project,$name)
+	{
+		$subject="Ticket ".$ticket->getTitle()." is in production";
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/production.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle())
+				);
 		$this->sendEmail($email,$subject,$body);
 	}
-	public function notifyAssignedToStory($email,$projectname,$name,$surname,$storyname){
+	public function notifyTicketinQA($email,$ticket,$client_name,$project,$name)
+	{
+		$subject="Ticket ".$ticket->getTitle()." is in QA";
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/qa.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle())
+				);
+		$this->sendEmail($email,$subject,$body);
+	}
+	public function notifyTicketAccepted($email,$ticket,$client_name,$project,$name)
+	{
+		$subject="Ticket ".$ticket->getTitle()." Accepted";
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/done.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle())
+				);
+		$this->sendEmail($email,$subject,$body);
+	}
+	public function notifyAssignedToProject($email,$project,$name,$client_name,$isleader){
+		$subject="You have been assigned to ".$project->getName();
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getProjectDetailLink().$project->getDisplayId();
+		$body=$this->twig->render(
+					'EmailTemplates/team/assign_project.html.twig',
+					array('client_name'=>$client_name,
+						'project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"isleader"=>$isleader)
+				);
+		$this->sendEmail($email,$subject,$body);
+	}
+	public function notifyAssignedToStory($email,$ticket,$client_name,$project,$name,$storyname){
 		$subject="You have been assigned to ".$storyname;
-		$body="Dear ".$name." ".$surname."\n\nYou have been assigned to new story ".$storyname.".".
-			"\nProject :".$projectname;
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/assignedstory.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle(),
+						"story_name"=>$storyname)
+				);
 		$this->sendEmail($email,$subject,$body);
 	}
-	public function notifyStoryEstimated($email,$projectname,$storyname,$name,$surname,$time){
-		$subject="Story ".$storyname." is estimated to ".$time."H";
-		$body="Hello,\n\nThe story ".$storyname." has been estimated ".$time."H by ".$name." ".$surname
-			."\nProject :".$projectname;
-		$this->sendEmail($email,$subject,$body);
-	}
-	public function notifyStoryRealtime($email,$projectname,$storyname,$name,$surname,$time){
-		$subject="Real time of the story ".$storyname." is delivered ".$time."H";
-		$body="Hello,\n\nThe realtime of the story ".$storyname." has been delevired ".$time."H by ".$name." ".$surname
-			."\nProject :".$projectname;
-		$this->sendEmail($email,$subject,$body);
-	}
-	public function notifyStoryDone($email,$projectname,$storyname,$name,$surname){
+	public function notifyStoryDone($email,$ticket,$client_name,$project,$name,$storyname){
 		$subject="The story ".$storyname." finished";
-		$body="Hello,\n\nThe story ".$storyname." finished by ".$name." ".$surname
-			."\nProject :".$projectname;
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/storyfinished.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle(),
+						"story_name"=>$storyname)
+				);
 		$this->sendEmail($email,$subject,$body);
 	}
-
+	public function notifyBugCreated($email,$ticket,$client_name,$project,$name,$storyname)
+	{
+		$subject="The bug ".$storyname." created";
+		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
+		$date=$today->format("d.m.Y");
+		$link=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+		$body=$this->twig->render(
+					'EmailTemplates/team/bugcreated.html.twig',
+					array('project_name'=>$project->getName(),
+						"date"=>$date,
+						"name"=>$name,
+						"link"=>$link,
+						"client_name"=>$client_name,
+						"ticket_name"=>$ticket->getTitle(),
+						"story_name"=>$storyname)
+				);
+		$this->sendEmail($email,$subject,$body);
+	}
 	private function sendEmail($email,$subject,$body)
 	{
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom("bb8@flexwork.io")
 		->setTo($email)
-		->setBody($body);
+		->setBody($body,'text/html');
 		
 		$isent=$this->mailer->send($message);
 	}
@@ -572,13 +667,14 @@ class EmailNotifierService
 	public function sendClientCreds($client,$password)
 	{
 		$client_email=$client->getEmail();
+		$keyaccount=$client->getKeyaccount();
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
 		$subject="Welcome to flexwork";
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom("bb8@flexwork.io")
-		->setTo($client_email)
+		->setTo(array($client_email,$keyaccount->getEmail()))
 		->setBody(
 			$this->twig->render(
 					'EmailTemplates/client/access.twig.html',
@@ -587,6 +683,7 @@ class EmailNotifierService
 				'text/html'
 			);
 		$isent=$this->mailer->send($message);
+		
 	}
 	private function createEmailToken($user)
 	{

@@ -40,10 +40,14 @@ class TaskController extends Controller
         			$task->setDescription($json->{"description"});
                     $task->setType($json->{'type'});
                     if($json->{'type'}==TaskTypes::$BUG["type"] && $user->getCredentials()->getId()!=$project->getTeamLeader()->getId())
+                    { 
                         $task->setIsAccepted(false);
-                    else
+                        $this->get("acmtool_app.notifier.handler")->bugCreated($ticket,$user,$task,true);
+                    }
+                    elseif($json->{'type'}==TaskTypes::$BUG["type"] && $user->getCredentials()->getId()==$project->getTeamLeader()->getId())
                     {
                         $task->setIsAccepted(true);
+                         $this->get("acmtool_app.notifier.handler")->bugCreated($ticket,$user,$task,false);
                     } 
         			$task->setCreationdate(new \DateTime("UTC"));
         			$owner=$ticket->getProject()->getTeamLeader();
@@ -88,10 +92,12 @@ class TaskController extends Controller
         			$task->setisFinished(false);
         			$em->persist($task);
 	                $em->flush();
+                    if($json->{'type'}!=TaskTypes::$BUG["type"])
+                        $this->get("acmtool_app.notifier.handler")->storyCreated($ticket,$user,$task);
                     if($assigned)
                     {
                         $project=$ticket->getProject();
-                        $this->get("acmtool_app.email.notifier")->notifyAssignedToStory($assigned->getEmail(),$project->getName(),$assigned->getName(),$assigned->getSurname(),$task->getTitle());
+                        $this->get("acmtool_app.notifier.handler")->assignedToStory($ticket,$user,$assigned,$task);
                     }
 	                $response=new Response('Task created',200);
 	                return $response;
@@ -185,7 +191,8 @@ class TaskController extends Controller
                         if($oldassigned==null || $oldassigned->getEmail()!=$assigned->getEmail()){
                             $ticket=$task->getTicket();
                             $project=$ticket->getProject();
-                            $this->get("acmtool_app.email.notifier")->notifyAssignedToStory($assigned->getEmail(),$project->getName(),$assigned->getName(),$assigned->getSurname(),$task->getTitle());
+                            $user=$this->get("security.context")->getToken()->getUser();
+                            $this->get("acmtool_app.notifier.handler")->assignedToStory($task->getTicket(),$user,$assigned,$task);
                         }
 
                     }
@@ -300,8 +307,7 @@ class TaskController extends Controller
                     $name=$this->get('security.context')->getToken()->getUser()->getName();
                     $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
                     $project_name=$project->getName();
-                    if($project->getTeamleader())
-                        $this->get("acmtool_app.email.notifier")->notifyStoryEstimated($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname,$json->{"estimation"});
+                    $this->get("acmtool_app.notifier.handler")->storyEstimated($task->getTicket(),$user,$task);
 	        		$response=new Response('Estimation set',200);
 		            return $response;
 		        }
@@ -350,9 +356,7 @@ class TaskController extends Controller
                     $name=$this->get('security.context')->getToken()->getUser()->getName();
                     $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
                     $project_name=$project->getName();
-
-                    if($project->getTeamleader())
-                        $this->get("acmtool_app.email.notifier")->notifyStoryRealtime($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname,$total);
+                    $this->get("acmtool_app.notifier.handler")->storyRealtimeSet($task->getTicket(),$user,$task);
 	        		$response=new Response('realtime set',200);
 		            return $response;
 		        }
@@ -541,6 +545,7 @@ class TaskController extends Controller
 			$task->setIsStarted(true);
 			$task->setStarteddate(new \DateTime("UTC"));
 			$em->flush();
+            $this->get("acmtool_app.notifier.handler")->storystarted($task->getTicket(),$user,$task);
 	        $response=new Response('Task started',200);
 		    return $response;
 
@@ -576,12 +581,7 @@ class TaskController extends Controller
 			{
 				$ticket->setStatus(TicketStatus::TESTING);
 				$ticket->setTestingdate(new \DateTime("UTC"));
-                $company_name=$project->getOwner()->getCompanyname();
-                $emails=array();
-                array_push($emails, $project->getKeyaccount()->getEmail());
-                //Todo: add client notification
-                $this->get("acmtool_app.email.notifier")->notifyTicketinQA($emails,$project->getName(),$ticket->getTitle(),$company_name);
-                $this->get("acmtool_app.email.notifier")->notifyClientTicketInQA($project->getOwner(),$ticket);
+                $this->get("acmtool_app.notifier.handler")->ticketinQA($ticket,$user);
 			}
 			$mess=array("done"=>$done);
 			$em->flush();
@@ -590,7 +590,7 @@ class TaskController extends Controller
             $project_name=$task->getTicket()->getProject()->getName();
             
             if($project->getTeamleader())
-                $this->get("acmtool_app.email.notifier")->notifyStoryDone($project->getTeamleader()->getLogin(),$project->getName(),$task->getTitle(),$name,$surname);
+                $this->get("acmtool_app.notifier.handler")->storyFinished($ticket,$user,$task);
 	        $response=new Response(json_encode($mess),200);
 		    return $response;
 
@@ -655,6 +655,7 @@ class TaskController extends Controller
                         $task->getTicket()->setBugopen(true);
                         $task->getTicket()->setClosenotif(false);
                         $em->flush();
+                        $this->get("acmtool_app.notifier.handler")->bugAccepted($task->getTicket(),$user,$task);
                         $response=new Response('Task accepted',200);
                         return $response;
                    }
@@ -694,7 +695,7 @@ class TaskController extends Controller
                             $ticket->setDiplayId($displayid);
                             $em->remove($task);
                             $em->flush();
-                            $this->get("acmtool_app.email.notifier")->notifyClientBugRejected($project->getOwner(),$ticket,$json->{"reason"});
+                             $this->get("acmtool_app.notifier.handler")->bugRejected($task->getTicket(),$user,$ticket,$json->{"reason"});
                             $response=new Response('Task converted to ticket',200);
                             return $response;
                         }

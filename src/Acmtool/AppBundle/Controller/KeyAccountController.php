@@ -74,7 +74,7 @@ class KeyAccountController extends Controller
                     $em->persist($user);
                     $em->flush();
                      if($json->{"dosend"})
-                        $this->get("acmtool_app.email.notifier")->notifyAddedTeamMember($json->{'email'},$json->{'password'},$json->{"login"},$json->{'name'},$json->{'surname'});
+                        $this->get("acmtool_app.notifier.handler")->teamMemberAdded($json->{'name'},$json->{'email'},$json->{'password'});
                     $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent(ConstValues::KEYACREATED);

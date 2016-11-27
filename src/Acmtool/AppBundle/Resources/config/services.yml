@@ -9,6 +9,7 @@ parameters:
     acmtool_app.hasher.class: Acmtool\AppBundle\DependencyInjection\HashService
     acmtool_app.emailauth.provider.class: Acmtool\AppBundle\firewall\emailauth\EmailAuthProvider
     acmtool_app.emailauth.listener.class: Acmtool\AppBundle\firewall\emailauth\EmailTokenListener
+    acmtool_app.notifier.handler.class: Acmtool\AppBundle\DependencyInjection\NotificationHandlerService
 
 services:
 #    acmtool_app.example:
@@ -45,3 +46,6 @@ services:
     emailauth.security.authentication.listener:
      class:  '%acmtool_app.emailauth.listener.class%'
      arguments: [@security.context, @security.authentication.manager]
+    acmtool_app.notifier.handler:
+     class: '%acmtool_app.notifier.handler.class%'
+     arguments: [@doctrine, @acmtool_app.email.notifier]

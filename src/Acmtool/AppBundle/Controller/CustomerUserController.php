@@ -79,7 +79,7 @@ class CustomerUserController extends Controller
                      {
                         $company->setName($user->getName());
                         $company->setEmail($user->getEmail());
-                        $this->get("acmtool_app.email.notifier")->sendClientCreds($company,$json->{'password'});
+                        $this->get("acmtool_app.notifier.handler")->clientUserAdded($company,$json->{'password'});
                      }
                         
                     $res=new Response();

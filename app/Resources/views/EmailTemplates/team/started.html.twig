@@ -1,0 +1,68 @@
+{% extends 'email_base.html.twig' %}
+{% block greeting%}
+	<h2 style="margin-bottom: 5px;margin-top: 0px;">Hey {{name}}</h2>
+{% endblock %}
+{% block body %}
+<tr>
+    <td colspan="2"  valign="top" style="line-height:1.8em;font-size:16px;text-align:center;">
+        <table width="100%">
+          <tr>
+            <td height="50">
+              <div style="display: inline-block;color: #bababa;font-size: 12px;background-color: #fff;padding: 0px 10px;border-radius: 5px;border: 1px solid #ffffff;font-family: Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: regular;"><img src="http://img.fxw.io/email/status-check_2x.png" alt="&#10004;" title="&#10004;" width="16" height="12" /> draft</div>
+              <div style="display: inline-block;color: #00b39b;font-size: 12px;background-color: #fff;padding: 0px 20px;border-radius: 5px;border: 1px solid #00b39b;font-family: Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: regular;">estimation</div>
+              <div style="display: inline-block;color: #bababa;font-size: 12px;background-color: #fff;padding: 0px 10px;border-radius: 5px;border: 1px solid #ffffff;font-family: Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: regular;">production</div>
+              <div style="display: inline-block;color: #bababa;font-size: 12px;background-color: #fff;padding: 0px 10px;border-radius: 5px;border: 1px solid #ffffff;font-family: Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: regular;">QA</div>
+              <div style="display: inline-block;color: #bababa;font-size: 12px;background-color: #fff;padding: 0px 10px;border-radius: 5px;border: 1px solid #ffffff;font-family: Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: regular;">delivered</div>
+              <div style="display: inline-block;color: #bababa;font-size: 12px;background-color: #fff;padding: 0px 10px;border-radius: 5px;border: 1px solid #ffffff;font-family: Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: regular;">done</div>
+            </td>
+          </tr>
+        </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan="2" valign="top" style="padding: 10px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #f9f9f9;border-top: 2px solid #eee;">
+        <table width="100%">
+         <tr>
+          <p class="projectInfo"><b>{{project_name}}</b></p>
+          <p style="font-size: 12px;color: #999;">{{client_name}}</p>
+        </tr>
+        </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" valign="top" style="padding: 10px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #fff7f7;border-bottom: 2px solid #ffe6e6;">
+        <table width="100%">
+          <tr>
+            <p><span style="background-color: #17a688;color:#fff;padding:4px;border-radius: 4px;margin-right:5px;font-size:12px;">ticket</span> <span style="font-size: 16px;"><b>{{ticket_name}}</b></span></p>
+          </tr>
+          <tr>
+            <td>
+              <p class="ticketInfo">is now</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="height:50px;">
+              <span style="background-color: #fff !important;color: #5e5e5e !important;text-decoration: none;padding: 10px 20px;border-radius: 8px;font-weight:bold;border: 1px solid #e5e5e5;">
+                <img src="http://img.fxw.io/email/status-check_2x.png" alt="&#10004;" title="&#10004;" width="16" height="12" /> started
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p class="ticketInfo">please</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="height:50px;">
+              <p><a href="{{link}}" target="_blank" class="fxwLink"><img src="http://img.fxw.io/email/plus-xs_2x.png" width="12" height="12" alt="+" title="+"> add story </a></p>
+            </td>
+          </tr>
+        </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan="2" style="height:20px;" colspan="2"></td>
+  </tr>
+{% endblock %}

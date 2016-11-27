@@ -194,6 +194,10 @@ class Ticket
      */
     private $closenotif=false;
     /**
+    * @ORM\OneToMany(targetEntity="Log", mappedBy="ticket")
+    */
+    private $logs;
+    /**
      * Get id
      *
      * @return integer 
@@ -871,5 +875,38 @@ class Ticket
     public function getClosenotif()
     {
         return $this->closenotif;
+    }
+
+    /**
+     * Add logs
+     *
+     * @param \Acmtool\AppBundle\Entity\Log $logs
+     * @return Ticket
+     */
+    public function addLog(\Acmtool\AppBundle\Entity\Log $logs)
+    {
+        $this->logs[] = $logs;
+
+        return $this;
+    }
+
+    /**
+     * Remove logs
+     *
+     * @param \Acmtool\AppBundle\Entity\Log $logs
+     */
+    public function removeLog(\Acmtool\AppBundle\Entity\Log $logs)
+    {
+        $this->logs->removeElement($logs);
+    }
+
+    /**
+     * Get logs
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getLogs()
+    {
+        return $this->logs;
     }
 }

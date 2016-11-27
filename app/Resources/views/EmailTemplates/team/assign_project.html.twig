@@ -1,0 +1,51 @@
+ {% extends 'email_base.html.twig' %}
+{% block greeting%}
+  <h2 style="margin-bottom: 5px;margin-top: 0px;">Hey {{name}}</h2>
+{% endblock %}
+{% block body %}
+
+  <tr>
+  <td colspan="2" valign="top" style="padding: 10px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #f7fffd;border-top: 2px solid #e1fcf5;">
+  <table width="100%">
+    <tr>
+    {% if isleader %}
+      <td>
+        <p class="ticketInfo">you have been <b>assigned</b> as <b>team leader</b> <br/>to new project</p>
+      </td>                     
+    {% else %}
+      <td>
+        <p class="ticketInfo">you have been <b>assigned</b> to new project</p>
+      </td>
+    {% endif %}
+    </tr>
+  </table>
+  </td>
+  </tr>
+
+  <tr>
+  <td colspan="2" valign="top" style="padding: 10px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #f9f9f9;">
+  <table width="100%">
+    <tr>
+      <p class="projectInfo"><b>{{project_name}}</b></p>
+      <p style="font-size: 12px;color: #999;">{{client_name}}</p>
+    </tr>
+  </table>
+  </td>
+  </tr>
+
+  <tr>
+  <td colspan="2" valign="top" style="padding: 20px 0px;line-height:1.8em;font-size:16px;text-align:center;background-color: #f7fffd;border-bottom: 2px solid #e1fcf5;">
+  <table width="100%">
+    <tr>
+      <td style="height:20px;" valign="middle">
+        <p><a href="{{link}}" target="_blank" class="gotoApp">see details <img src="http://img.fxw.io/email/arrow-xs-right_2x.png" width="8" height="8" alt="&#187;" title="&#187;"></a></p>
+      </td>
+    </tr>
+  </table>
+  </td>
+  </tr>
+
+  <tr>
+  <td colspan="2" style="height:20px;" colspan="2"></td>
+  </tr>
+{% endblock %}

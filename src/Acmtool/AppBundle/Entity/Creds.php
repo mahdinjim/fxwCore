@@ -54,6 +54,10 @@ class Creds implements \Serializable
     * @ORM\OneToMany(targetEntity="Task", mappedBy="owner")
     */
     private $tasks; 
+     /**
+    * @ORM\OneToMany(targetEntity="Log", mappedBy="user")
+    */
+    private $logs;
     /**
      * Get id
      *

@@ -35,7 +35,6 @@ class EmailNotifierService
 		$subject="New project ".$project->getName()." created";
 		$date=$today->format("d.m.Y");
 		$link=ClientLinks::getClientProjectLink().$client->getId();
-		var_dump($link);die();
 		$body=$this->twig->render(
 					'EmailTemplates/team/newproject.html.twig',
 					array('client_name'=>$client->getCompanyname(),

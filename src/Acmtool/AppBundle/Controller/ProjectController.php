@@ -163,7 +163,7 @@ class ProjectController extends Controller
             $em->flush();
             $user=$this->get("security.context")->getToken()->getUser();
             $this->get("acmtool_app.notifier.handler")->projectCreated($user,$project);
-            $response=new Response(ConstValues::PROJECTCREATED,200);
+            $response=new Response('{"project_id":"'.$project->getDisplayId().'"}',200);
             return $response;
 
            

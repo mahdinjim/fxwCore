@@ -21,4 +21,12 @@ class DefaultController extends Controller
 
         return new Response("<html><body>hello</body>");
     }
+    public function channelIdAction($name)
+    {
+         
+        $chatservice=$this->get("acmtool_app.messaging");
+        $chatprovider=$chatservice->CreateChatProvider();
+        $id=$chatprovider->getChannelId($name);
+        return new Response("<html><body>channel id is:".$id."</body>");
+    }
 }

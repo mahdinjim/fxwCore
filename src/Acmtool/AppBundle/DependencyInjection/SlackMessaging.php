@@ -14,6 +14,18 @@ class SlackMessaging implements IMessaging
 	const deleteMessage="chat.delete?";
 	const createchannel="channels.create?";
 	const invitechannel="channels.invite?";
+	const channellist="channels.list?";
+	public function getChannelId($name)
+	{
+		$mess=json_decode(file_get_contents(self::Baseurl.self::channellist."token=".self::admintoken));
+		if($mess->{"ok"})
+		{
+			foreach ($mess->{"channels"} as $key) {
+				if($key->{"name"}==$name)
+					return $key->{"id"};
+			}
+		}
+	}
 	public function sendMessage($text,$group,$client)
 	{
 		$text=urlencode($text);

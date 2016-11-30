@@ -1,6 +1,10 @@
 acmtool_app_homepage:
     path:     /public/test
     defaults: { _controller: AcmtoolAppBundle:Default:index }
+acmtool_app_channelid:
+    path:     /public/channelid/{name}
+    defaults: { _controller: AcmtoolAppBundle:Default:channelId }
+    methods:  [OPTIONS,GET]
 
 _create:
     path:     /secret/once/create

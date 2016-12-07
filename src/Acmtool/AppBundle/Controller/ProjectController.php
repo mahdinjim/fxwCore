@@ -1558,9 +1558,10 @@ class ProjectController extends Controller
                 {
                     $notif= new NoNotif();
                     $notif->setProject($project);
-                    $notif->setUser($user->getCredentials());
+                    $notif->setUser($loggeduser->getCredentials());
                     $em->persist($notif);
                     $em->flush();
+                    $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent('{"message":"notification diabled"}');
                     $res->headers->set('Content-Type', 'application/json');
@@ -1569,6 +1570,7 @@ class ProjectController extends Controller
                 }
                 else
                 {
+                    $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent('{"message":"notification disabled"}');
                     $res->headers->set('Content-Type', 'application/json');

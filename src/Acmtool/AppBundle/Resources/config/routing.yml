@@ -530,5 +530,5 @@ _admindashboard:
     methods: [GET,OPTIONS]
 _desactivateemailnotif:
     path:     /private/project/emailnotif/disable/{project_id}/{activate}
-    defaults: { _controller: AcmtoolAppBundle:Project:desacticateEmail }
+    defaults: { _controller: AcmtoolAppBundle:Project:desacticateEmailNotif }
     methods: [GET,OPTIONS]

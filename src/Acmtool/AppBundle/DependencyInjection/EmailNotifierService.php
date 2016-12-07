@@ -736,7 +736,8 @@ class EmailNotifierService
 	}
 	private function checkSendNotif($user,$project)
 	{
-		$noNotifExist=$em->getRepository("AcmtoolAppBundle:NoNotif")->findOneBy(array("user"=>$loggeduser->getCredentials(),"project"=>$project));
+		$em=$this->doctrine->getEntityManager();
+		$noNotifExist=$em->getRepository("AcmtoolAppBundle:NoNotif")->findOneBy(array("user"=>$user,"project"=>$project));
 		if($noNotifExist)
 			return false;
 		else

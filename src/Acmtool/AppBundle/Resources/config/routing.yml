@@ -528,3 +528,7 @@ _admindashboard:
     path:     /private/super/dashboard
     defaults: { _controller: AcmtoolAppBundle:Dashboard:adminDashboard }
     methods: [GET,OPTIONS]
+_desactivateemailnotif:
+    path:     /private/project/emailnotif/disable/{project_id}/{activate}
+    defaults: { _controller: AcmtoolAppBundle:Project:desacticateEmail }
+    methods: [GET,OPTIONS]

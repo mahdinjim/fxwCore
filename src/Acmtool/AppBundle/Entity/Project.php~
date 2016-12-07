@@ -1088,37 +1088,4 @@ class Project
     {
         return $this->logs;
     }
-
-    /**
-     * Add noNotifs
-     *
-     * @param \Acmtool\AppBundle\Entity\NoNotif $noNotifs
-     * @return Project
-     */
-    public function addNoNotif(\Acmtool\AppBundle\Entity\NoNotif $noNotifs)
-    {
-        $this->noNotifs[] = $noNotifs;
-
-        return $this;
-    }
-
-    /**
-     * Remove noNotifs
-     *
-     * @param \Acmtool\AppBundle\Entity\NoNotif $noNotifs
-     */
-    public function removeNoNotif(\Acmtool\AppBundle\Entity\NoNotif $noNotifs)
-    {
-        $this->noNotifs->removeElement($noNotifs);
-    }
-
-    /**
-     * Get noNotifs
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getNoNotifs()
-    {
-        return $this->noNotifs;
-    }
 }

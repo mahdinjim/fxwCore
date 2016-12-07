@@ -300,7 +300,7 @@ class TaskController extends Controller
         		$task=$em->getRepository("AcmtoolAppBundle:Task")->findOneById($json->{"task_id"});
                 $user=$this->get("security.context")->getToken()->getUser();
                 $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$task->getTicket()->getProject()->getDisplayId());
-        		if($task && $project){
+        		if($task && $project && $task->getTicket()->getEstimation()==null){
 	        		$task->setEstimation(floatval($json->{"estimation"}));
 	        		$task->setEstimateddate(new \DateTime("UTC"));
 	        		$em->flush();

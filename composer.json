@@ -21,7 +21,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "nelmio/cors-bundle": "~1.0",
         "beberlei/DoctrineExtensions": "*",
-        "eventviva/php-image-resize": "1.5.*"
+        "eventviva/php-image-resize": "1.5.*",
+        "intercom/intercom-php": "^2.0"
     },
     "scripts": {
         "post-install-cmd": [

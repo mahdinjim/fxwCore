@@ -271,7 +271,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -285,7 +286,8 @@ class EmailNotifierService
 					),
 					'text/html'
 				);
-				$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -315,7 +317,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -329,7 +332,8 @@ class EmailNotifierService
 				),
 				'text/html'
 			);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -357,7 +361,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -371,7 +376,8 @@ class EmailNotifierService
 					),
 					'text/html'
 				);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -399,7 +405,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -413,7 +420,8 @@ class EmailNotifierService
 				),
 				'text/html'
 				);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -443,7 +451,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -457,7 +466,8 @@ class EmailNotifierService
 						),
 						'text/html'
 					);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -485,7 +495,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -499,7 +510,8 @@ class EmailNotifierService
 				),
 				'text/html'
 			);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -525,7 +537,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -539,7 +552,8 @@ class EmailNotifierService
 						),
 						'text/html'
 					);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -565,7 +579,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -579,7 +594,8 @@ class EmailNotifierService
 						),
 						'text/html'
 					);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -605,7 +621,8 @@ class EmailNotifierService
 				'text/html'
 			);
 		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -619,7 +636,8 @@ class EmailNotifierService
 				),
 				'text/html'
 			);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))	
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -644,8 +662,8 @@ class EmailNotifierService
 				),
 				'text/html'
 			);
-		
-		$isent=$this->mailer->send($message);
+		if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+			$isent=$this->mailer->send($message);
 		foreach ($client->getUsers() as $user) {
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
@@ -659,7 +677,8 @@ class EmailNotifierService
 				),
 				'text/html'
 				);
-				$isent=$this->mailer->send($message);
+				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
+					$isent=$this->mailer->send($message);
 			}
 
 	}
@@ -714,6 +733,14 @@ class EmailNotifierService
 	    }
 
 	    return $key;
+	}
+	private function checkSendNotif($user,$project)
+	{
+		$noNotifExist=$em->getRepository("AcmtoolAppBundle:NoNotif")->findOneBy(array("user"=>$loggeduser->getCredentials(),"project"=>$project));
+		if($noNotifExist)
+			return false;
+		else
+			return true;
 	}
 
 

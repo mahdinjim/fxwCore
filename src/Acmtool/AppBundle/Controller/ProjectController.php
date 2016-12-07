@@ -21,6 +21,7 @@ use Acmtool\AppBundle\Entity\Roles;
 use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\Admin;
 use Acmtool\AppBundle\Entity\TaskTypes;
+use Acmtool\AppBundle\Entity\NoNotif;
 class ProjectController extends Controller
 {
 	public function createAction()
@@ -425,7 +426,12 @@ class ProjectController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$id);
         if($project)
         {
+            $noNotifExist=$em->getRepository("AcmtoolAppBundle:NoNotif")->findOneBy(array("user"=>$loggeduser->getCredentials(),"project"=>$project));
             $mess=array("id"=>$project->getDisplayId(),"name"=>$project->getName(),"briefing"=>$project->getDescription(),"customer"=>$project->getOwner()->getCompanyname(),"state"=>$project->getState(),"skills"=>$project->getProjectSkills(),"budget"=>$project->getBudget(),"channel_id"=>$project->getChannelid(),"signed"=>$project->getSignedContract(),"description"=>$project->getDescriptionContract(),"rate"=>$project->getRate());
+            if($noNotifExist)
+                $mess["EmailNotifDisabled"]=true;
+            else
+                $mess["EmailNotifDisabled"]=false;
             if($project->getContractPrepared()===null)
                 $mess["contractprepared"]=true;
             else
@@ -780,7 +786,7 @@ class ProjectController extends Controller
                            {
                                 $project->addDesigner($member);
                                 $member->addProject($project);
-                                $this->get("acmtool_app.notifier.handler")->notifyAssignedToProject($project,$member);
+                                $this->get("acmtool_app.notifier.handler")->assignedToProject($project,$member);
                            }
                         }
                         
@@ -842,7 +848,7 @@ class ProjectController extends Controller
                            {
                                 $project->addTester($member);
                                 $member->addProject($project);
-                                $this->get("acmtool_app.notifier.handler")->notifyAssignedToProject($project,$member);
+                               $this->get("acmtool_app.notifier.handler")->assignedToProject($project,$member);
                            }
                         }
                         
@@ -903,7 +909,7 @@ class ProjectController extends Controller
                            {
                                 $project->addSysAdmin($member);
                                 $member->addProject($project);
-                                $this->get("acmtool_app.notifier.handler")->notifyAssignedToProject($project,$member);
+                               $this->get("acmtool_app.notifier.handler")->assignedToProject($project,$member);
                            }
                         }
                         
@@ -1533,6 +1539,54 @@ class ProjectController extends Controller
                     return $res;
                 }
             }
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+    public function desacticateEmailNotifAction($project_id,$activate)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$project_id);
+        $noNotifExist=$em->getRepository("AcmtoolAppBundle:NoNotif")->findOneBy(array("user"=>$loggeduser->getCredentials(),"project"=>$project));
+        if($project)
+        {
+            if($activate)
+            {
+                if(!$noNotifExist)
+                {
+                    $notif= new NoNotif();
+                    $notif->setProject($project);
+                    $notif->setUser($user->getCredentials());
+                    $em->persist($notif);
+                    $em->flush();
+                    $res->setStatusCode(200);
+                    $res->setContent('{"message":"notification diabled"}');
+                    $res->headers->set('Content-Type', 'application/json');
+                    return $res;
+           
+                }
+                else
+                {
+                    $res->setStatusCode(200);
+                    $res->setContent('{"message":"notification disabled"}');
+                    $res->headers->set('Content-Type', 'application/json');
+                    return $res;
+                }
+            }
+            else
+            {
+                $em->remove($noNotifExist);
+                $em->flush();
+                $res->setStatusCode(200);
+                $res->setContent('{"message":"notification enabled"}');
+                $res->headers->set('Content-Type', 'application/json');
+                return $res;
+            }
+        }
+        else
+        {
             $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
             $response->headers->set('Content-Type', 'application/json');
             return $response;

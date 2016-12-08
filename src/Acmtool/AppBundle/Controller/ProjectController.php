@@ -1552,7 +1552,7 @@ class ProjectController extends Controller
         $noNotifExist=$em->getRepository("AcmtoolAppBundle:NoNotif")->findOneBy(array("user"=>$loggeduser->getCredentials(),"project"=>$project));
         if($project)
         {
-            if($activate)
+            if($activate==="false")
             {
                 if(!$noNotifExist)
                 {
@@ -1581,6 +1581,7 @@ class ProjectController extends Controller
             {
                 $em->remove($noNotifExist);
                 $em->flush();
+                 $res=new Response();
                 $res->setStatusCode(200);
                 $res->setContent('{"message":"notification enabled"}');
                 $res->headers->set('Content-Type', 'application/json');

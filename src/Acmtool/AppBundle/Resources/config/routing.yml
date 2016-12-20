@@ -10,8 +10,8 @@ test_wsse:
     defaults: { _controller: AcmtoolAppBundle:Default:testWsse }
     methods:  [OPTIONS,GET]
 clientnumber_kpi:
-    path:     /public/client/number
-    defaults: { _controller: AcmtoolAppBundle:KpiExternDashboard:etClientNumber }
+    path:     /extern/client/number
+    defaults: { _controller: AcmtoolAppBundle:KpiExternDashboard:getClientNumber }
     methods:  [OPTIONS,GET]
 _create:
     path:     /secret/once/create

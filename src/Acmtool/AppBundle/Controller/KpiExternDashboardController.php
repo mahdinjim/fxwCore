@@ -27,7 +27,7 @@ class KpiExternDashboardController extends Controller
 		}
 		$res=new Response();
         $res->setStatusCode(200);
-        $res->setContent(json_encode($dataArray));
+        $res->setContent(json_encode(array("data"=>$dataArray)));
         $res->headers->set('Content-Type', 'application/json');
         return $res;
 

@@ -26,7 +26,7 @@ class KpiExternDashboardController extends Controller
 			}
 		}*/
 		$res=new Response();
-		$data='["1":2,"2":4,"3":8]';
+		$data='{"data":["1":2,"2":4,"3":8]}Ò';
         $res->setStatusCode(200);
         $res->setContent($data);
         $res->headers->set('Content-Type', 'application/json');

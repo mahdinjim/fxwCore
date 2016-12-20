@@ -5,6 +5,10 @@ acmtool_app_channelid:
     path:     /public/channelid/{name}
     defaults: { _controller: AcmtoolAppBundle:Default:channelId }
     methods:  [OPTIONS,GET]
+test_wsse:
+    path:     /extern/debug
+    defaults: { _controller: AcmtoolAppBundle:Default:testWsse }
+    methods:  [OPTIONS,GET]
 
 _create:
     path:     /secret/once/create

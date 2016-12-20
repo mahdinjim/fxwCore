@@ -29,4 +29,8 @@ class DefaultController extends Controller
         $id=$chatprovider->getChannelId($name);
         return new Response("<html><body>channel id is:".$id."</body>");
     }
+    public function testWsseAction()
+    {
+        return new Response('{"status":"ok"}');
+    }
 }

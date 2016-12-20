@@ -11,6 +11,8 @@ parameters:
     acmtool_app.emailauth.listener.class: Acmtool\AppBundle\firewall\emailauth\EmailTokenListener
     acmtool_app.notifier.handler.class: Acmtool\AppBundle\DependencyInjection\NotificationHandlerService
     acmtool_app.intercom.service.class: Acmtool\AppBundle\DependencyInjection\IntercomService
+    acmtool_app.wsse.provider.class: Acmtool\AppBundle\firewall\wsseauth\WsseProvider
+    acmtool_app.wsse.listener.class: Acmtool\AppBundle\firewall\wsseauth\WsseListener
 services:
 #    acmtool_app.example:
 #        class: %acmtool_app.example.class%
@@ -51,3 +53,11 @@ services:
      arguments: [@doctrine, @acmtool_app.email.notifier, @acmtool_app.intercom]
     acmtool_app.intercom:
      class: '%acmtool_app.intercom.service.class%'
+    wsse.security.authentication.provider:
+     class:  '%acmtool_app.wsse.provider.class%'
+     arguments:
+         - @doctrine
+         - '%kernel.cache_dir%/security/nonces'
+    wsse.security.authentication.listener:
+     class:  '%acmtool_app.wsse.listener.class%'
+     arguments: [@security.context, @security.authentication.manager] 

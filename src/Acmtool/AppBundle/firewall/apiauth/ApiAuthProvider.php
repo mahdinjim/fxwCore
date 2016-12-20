@@ -12,9 +12,11 @@ Const TIMEZONE="Europe/Berlin";
 class ApiAuthProvider implements AuthenticationProviderInterface
 {
     private $doctrine;
-    public function __construct($doctrine)
+    private $intecomService;
+    public function __construct($doctrine,$intecomService)
     {
         $this->doctrine = $doctrine;
+        $this->intecomService=$intecomService;
     }
 
     public function authenticate(TokenInterface $token)
@@ -32,6 +34,7 @@ class ApiAuthProvider implements AuthenticationProviderInterface
                 $authenticatedToken=new ApiToken($user->getRoles());
                 $authenticatedToken->setUser($user);
                 $authenticatedToken->setTokenDig($token->getTokenDig());
+                $this->intecomService->addCustomAttribute($user->getEmail(),array());
                 return $authenticatedToken;
             }
             else

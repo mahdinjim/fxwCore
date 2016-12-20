@@ -9,7 +9,7 @@ class TaskTypes
 	public static $CONCEPT = array('text' =>"Concept" ,"type"=>"concept" );
 	public static $DEPLOYMENT = array('text' =>"Deployment" ,"type"=>"deployment" );
 	public static $UIDESIGN = array('text' =>"UI Design" ,"type"=>"uidesign" );
-	public static $UICODING = array('text' =>"UI Coding" ,"type"=>"uicoding" );
+	public static $UICODING = array('text' =>"HTML/CSS" ,"type"=>"uicoding" );
 	public static $FRONTEND = array('text' =>"Frontend dev" ,"type"=>"frontenddev" );
 	public static $BACKEND = array('text' =>"Backend dev" ,"type"=>"backenddev" );
 	public static function serialize()

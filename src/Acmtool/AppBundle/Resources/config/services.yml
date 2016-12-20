@@ -10,14 +10,14 @@ parameters:
     acmtool_app.emailauth.provider.class: Acmtool\AppBundle\firewall\emailauth\EmailAuthProvider
     acmtool_app.emailauth.listener.class: Acmtool\AppBundle\firewall\emailauth\EmailTokenListener
     acmtool_app.notifier.handler.class: Acmtool\AppBundle\DependencyInjection\NotificationHandlerService
-
+    acmtool_app.intercom.service.class: Acmtool\AppBundle\DependencyInjection\IntercomService
 services:
 #    acmtool_app.example:
 #        class: %acmtool_app.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
     apiauth.security.authentication.provider:
      class:  '%acmtool_app.apiauth.provider.class%'
-     arguments: ['@doctrine']
+     arguments: ['@doctrine','@acmtool_app.intercom']
 
     apiauth.security.authentication.listener:
      class:  '%acmtool_app.apiauth.listener.class%'
@@ -48,4 +48,6 @@ services:
      arguments: [@security.context, @security.authentication.manager]
     acmtool_app.notifier.handler:
      class: '%acmtool_app.notifier.handler.class%'
-     arguments: [@doctrine, @acmtool_app.email.notifier]
+     arguments: [@doctrine, @acmtool_app.email.notifier, @acmtool_app.intercom]
+    acmtool_app.intercom:
+     class: '%acmtool_app.intercom.service.class%'

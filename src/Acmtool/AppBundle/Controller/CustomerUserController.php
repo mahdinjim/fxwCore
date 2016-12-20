@@ -75,13 +75,10 @@ class CustomerUserController extends Controller
                 } else {
                     $em->persist($user);
                     $em->flush();
-                     if($json->{"isSent"})
-                     {
-                        $company->setName($user->getName());
-                        $company->setEmail($user->getEmail());
-                        $this->get("acmtool_app.notifier.handler")->clientUserAdded($company,$json->{'password'});
-                     }
-                        
+                    $company->setSurname($user->getSurname());
+                     $company->setName($user->getName());
+                    $company->setEmail($user->getEmail());
+                    $this->get("acmtool_app.notifier.handler")->clientUserAdded($company,$json->{'password'},$json->{"isSent"});
                     $res=new Response();
                     $res->setStatusCode(200);
                     $res->setContent(ConstValues::KEYACREATED);
@@ -137,6 +134,7 @@ class CustomerUserController extends Controller
                             $password = $encoder->encodePassword($json->{'password'}, $user->getSalt());
                             $user->getCredentials()->setPassword($password);
                         }
+                        $oldEmail=$user->getEmail();
                         $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         $user->setSurname($json->{'surname'});
@@ -161,6 +159,7 @@ class CustomerUserController extends Controller
                             return $response;
                         } else {
                             $em->flush();
+                            $this->get("acmtool_app.notifier.handler")->clientInfoUpdated($user,$oldEmail);
                             $res=new Response();
                             $res->setStatusCode(200);
                             $res->setContent(ConstValues::KEYAUPDATED);
@@ -185,6 +184,7 @@ class CustomerUserController extends Controller
         $user=$em->getRepository("AcmtoolAppBundle:CustomerUser")->findOneById($id);
         if($user){
             $em->remove($user);
+            $this->get("acmtool_app.notifier.handler")->clientDeleted($user);
             $em->flush();
             $res=new Response();
             $res->setStatusCode(200);

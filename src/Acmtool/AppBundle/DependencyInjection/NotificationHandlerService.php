@@ -8,10 +8,18 @@ class NotificationHandlerService
 	private $doctrine;
 	private $emailService;
 	private $em;
-	function __construct($doctrine,$emailService) {
+	private $intercomService;
+	function __construct($doctrine,$emailService,$intercomService) {
 		$this->doctrine = $doctrine;
 		$this->emailService = $emailService;
+		$this->intercomService = $intercomService;
 		$this->em=$this->doctrine->getEntityManager();
+	}
+	//update intercom last login info
+	public function clientLoggedIn($client_email)
+	{
+		$attribute=array("lastLoginTime"=>time());
+		$this->intercomService->addCustomAttribute($client_email,$attribute);
 	}
 	//Notify Team member and send him credentials
 	public function teamMemberAdded($name,$email,$pwd)
@@ -19,9 +27,23 @@ class NotificationHandlerService
 		$this->emailService->notifyAddedTeamMember($email,$pwd,$name);
 	}
 	//Notify client and send him credentials
-	public function clientAdded($client,$pwd)
+	public function clientAdded($client,$pwd,$send)
 	{
-		$this->emailService->sendClientCreds($client,$pwd);
+		if($send)
+			$this->emailService->sendClientCreds($client,$pwd);
+		$companyname=$client->getCompanyname();
+		$country=$client->getAddress()->getCountry();
+		$city=$client->getAddress()->getCity();
+		$this->intercomService->createNewUser($client,$companyname,$country,$city);
+	}
+	//delete client from intercom when the client is deleted
+	public function clientDeleted($client)
+	{
+		//$this->intercomService->deleteIntercomUser($client->getEmail());
+	}
+	public function clientInfoUpdated($client,$oldEmail)
+	{
+		$this->intercomService->updateUserEmail($client->getEmail(),$oldEmail);
 	}
 	//send client email
 	//send keyaccount email
@@ -30,9 +52,15 @@ class NotificationHandlerService
 
 	}
 	//send the client user email with his credentials
-	public function clientUserAdded($client,$pwd)
+	//create a user in intercom
+	public function clientUserAdded($client,$pwd,$send)
 	{
-		$this->emailService->sendClientCreds($client,$pwd);
+		if($send)
+			$this->emailService->sendClientCreds($client,$pwd);
+		$companyname=$client->getCompanyname();
+		$country=$client->getAddress()->getCountry();
+		$city=$client->getAddress()->getCity();
+		$this->intercomService->createNewUser($client,$companyname,$country,$city);
 	}
 	//send email to keyaccount
 	//add to log project created
@@ -56,7 +84,8 @@ class NotificationHandlerService
 			$this->emailService->notifyProjectCreated($key->getEmail(),$key->getName(),$client,$project,$creator_name);
 		}
 		$this->emailService->notifyProjectCreated($keyaccount->getEmail(),$keyaccount->getName(),$client,$project,$creator_name);
-
+		$attribute=array("lastProjectCreated"=>time());
+		$this->intercomService->addCustomAttribute($client->getEmail(),$attribute);
 	}
 	//send email to client
 	public function projectContractPrepared()
@@ -110,7 +139,8 @@ class NotificationHandlerService
 			$teamleader=$this->em->getRepository("AcmtoolAppBundle:Creds")->getUserByCreds($project->getTeamleader());
 			$this->emailService->notifyTicketCreated($teamleader->getEmail(),$ticket,$client->getCompanyname(),$project,$teamleader->getName());
 		}
-		
+		$attribute=array("lastTicketCreated"=>time());
+		$this->intercomService->addCustomAttribute($client->getEmail(),$attribute);
 
 	}
 	//send email to teamleader asking him to add story

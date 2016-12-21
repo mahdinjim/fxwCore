@@ -40,7 +40,7 @@ class KpiExternDashboardController extends Controller
 				$months=array_keys($dataArray[$currentYear]);
 				$currentMonth=$months[$j];
 				$monthName=$this->getMonthName($currentMonth);
-				array_push($dataMonth, array("monthName"=>$monthName,"clientNum"=>$dataArray[$currentYear][$currentMonth]));
+				$dataMonth=array_merge($dataMonth, array("monthName"=>$monthName,"clientNum"=>$dataArray[$currentYear][$currentMonth]));
 				array_push($dataYear["data"], $dataMonth);
 			}
 			array_push($mess, $dataYear);

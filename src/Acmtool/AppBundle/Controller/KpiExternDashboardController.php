@@ -17,21 +17,46 @@ class KpiExternDashboardController extends Controller
 		foreach ($clients as $key) {
 			if(array_key_exists($key->getYear(),$dataArray))
 			{
-				$dataArray[$key->getYear()][($key->getMonth())]++;
+				$dataArray[$key->getYear()][intval($key->getMonth())]++;
 			}
 			else
 			{
 				$dataArray[$key->getYear()]=$this->initalizeNewYear();
-				$dataArray[$key->getYear()][($key->getMonth())]++;
+				$dataArray[$key->getYear()][intval($key->getMonth())]++;
 			}
+		}
+		$mess=array();
+		for($i=0;$i<count($dataArray);$i++)
+		{
+			$dataYear=array();
+			$years=array_keys($dataArray);
+			$currentYear=$years[$i];
+			$dataYear["year"]=strval($currentYear);
+			$dataYear["data"]=array();
+			
+			for($j=0; $j<count($dataArray[$currentYear]); $j++)
+			{
+				$dataMonth=array();
+				$months=array_keys($dataArray[$currentYear]);
+				$currentMonth=$months[$j];
+				$monthName=$this->getMonthName($currentMonth);
+				$dataMonth[$monthName]=array("clientNum"=>$dataArray[$currentYear][$currentMonth]);
+				array_push($dataYear["data"], $dataMonth);
+			}
+			array_push($mess, $dataYear);
 		}
 		$res=new Response();
         $res->setStatusCode(200);
-        $res->setContent(json_encode(array("data"=>$dataArray)));
+        $res->setContent(json_encode($mess));
         $res->headers->set('Content-Type', 'application/json');
         return $res;
 
 
+	}
+	private function getMonthName($index)
+	{
+		$months=["Jan","Feb","Mar","Apr","Mai","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+		return $months[$index-1];
 	}
 	private function initalizeNewYear()
 	{

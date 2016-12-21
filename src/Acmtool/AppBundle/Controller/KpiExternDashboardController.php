@@ -14,7 +14,7 @@ class KpiExternDashboardController extends Controller
 		$dataArray=array();
 		$em = $this->getDoctrine()->getManager();
 		$clients= $em->getRepository("AcmtoolAppBundle:Customer")->findAll();
-		/*foreach ($clients as $key) {
+		foreach ($clients as $key) {
 			if(array_key_exists($key->getYear(),$dataArray))
 			{
 				$dataArray[$key->getYear()][($key->getMonth())]++;
@@ -24,11 +24,10 @@ class KpiExternDashboardController extends Controller
 				$dataArray[$key->getYear()]=$this->initalizeNewYear();
 				$dataArray[$key->getYear()][($key->getMonth())]++;
 			}
-		}*/
+		}
 		$res=new Response();
-		$data='[{"1":2},{"2":4},{"3":8}]';
         $res->setStatusCode(200);
-        $res->setContent($data);
+        $res->setContent(array("data"=>$dataArray));
         $res->headers->set('Content-Type', 'application/json');
         return $res;
 

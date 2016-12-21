@@ -7,6 +7,8 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Acmtool\AppBundle\firewall\apiauth\ApiToken;
+use Acmtool\AppBundle\Entity\Customer;
+use Acmtool\AppBundle\Entity\CustomerUser;
 Const PERIOD=3600;
 Const TIMEZONE="Europe/Berlin";
 class ApiAuthProvider implements AuthenticationProviderInterface
@@ -34,7 +36,8 @@ class ApiAuthProvider implements AuthenticationProviderInterface
                 $authenticatedToken=new ApiToken($user->getRoles());
                 $authenticatedToken->setUser($user);
                 $authenticatedToken->setTokenDig($token->getTokenDig());
-                $this->intecomService->addCustomAttribute($user->getEmail(),array());
+                if(($user instanceOf Customer) || ($user instanceOf CustomerUser))
+                    $this->intecomService->addCustomAttribute($user->getEmail(),array());
                 return $authenticatedToken;
             }
             else

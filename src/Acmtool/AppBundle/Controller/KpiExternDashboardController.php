@@ -53,6 +53,10 @@ class KpiExternDashboardController extends Controller
 
 
 	}
+	public function getfxwNumbersAction()
+	{
+		
+	}
 	private function getMonthName($index)
 	{
 		$months=["Jan","Feb","Mar","Apr","Mai","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];

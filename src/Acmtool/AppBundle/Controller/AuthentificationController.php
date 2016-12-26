@@ -39,7 +39,7 @@ class AuthentificationController extends Controller
                
                 $username=$json->{"login"};
                 $user = $em->getRepository('AcmtoolAppBundle:Creds')->getUserByUsername($username);
-                if($user)
+                if($user && $user->getIsActive())
                 {
                     $authservice=$this->get('acmtool_app.authentication');
                     $password=$json->{"password"};

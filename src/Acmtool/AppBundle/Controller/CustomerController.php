@@ -287,7 +287,7 @@ class CustomerController extends Controller
             $users=array();
             $i=0;
             foreach ($result as $user) {
-                $users[$i] = array('id'=>$user->getId(),"creationdate"=>date_format($user->getStartingdate(), 'Y-m-d'),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto()));
+                $users[$i] = array('id'=>$user->getId(),"active"=>$user->getIsActive(),"creationdate"=>date_format($user->getStartingdate(), 'Y-m-d'),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto()));
                 $ticketnumber=0;
                 foreach ($user->getProjects() as $key) {
                     $ticketnumber+=count($key->getTickets());
@@ -350,6 +350,49 @@ class CustomerController extends Controller
 
 
         }
+    }
+    public function desActivateClientAction($id,$activate)
+    {
+         $em = $this->getDoctrine()->getManager();
+         if($this->get('security.context')->isGranted('ROLE_KEYACCOUNT') || $this->get('security.context')->isGranted('ROLE_ADMIN') )
+         {
+             $user=$em->getRepository("AcmtoolAppBundle:Customer")->findOneById($id);
+             if($user)
+             {
+                if($activate==="true")
+                {
+                     $user->setIsActive(true);
+                     foreach ($user->getUsers() as $key) {
+                        $key->setIsActive(true);
+                     }
+                }
+                   
+                else
+                {
+                     $user->setIsActive(false);
+                     foreach ($user->getUsers() as $key) {
+                        $key->setIsActive(false);
+                     }
+                }
+                $em->flush();
+                $response=new Response('{"message":"account status changed successfully"}',200);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;  
+             }
+            else
+            {
+                $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
+            
+         }
+          else
+            {
+                $response=new Response('{"err":"unauthorized"}',403);
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;
+            }
     }
 
 }

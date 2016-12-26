@@ -22,6 +22,13 @@ use Acmtool\AppBundle\Entity\KeyAccount;
  */
 class ProjectRepository extends EntityRepository
 {
+	public function getTotalNumberOfProject()
+	{
+		$em=$this->getEntityManager();
+		$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Project")
+	            ->getSingleScalarResult();
+	    return $totalcount;
+	}
 	public function getProjectsCountbyKeyAccount($keyaccount,$state)
 	{
 		$em=$this->getEntityManager();

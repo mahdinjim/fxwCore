@@ -31,7 +31,7 @@ class ApiAuthProvider implements AuthenticationProviderInterface
         {
 
             $user=$em->getRepository('AcmtoolAppBundle:Token')->findUserByToken($apitoken);
-            if($user)
+            if($user && $user->getIsActive())
             {
                 $authenticatedToken=new ApiToken($user->getRoles());
                 $authenticatedToken->setUser($user);

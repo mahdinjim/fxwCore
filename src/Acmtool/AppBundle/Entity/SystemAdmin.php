@@ -98,6 +98,28 @@ class SystemAdmin extends DevTeamMember implements UserInterface, \Serializable
     {
         return array('ROLE_SYSADMIN');
     }
+     /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Developer
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
 
     /**
      * @inheritDoc

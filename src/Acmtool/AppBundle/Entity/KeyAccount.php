@@ -168,6 +168,28 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
     {
         return $this->apitoken;
     }
+     /**
+     * Set isActive
+     *
+     * @param boolean $isActive
+     * @return Developer
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     *
+     * @return boolean 
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
     /**
      * Add projects
      *

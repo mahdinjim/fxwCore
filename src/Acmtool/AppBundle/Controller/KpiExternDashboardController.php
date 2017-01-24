@@ -55,7 +55,18 @@ class KpiExternDashboardController extends Controller
 	}
 	public function getfxwNumbersAction()
 	{
-		
+		$em = $this->getDoctrine()->getManager();
+		$mess= array();
+		$mess["client_number"] = $em->getRepository("AcmtoolAppBundle:Customer")->getTotalClientCount();
+		$mess["project_number"] = $em->getRepository("AcmtoolAppBundle:Project")->getTotalProjectCount();
+		$mess["ticket_number"] = $em->getRepository("AcmtoolAppBundle:Ticket")->getTotalTicketCount();
+		$mess["ticket_billed_number"] = $em->getRepository("AcmtoolAppBundle:Ticket")->getTotalBilledTicketCount();
+		$res = new Response();
+		$res->setStatusCode(200);
+		$res->setContent(json_encode($mess));
+		$res->headers->set('Content-Type', 'application/json');
+        return $res;
+
 	}
 	private function getMonthName($index)
 	{

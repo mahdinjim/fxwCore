@@ -31,4 +31,11 @@ class CustomerRepository extends EntityRepository
             ->getSingleScalarResult();
         return $totalcount;
 	}
+	public function getTotalClientCount()
+	{
+		$em=$this->getEntityManager();
+		$totalcount=$em->createQuery("SELECT COUNT(c) FROM AcmtoolAppBundle:Customer c")
+            ->getSingleScalarResult();
+        return $totalcount;
+	}
 }

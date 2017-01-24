@@ -63,7 +63,7 @@ class WsseProvider implements AuthenticationProviderInterface
 
         // Validate Secret
         $expected = base64_encode(sha1(base64_decode($nonce).$created.$secret, true));
-
+        var_dump(StringUtils::equals($expected, $digest));
         return StringUtils::equals($expected, $digest);
     }
 

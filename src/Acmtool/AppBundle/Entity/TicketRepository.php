@@ -39,4 +39,29 @@ class TicketRepository extends EntityRepository
                         ->getResult();
         return $result;
 	}
+	public function getTotalTicketCount()
+	{
+		$em=$this->getEntityManager();
+		$totalcount=$em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:Ticket t")
+            ->getSingleScalarResult();
+        return $totalcount;
+	}
+	public function getTotalBilledTicketCount()
+	{
+		
+		$em=$this->getEntityManager();
+		$totalcount=$em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:Ticket t WHERE t.isPayed = true")
+            ->getSingleScalarResult();
+        return $totalcount;
+	}
+	public function getTotalEstimatedHours()
+	{
+		$em=$this->getEntityManager();
+		$ticketsEstimations = $em->createQuery("SELECT t.estimation FROM AcmtoolAppBundle:Ticket")->getResult();
+		foreach ($ticketsEstimations as $key) {
+			var_dump($key);
+		}
+		die();
+
+	}
 }

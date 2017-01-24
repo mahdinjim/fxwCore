@@ -179,4 +179,11 @@ class ProjectRepository extends EntityRepository
 		}
 		return $project;
 	}
+	public function getTotalProjectCount()
+	{
+		$em=$this->getEntityManager();
+		$totalcount=$em->createQuery("SELECT COUNT(p) FROM AcmtoolAppBundle:Project p")
+            ->getSingleScalarResult();
+        return $totalcount;
+	}
 }

@@ -13,6 +13,10 @@ clientnumber_kpi:
     path:     /extern/client/number
     defaults: { _controller: AcmtoolAppBundle:KpiExternDashboard:getClientNumber }
     methods:  [OPTIONS,GET]
+fxwnumbers_kpi:
+    path:     /public/fxw/numbers
+    defaults: { _controller: AcmtoolAppBundle:KpiExternDashboard:getfxwNumbers }
+    methods:  [OPTIONS,GET]
 _create:
     path:     /secret/once/create
     defaults: { _controller: AcmtoolAppBundle:AdminController:Create }

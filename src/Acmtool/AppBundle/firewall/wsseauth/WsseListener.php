@@ -25,15 +25,14 @@ class WsseListener implements ListenerInterface
     public function handle(GetResponseEvent $event)
     {
         $request = $event->getRequest();
-
+        
         $wsseRegex = '/UsernameToken Username="([^"]+)", PasswordDigest="([^"]+)", Nonce="([a-zA-Z0-9+\/]+={0,2})", Created="([^"]+)"/';
-        if (!$request->headers->has('x-wsse') || 1 !== preg_match($wsseRegex, $request->headers->get('x-wsse'), $matches)) {
+        if (!$request->headers->has('x-wsse') || (1 !== preg_match($wsseRegex, $request->headers->get('x-wsse'), $matches))) {
             $response = new Response();
 	        $response->setStatusCode(403);
 	        $event->setResponse($response);
             return;
         }
-
         $token = new WsseToken();
         $token->setUser($matches[1]);
 

@@ -1,3 +1,7 @@
+acmtool_j:
+    resource: "@AcmtoolJBundle/Resources/config/routing.yml"
+    prefix:   /api
+
 acmtool_app:
     resource: "@AcmtoolAppBundle/Resources/config/routing.yml"
     prefix:   /api

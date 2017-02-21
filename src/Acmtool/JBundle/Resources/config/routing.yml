@@ -1,0 +1,11 @@
+acmtool_j_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: AcmtoolJBundle:Default:index }
+j_ui_generator:
+    path:     /jira/ui/{account}/{token}
+    defaults: { _controller: AcmtoolJBundle:Default:getUI }
+    methods:  [OPTIONS,GET]
+j_add_account:
+    path:     /jira/account/add/{linker}
+    defaults: { _controller: AcmtoolJBundle:Default:linkAccount }
+    methods:  [OPTIONS,POST]

@@ -375,6 +375,10 @@ _createTicket:
     path:     /private/project/restricted/ticket/create
     defaults: { _controller: AcmtoolAppBundle:Ticket:create }
     methods: [POST,OPTIONS]
+_botcreateTicket:
+    path:     /extern/ticket/create
+    defaults: { _controller: AcmtoolAppBundle:Ticket:create }
+    methods: [POST,OPTIONS]
 _getticketypes:
     path:     /private/ticket/types
     defaults: { _controller: AcmtoolAppBundle:Ticket:getTicketTypes }

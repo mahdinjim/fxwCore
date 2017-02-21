@@ -28,7 +28,11 @@ class TicketController extends Controller
         	if(isset($json->{"title"}) && isset($json->{"description"}) && isset($json->{"project_id"}) && isset($json->{"createdby"}))
         	{
         		$user=$this->get("security.context")->getToken()->getUser();
-                $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$json->{"project_id"});
+        		$isBot=$this->get('security.context')->isGranted("ROLE_BOT");
+        		if($isBot)
+        			$project = $em->getRepository("AcmtoolAppBundle:Project")->findOneById($json->{"project_id"});
+        		else
+                	$project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$json->{"project_id"});
         		if($project){
         			$ticket=new Ticket();
         			$ticket->setProject($project);
@@ -61,13 +65,13 @@ class TicketController extends Controller
         			$displayid=$project_id.$ticketCount;
         			$ticket->setDiplayId($displayid);
         			$em->flush();
-	                $this->get("acmtool_app.notifier.handler")->ticketCreated($ticket,$user);
+	                //$this->get("acmtool_app.notifier.handler")->ticketCreated($ticket,$user);
 	                $response=new Response('Ticket created',200);
 	                return $response;
         		}
         		else
         		{
-        			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+        			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.' no project Ò"}',400);
 	                $response->headers->set('Content-Type', 'application/json');
 	                return $response;
         		}     		
@@ -75,7 +79,7 @@ class TicketController extends Controller
         	}
         	else
         	{
-        		$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.'"}',400);
+        		$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.' missing infoÒ"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
         	}

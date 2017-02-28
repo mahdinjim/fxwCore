@@ -2,10 +2,26 @@ acmtool_j_homepage:
     path:     /hello/{name}
     defaults: { _controller: AcmtoolJBundle:Default:index }
 j_ui_generator:
-    path:     /jira/ui/{account}/{token}
+    path:     /private/jira/ui/{account}/{token}
     defaults: { _controller: AcmtoolJBundle:Default:getUI }
     methods:  [OPTIONS,GET]
 j_add_account:
-    path:     /jira/account/add/{linker}
+    path:     /private/jira/account/add/{linker}/{token}
     defaults: { _controller: AcmtoolJBundle:Default:linkAccount }
     methods:  [OPTIONS,POST]
+j_get_projects:
+    path:     /private/jira/project/{account}
+    defaults: { _controller: AcmtoolJBundle:Default:getJiraProjects }
+    methods:  [OPTIONS,GET]
+j_delete_account:
+    path:     /private/jira/account/unlink/{account}/{token}
+    defaults: { _controller: AcmtoolJBundle:Default:unLinkAccount }
+    methods:  [OPTIONS,GET]
+j_link_project:
+    path:     /private/jira/project/link/{token}
+    defaults: { _controller: AcmtoolJBundle:Default:linkProjects }
+    methods:  [OPTIONS,POST]
+j_unlink_project:
+    path:     /private/jira/project/unlink/{project_id}/{token}
+    defaults: { _controller: AcmtoolJBundle:Default:unlinkProjects }
+    methods:  [OPTIONS,GET]

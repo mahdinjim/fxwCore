@@ -209,6 +209,10 @@ class Project
     * @ORM\OneToMany(targetEntity="NoNotif", mappedBy="project")
     */
     private $noNotifs;
+    /**
+    * @ORM\OneToMany(targetEntity="LinkedProject", mappedBy="project")
+    */
+    private $pmtools;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -1120,5 +1124,38 @@ class Project
     public function getNoNotifs()
     {
         return $this->noNotifs;
+    }
+
+    /**
+     * Add pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedProject $pmtools
+     * @return Project
+     */
+    public function addPmtool(\Acmtool\AppBundle\Entity\LinkedProject $pmtools)
+    {
+        $this->pmtools[] = $pmtools;
+
+        return $this;
+    }
+
+    /**
+     * Remove pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedProject $pmtools
+     */
+    public function removePmtool(\Acmtool\AppBundle\Entity\LinkedProject $pmtools)
+    {
+        $this->pmtools->removeElement($pmtools);
+    }
+
+    /**
+     * Get pmtools
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPmtools()
+    {
+        return $this->pmtools;
     }
 }

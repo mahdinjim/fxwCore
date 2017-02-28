@@ -551,3 +551,19 @@ _desactivateClient:
     path:     /private/client/desactivate/{id}/{activate}
     defaults: { _controller: AcmtoolAppBundle:Customer:desActivateClient }
     methods: [GET,OPTIONS]
+_linkpmtool:
+    path:     /private/client/linktool/{id}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Customer:linkPmTool }
+    methods: [GET,OPTIONS]
+_unlinkpmtool:
+    path:     /private/client/unlinktool/{id}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Customer:unlikPmTool }
+    methods: [GET,OPTIONS]
+_linkpmtoolproject:
+    path:     /private/project/linktool/{project_id}/{project_name}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Project:linkProjectToPmTool }
+    methods: [GET,OPTIONS]
+_unlinkpmtoolproject:
+    path:     /private/project/unlinktool/{project_id}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Project:unlinkProjectToPmTool }
+    methods: [GET,OPTIONS]

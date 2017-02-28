@@ -11,7 +11,8 @@ use Acmtool\AppBundle\Entity\Address;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
-
+use Acmtool\AppBundle\Entity\SupportedPmTools;
+use Acmtool\AppBundle\Entity\LinkedPmTools;
 Const TIMEZONE="Europe/Berlin";
 class CustomerController extends Controller
 {
@@ -393,6 +394,72 @@ class CustomerController extends Controller
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
+    }
+    public function linkPmToolAction($id,$pmTool)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $tools = SupportedPmTools::getAll();
+        $client = $em->getRepository("AcmtoolAppBundle:Customer")->findOneById($id);
+        if($client)
+        {
+            if(in_array($pmTool, $tools))
+            {
+                $tools = $em->getRepository("AcmtoolAppBundle:LinkedPmTools")->findByClient($client);
+                $found = false;
+                foreach ($tools as $key) {
+                    if($key->getToolname() == $pmTool)
+                    {
+                        $found = true;
+                    }
+                        
+                }
+                if($found)
+                    return new Response("Tool already linked",200);
+                else
+                {
+                    $tool = new LinkedPmTools();
+                    $tool->setToolname($pmTool);
+                    $tool->setClient($client);
+                    $em->persist($tool);
+                    $em->flush();
+                    return new Response("Tool is linked",200);
+                }
+            }
+            else
+                return new Response("tool not supported",401);
+        }
+        else
+            return new Response("bad request",400);
+        
+    }
+    public function unlikPmToolAction($id,$pmTool)
+    {
+        $tools = SupportedPmTools::getAll();
+        $em = $this->getDoctrine()->getManager();
+        $client = $em->getRepository("AcmtoolAppBundle:Customer")->findOneById($id);
+        if($client)
+        {
+            if(in_array($pmTool, $tools))
+            {
+                $tools = $em->getRepository("AcmtoolAppBundle:LinkedPmTools")->findByClient($client);
+                $found = false;
+                foreach ($tools as $key) {
+                    if($key->getToolname() == $pmTool)
+                    {
+                        $found = true;
+                        $em->remove($key);
+                        $em->flush();
+                    }
+                        
+                }
+                return new Response("Tool unLinked",200);
+                
+            }
+            else
+                return new Response("tool not supported",401);
+        }
+        else
+            return new Response("bad request",400);
     }
 
 }

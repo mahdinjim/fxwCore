@@ -154,6 +154,10 @@ class Customer implements UserInterface, \Serializable
      * @ORM\Column(name="phonecode", type="string", length=255)
      */
     private $phonecode;
+     /**
+    * @ORM\OneToMany(targetEntity="LinkedPmTools", mappedBy="client")
+    */
+    private $pmtools;
     public function __construct()
     {
         $this->isActive = true;
@@ -736,5 +740,38 @@ class Customer implements UserInterface, \Serializable
     public function getStartingdate()
     {
         return $this->startingdate;
+    }
+
+    /**
+     * Add pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedPmTools $pmtools
+     * @return Customer
+     */
+    public function addPmtool(\Acmtool\AppBundle\Entity\LinkedPmTools $pmtools)
+    {
+        $this->pmtools[] = $pmtools;
+
+        return $this;
+    }
+
+    /**
+     * Remove pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedPmTools $pmtools
+     */
+    public function removePmtool(\Acmtool\AppBundle\Entity\LinkedPmTools $pmtools)
+    {
+        $this->pmtools->removeElement($pmtools);
+    }
+
+    /**
+     * Get pmtools
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPmtools()
+    {
+        return $this->pmtools;
     }
 }

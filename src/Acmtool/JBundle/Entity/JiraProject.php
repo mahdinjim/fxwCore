@@ -1,12 +1,14 @@
 <?php
 
 namespace Acmtool\JBundle\Entity;
-
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * JiraProject
- *
+ * @UniqueEntity(fields={"linkerId"},message="This flexwork project is already linked")
+ * @UniqueEntity(fields={"projectId"},message="This jira project is already linked")
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Acmtool\JBundle\Entity\ProjectRepository")
  */
@@ -54,7 +56,7 @@ class JiraProject
     }
 
     /**
-     * Set projectName
+     * Set jira projectName
      *
      * @param string $projectName
      * @return Project
@@ -90,7 +92,7 @@ class JiraProject
     }
 
     /**
-     * Get projectId
+     * Get jira projectId
      *
      * @return integer 
      */
@@ -100,7 +102,7 @@ class JiraProject
     }
 
     /**
-     * Set linkerId
+     * Set flexwork project id linkerId
      *
      * @param integer $linkerId
      * @return Project

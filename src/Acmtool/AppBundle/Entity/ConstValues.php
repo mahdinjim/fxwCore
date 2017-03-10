@@ -42,5 +42,11 @@ abstract class ConstValues
 	const CONFIGADDED="Project config addedsuccessfully";
 	const CONFIGUPDATED="Project config updated successfully";
 	const CONFIGDELETED="Project config deleted successfully";
+	const INVOICELIMITDAYS = 10;
+	const DEFAULTCURRENCY = "EUR";
+	const DEFAULTTAX = 19;
+	const DEFAULTBILLEDFROM = "De";
+	const GERMANYCODE ="De";
+	const TURKEYCODE = "Tr";
 
 }

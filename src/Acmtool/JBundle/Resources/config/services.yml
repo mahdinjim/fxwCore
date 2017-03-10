@@ -1,0 +1,7 @@
+parameters:
+#    acmtool_j.example.class: Acmtool\JBundle\Example
+
+services:
+#    acmtool_j.example:
+#        class: %acmtool_j.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

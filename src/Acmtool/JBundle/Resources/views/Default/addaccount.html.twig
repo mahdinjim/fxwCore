@@ -1,0 +1,58 @@
+<script type="text/javascript">
+    var token = "{{token}}";
+    var path = "{{link}}";
+    var createAccount = function()
+    {
+        var theForm = document.forms["add_j_account_form"];
+        var link = theForm["j_link"].value;
+        var passeword = theForm["j_passeword"].value;
+        var login = theForm["j_login"].value;
+        var errorNode = document.getElementById("add_jira_error_container");
+        if(link != "" && passeword != "" && login != "")
+        {
+            var secret = login+":"+passeword;
+            var data = {
+                "creds":secret,
+                "link" : link
+            }
+            var xhttp=new XMLHttpRequest();
+            xhttp.open("POST",path,true);
+            xhttp.setRequestHeader("x-crm-access-token", token);
+            xhttp.onreadystatechange=function(){
+                if (this.readyState == 4 && this.status == 200) {
+                    var wrapper = document.getElementById("add_jira_error_container");
+                    wrapper.innerHTML= "<p>Account added successfully, Now you can add flexwork jira bot to your jira account and start assigning issues to it.</p>"
+                }
+                else if(this.readyState == 4 && this.status != 200)
+                {
+                    if(this.status === 400)
+                        errorNode.innerHTML = "<p>"+this.responseText+"</p>";
+                    if(this.status >= 500)
+                        errorNode.innerHTML = "<p>"+this.responseText+"</p>";
+                    if(this.status === 403 )
+                        errorNode.innerHTML = "<p>You are not authorized</p>";
+                }
+            }
+            var dataMess = JSON.stringify(data)
+            xhttp.send(dataMess);
+            return false;
+        }
+       
+    }
+</script>
+<div id="j_form_wrapper">
+    <form class="m-t" role="form" name="add_j_account_form" onsubmit="return createAccount()" action="">
+        <div class="form-group">
+            <input  class="form-control" placeholder="account link" required="please add account link" name="j_link">
+        </div>
+         <div class="form-group">
+            <input class="form-control" placeholder="Jira login" required="please enter your jira login" name="j_login">
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control" placeholder="Jira password" required="please enter your jira passeword" name="j_passeword">
+        </div>
+        
+        <button type="submit" class="btn btn-primary block full-width m-b">Add account</button>
+        <div id="add_jira_error_container" class="errormsg"></div>  
+    </form>
+</div>

@@ -529,6 +529,11 @@ class NotificationHandlerService
 		$this->em->persist($log);
 		$this->emailService->notifyAssignedToStory($teamMember->getEmail(),$ticket,$client->getCompanyname(),$project,$teamMember->getName(),$story->getTitle());
 	}
+	//send email to client when new invoice created
+	public function invoiceCreated($invoice)
+	{
+
+	}
 	private function getAdmins() 
 	{
 		return $this->em->getRepository('AcmtoolAppBundle:Admin')->findAll();

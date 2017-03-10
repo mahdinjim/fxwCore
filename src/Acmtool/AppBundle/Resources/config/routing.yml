@@ -375,6 +375,10 @@ _createTicket:
     path:     /private/project/restricted/ticket/create
     defaults: { _controller: AcmtoolAppBundle:Ticket:create }
     methods: [POST,OPTIONS]
+_botcreateTicket:
+    path:     /extern/ticket/create
+    defaults: { _controller: AcmtoolAppBundle:Ticket:create }
+    methods: [POST,OPTIONS]
 _getticketypes:
     path:     /private/ticket/types
     defaults: { _controller: AcmtoolAppBundle:Ticket:getTicketTypes }
@@ -546,4 +550,44 @@ _desactivateemailnotif:
 _desactivateClient:
     path:     /private/client/desactivate/{id}/{activate}
     defaults: { _controller: AcmtoolAppBundle:Customer:desActivateClient }
+    methods: [GET,OPTIONS]
+_linkpmtool:
+    path:     /private/client/linktool/{id}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Customer:linkPmTool }
+    methods: [GET,OPTIONS]
+_unlinkpmtool:
+    path:     /private/client/unlinktool/{id}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Customer:unlikPmTool }
+    methods: [GET,OPTIONS]
+_linkpmtoolproject:
+    path:     /private/project/linktool/{project_id}/{project_name}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Project:linkProjectToPmTool }
+    methods: [GET,OPTIONS]
+_unlinkpmtoolproject:
+    path:     /private/project/unlinktool/{project_id}/{pmTool}
+    defaults: { _controller: AcmtoolAppBundle:Project:unlinkProjectToPmTool }
+    methods: [GET,OPTIONS]
+_getunbilledtickets:
+    path:     /private/super/invoice/list
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getAdminList }
+    methods: [GET,OPTIONS]
+_createinvoice:
+    path:     /private/super/invoice/new/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:createInvoice }
+    methods: [GET,OPTIONS]
+_payinvoice:
+    path:     /private/super/invoice/pay/{invoiceId}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:markInvoiceasPaid }
+    methods: [GET,OPTIONS]
+_getAllinvoice:
+    path:     /private/invoice/list/{year}/{month}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getInvoiceList }
+    methods: [GET,OPTIONS]
+_getInvoiceDetail:
+    path:     /private/invoice/detail/{invoiceId}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getInvoiceDetails }
+    methods: [GET,OPTIONS]
+_getInvoiceReport:
+    path:     /private/invoice/report/{invoice}/{id}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getInvoiceReport }
     methods: [GET,OPTIONS]

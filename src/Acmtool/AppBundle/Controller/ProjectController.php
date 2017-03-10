@@ -22,6 +22,8 @@ use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\Admin;
 use Acmtool\AppBundle\Entity\TaskTypes;
 use Acmtool\AppBundle\Entity\NoNotif;
+use Acmtool\AppBundle\Entity\SupportedPmTools;
+use Acmtool\AppBundle\Entity\LinkedProject;
 class ProjectController extends Controller
 {
 	public function createAction()
@@ -596,7 +598,14 @@ class ProjectController extends Controller
                 $configs[$i]=array("id"=>$key->getId(),"title"=>$key->getTitle(),"config"=>$key->getConfig());
                 $i++;
             }
-            $mess["configs"]=$configs;           
+            $mess["configs"]=$configs;
+            $i=0;
+            $tools=array();
+            foreach ($project->getPmtools() as $key) {
+                $tools[$i]["tool"]=$key->getToolname();
+                $tools[$i]["p_name"]=urldecode($key->getProjectName());
+            }
+            $mess["pmtools"]=$tools;   
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent(json_encode($mess));
@@ -1224,6 +1233,10 @@ class ProjectController extends Controller
                  // $data["contractprepared"]=$key->getContractPrepared();
                 if($key->getSignedContract())
                     $data["signaturedate"]=date_format($key->getSignaturedate(),"Y-m-d");
+                if($key->getOwner()->getCurrency() != null)
+                    $data["currency"]=$key->getOwner()->getCurrency();
+                else
+                    $data["currency"]=ConstValues::DEFAULTCURRENCY;
                 $data["estimation"]=$key->getEstimation();
                 $data["period"]=$key->getPeriod();
                 $j=0;
@@ -1594,6 +1607,74 @@ class ProjectController extends Controller
             $response->headers->set('Content-Type', 'application/json');
             return $response;
         }
+    }
+    public function linkProjectToPmToolAction($project_id,$project_name,$pmTool)
+    {
+         $em = $this->getDoctrine()->getManager();
+        $tools = SupportedPmTools::getAll();
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$project_id);
+        if($project)
+        {
+            $found = false;
+            if(in_array($pmTool, $tools))
+            {
+                $linkedProjects = $em->getRepository("AcmtoolAppBundle:LinkedProject")->findByProject($project);
+                foreach ($linkedProjects as $key) {
+                    if($key->getToolname() == $pmTool)
+                    {
+                        $found = true;
+                    }
+                }
+                if($found)
+                    return new Response("Project already linked",200);
+                else
+                {
+                    $linkp = new LinkedProject();
+                    $linkp->setProject($project);
+                    $linkp->setToolname($pmTool);
+                    $linkp->setProjectName($project_name);
+                    $em->persist($linkp);
+                    $em->flush();
+                    return new Response("Project linked successfully",200);
+                }
+            }
+            else
+            {
+                return new Response("tool not supported",401);
+            }
+        }
+         else
+            return new Response("bad request",400);
+    }
+    public function unlinkProjectToPmToolAction($project_id,$pmTool)
+    {
+         $em = $this->getDoctrine()->getManager();
+        $tools = SupportedPmTools::getAll();
+        $loggeduser=$this->get("security.context")->getToken()->getUser();
+        $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($loggeduser,$project_id);
+        if($project)
+        {
+            if(in_array($pmTool, $tools))
+            {
+                $linkedProjects = $em->getRepository("AcmtoolAppBundle:LinkedProject")->findByProject($project);
+                foreach ($linkedProjects as $key) {
+                    if($key->getToolname() == $pmTool)
+                    {
+                        $found = true;
+                        $em->remove($key);
+                        $em->flush();
+                    }
+                }
+                return new Response("Project unlinked",200);
+            }
+            else
+            {
+                return new Response("tool not supported",401);
+            }
+        }
+         else
+            return new Response("bad request",400);
     }
 
 }

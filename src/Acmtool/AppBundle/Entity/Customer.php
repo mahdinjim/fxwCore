@@ -154,6 +154,32 @@ class Customer implements UserInterface, \Serializable
      * @ORM\Column(name="phonecode", type="string", length=255)
      */
     private $phonecode;
+     /**
+    * @ORM\OneToMany(targetEntity="LinkedPmTools", mappedBy="client")
+    */
+    private $pmtools;
+    /**
+    * @ORM\OneToMany(targetEntity="Invoice", mappedBy="client")
+    */
+    private $invoices;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="currency", type="string", length=255)
+     */
+    private $currency;
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="tax", type="float")
+     */
+    private $tax;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="billedFrom", type="string", length=20)
+     */
+    private $billedFrom;
     public function __construct()
     {
         $this->isActive = true;
@@ -736,5 +762,140 @@ class Customer implements UserInterface, \Serializable
     public function getStartingdate()
     {
         return $this->startingdate;
+    }
+
+    /**
+     * Add pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedPmTools $pmtools
+     * @return Customer
+     */
+    public function addPmtool(\Acmtool\AppBundle\Entity\LinkedPmTools $pmtools)
+    {
+        $this->pmtools[] = $pmtools;
+
+        return $this;
+    }
+
+    /**
+     * Remove pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedPmTools $pmtools
+     */
+    public function removePmtool(\Acmtool\AppBundle\Entity\LinkedPmTools $pmtools)
+    {
+        $this->pmtools->removeElement($pmtools);
+    }
+
+    /**
+     * Get pmtools
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPmtools()
+    {
+        return $this->pmtools;
+    }
+
+    /**
+     * Set currency
+     *
+     * @param string $currency
+     * @return Customer
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * Get currency
+     *
+     * @return string 
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * Set tax
+     *
+     * @param float $tax
+     * @return Customer
+     */
+    public function setTax($tax)
+    {
+        $this->tax = $tax;
+
+        return $this;
+    }
+
+    /**
+     * Get tax
+     *
+     * @return float 
+     */
+    public function getTax()
+    {
+        return $this->tax;
+    }
+
+    /**
+     * Add invoices
+     *
+     * @param \Acmtool\AppBundle\Entity\Invoice $invoices
+     * @return Customer
+     */
+    public function addInvoice(\Acmtool\AppBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices[] = $invoices;
+
+        return $this;
+    }
+
+    /**
+     * Remove invoices
+     *
+     * @param \Acmtool\AppBundle\Entity\Invoice $invoices
+     */
+    public function removeInvoice(\Acmtool\AppBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices->removeElement($invoices);
+    }
+
+    /**
+     * Get invoices
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getInvoices()
+    {
+        return $this->invoices;
+    }
+
+    /**
+     * Set billedFrom
+     *
+     * @param string $billedFrom
+     * @return Customer
+     */
+    public function setBilledFrom($billedFrom)
+    {
+        $this->billedFrom = $billedFrom;
+
+        return $this;
+    }
+
+    /**
+     * Get billedFrom
+     *
+     * @return string 
+     */
+    public function getBilledFrom()
+    {
+        return $this->billedFrom;
     }
 }

@@ -53,7 +53,14 @@ class AuthentificationController extends Controller
                         elseif ($user instanceOf Customer) {
                             $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"signed"=>true,"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
                             $address=array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState());
+                            $tools=[];
+                            $i=0;
+                            foreach ($user->getPmtools() as $key) {
+                                $tools[$i]=$key->getToolname();
+                            }
+                            $UserInfo['pmtools']=$tools;
                             $UserInfo["address"]=$address;
+
                             $this->get("acmtool_app.notifier.handler")->clientLoggedIn($user->getEmail());
                         }
                         elseif ($user instanceOf CustomerUser) {

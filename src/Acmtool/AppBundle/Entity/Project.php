@@ -177,6 +177,10 @@ class Project
     * @ORM\OneToMany(targetEntity="Ticket", mappedBy="project")
     */
     private $tickets;
+     /**
+    * @ORM\OneToMany(targetEntity="Invoice", mappedBy="project")
+    */
+    private $invoices;
     /**
      * @var string
      * 
@@ -209,6 +213,10 @@ class Project
     * @ORM\OneToMany(targetEntity="NoNotif", mappedBy="project")
     */
     private $noNotifs;
+    /**
+    * @ORM\OneToMany(targetEntity="LinkedProject", mappedBy="project")
+    */
+    private $pmtools;
     function __construct() {
         $this->sysadmins=new ArrayCollection();
         $this->developers=new ArrayCollection();
@@ -1120,5 +1128,71 @@ class Project
     public function getNoNotifs()
     {
         return $this->noNotifs;
+    }
+
+    /**
+     * Add pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedProject $pmtools
+     * @return Project
+     */
+    public function addPmtool(\Acmtool\AppBundle\Entity\LinkedProject $pmtools)
+    {
+        $this->pmtools[] = $pmtools;
+
+        return $this;
+    }
+
+    /**
+     * Remove pmtools
+     *
+     * @param \Acmtool\AppBundle\Entity\LinkedProject $pmtools
+     */
+    public function removePmtool(\Acmtool\AppBundle\Entity\LinkedProject $pmtools)
+    {
+        $this->pmtools->removeElement($pmtools);
+    }
+
+    /**
+     * Get pmtools
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPmtools()
+    {
+        return $this->pmtools;
+    }
+
+    /**
+     * Add invoices
+     *
+     * @param \Acmtool\AppBundle\Entity\Invoice $invoices
+     * @return Project
+     */
+    public function addInvoice(\Acmtool\AppBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices[] = $invoices;
+
+        return $this;
+    }
+
+    /**
+     * Remove invoices
+     *
+     * @param \Acmtool\AppBundle\Entity\Invoice $invoices
+     */
+    public function removeInvoice(\Acmtool\AppBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices->removeElement($invoices);
+    }
+
+    /**
+     * Get invoices
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getInvoices()
+    {
+        return $this->invoices;
     }
 }

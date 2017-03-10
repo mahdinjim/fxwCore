@@ -46,7 +46,7 @@ class IntercomService
         try{
             $user = $this->intercom->users->getUsers(array("email" => $email));
             $this->intercom->users->create(array(
-                "id" => $user->id,
+                "id" =>$user->id,
                 "email"=>$newemail
             ));
         }

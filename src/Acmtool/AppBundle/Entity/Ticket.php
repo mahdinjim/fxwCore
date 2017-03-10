@@ -198,6 +198,11 @@ class Ticket
     */
     private $logs;
     /**
+    * @ORM\ManyToOne(targetEntity="Invoice", inversedBy="tickets")
+    * @ORM\JoinColumn(name="invoice_id",referencedColumnName="id",onDelete="SET NULL")
+    */
+    private $invoice;
+    /**
      * Get id
      *
      * @return integer 
@@ -908,5 +913,28 @@ class Ticket
     public function getLogs()
     {
         return $this->logs;
+    }
+
+    /**
+     * Set invoice
+     *
+     * @param \Acmtool\AppBundle\Entity\Invoice $invoice
+     * @return Ticket
+     */
+    public function setInvoice(\Acmtool\AppBundle\Entity\Invoice $invoice = null)
+    {
+        $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    /**
+     * Get invoice
+     *
+     * @return \Acmtool\AppBundle\Entity\Invoice 
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
     }
 }

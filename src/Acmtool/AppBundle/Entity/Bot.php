@@ -203,6 +203,6 @@ class Bot implements UserInterface
      */
     public function getRoles()
     {
-        return array("BOT_ROLE");
+        return array("ROLE_BOT");
     }
 }

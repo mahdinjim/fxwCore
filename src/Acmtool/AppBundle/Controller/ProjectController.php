@@ -1233,6 +1233,10 @@ class ProjectController extends Controller
                  // $data["contractprepared"]=$key->getContractPrepared();
                 if($key->getSignedContract())
                     $data["signaturedate"]=date_format($key->getSignaturedate(),"Y-m-d");
+                if($key->getOwner()->getCurrency() != null)
+                    $data["currency"]=$key->getOwner()->getCurrency();
+                else
+                    $data["currency"]=ConstValues::DEFAULTCURRENCY;
                 $data["estimation"]=$key->getEstimation();
                 $data["period"]=$key->getPeriod();
                 $j=0;

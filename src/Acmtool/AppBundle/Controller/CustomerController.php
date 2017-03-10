@@ -71,6 +71,18 @@ class CustomerController extends Controller
                 $user->setDay(date('d'));
                 $user->setMonth(date("m"));
                 $user->setYear(date("Y"));
+                if(isset($json->{"tax"}))
+                    $user->setTax($json->{"tax"});
+                else
+                    $user->setTax(ConstValues::DEFAULTTAX);
+                if(isset($json->{"currency"}))
+                    $user->setCurrency($json->{"currency"});
+                else
+                    $user->setCurrency(ConstValues::DEFAULTCURRENCY);
+                if(isset($json->{"billedfrom"}))
+                    $user->setBilledFrom($json->{"billedfrom"});
+                else
+                    $user->setBilledFrom(ConstValues::DEFAULTBILLEDFROM);
                 $format = 'Y-m-d';
                 $startingdate = new \DateTime('UTC');
                 $user->setStartingdate($startingdate);
@@ -169,6 +181,18 @@ class CustomerController extends Controller
                         $user->setPhonecode($json->{'phonecode'});
                         $user->setTelnumber($json->{'telnumber'});
                         $user->setCompanyName($json->{'companyname'});
+                        if(isset($json->{"tax"}))
+                            $user->setTax($json->{"tax"});
+                        else
+                            $user->setTax(ConstValues::DEFAULTTAX);
+                        if(isset($json->{"currency"}))
+                            $user->setCurrency($json->{"currency"});
+                        else
+                            $user->setCurrency(ConstValues::DEFAULTCURRENCY);
+                        if(isset($json->{"billedfrom"}))
+                            $user->setBilledFrom($json->{"billedfrom"});
+                        else
+                            $user->setBilledFrom(ConstValues::DEFAULTBILLEDFROM);
                         $address=new Address();
                         $user->getAddress()->setAddress($json->{'address'}->{'address'});
                         $user->getAddress()->setZipCode($json->{'address'}->{'zipcode'});
@@ -288,7 +312,7 @@ class CustomerController extends Controller
             $users=array();
             $i=0;
             foreach ($result as $user) {
-                $users[$i] = array('id'=>$user->getId(),"active"=>$user->getIsActive(),"creationdate"=>date_format($user->getStartingdate(), 'Y-m-d'),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto()));
+                $users[$i] = array('id'=>$user->getId(),"active"=>$user->getIsActive(),"creationdate"=>date_format($user->getStartingdate(), 'Y-m-d'),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto()),"tax"=>$user->getTax(),"currency"=>$user->getCurrency(),"billedFrom"=>$user->getBilledFrom());
                 $ticketnumber=0;
                 foreach ($user->getProjects() as $key) {
                     $ticketnumber+=count($key->getTickets());
@@ -336,7 +360,11 @@ class CustomerController extends Controller
             }
             if($user)
             {
-                $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"logo"=>$user->getLogo(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"tel"=>$user->getTelnumber(),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
+                $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),
+                    'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),
+                    "companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"tax"=>$user->getTax(),"currency"=>$user->getCurrency(),"billedFrom"=>$user->getBilledFrom(),
+                    "tel"=>$user->getTelnumber(),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),
+                    "keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname()));
                 $res=new Response();
                 $res->setStatusCode(200);
                 $res->setContent(json_encode($UserInfo));

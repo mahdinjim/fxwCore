@@ -177,6 +177,10 @@ class Project
     * @ORM\OneToMany(targetEntity="Ticket", mappedBy="project")
     */
     private $tickets;
+     /**
+    * @ORM\OneToMany(targetEntity="Invoice", mappedBy="project")
+    */
+    private $invoices;
     /**
      * @var string
      * 
@@ -1157,5 +1161,38 @@ class Project
     public function getPmtools()
     {
         return $this->pmtools;
+    }
+
+    /**
+     * Add invoices
+     *
+     * @param \Acmtool\AppBundle\Entity\Invoice $invoices
+     * @return Project
+     */
+    public function addInvoice(\Acmtool\AppBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices[] = $invoices;
+
+        return $this;
+    }
+
+    /**
+     * Remove invoices
+     *
+     * @param \Acmtool\AppBundle\Entity\Invoice $invoices
+     */
+    public function removeInvoice(\Acmtool\AppBundle\Entity\Invoice $invoices)
+    {
+        $this->invoices->removeElement($invoices);
+    }
+
+    /**
+     * Get invoices
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getInvoices()
+    {
+        return $this->invoices;
     }
 }

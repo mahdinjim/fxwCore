@@ -12,12 +12,13 @@ use Acmtool\AppBundle\Entity\TicketType;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Roles;
 use Acmtool\AppBundle\Entity\TaskTypes;
+use Acmtool\AppBundle\Entity\ProjectDocument;
 class TicketController extends Controller
 {
 	public function createAction()
 	{
 		$request = $this->get('request');
-		$message = $request->getContent();
+		$message = $request->get("ticket");
 		$em = $this->getDoctrine()->getManager();
         $result = $this->get('acmtool_app.validation.json')->validate($message);
         if(!$result["valid"])
@@ -48,6 +49,35 @@ class TicketController extends Controller
                     $ticket->setDiplayId("-1");
         			$em->persist($ticket);
 	                $em->flush();
+	                $fileBag = $request->files;
+					$files=$fileBag->all();
+					for($i=0;$i<$json->{"fileCount"};$i++)
+					{
+						$index = "file".$i;
+						$filename=str_replace(' ', '', $files[$index]->getClientOriginalName());
+						$projectPath=__DIR__.'/../../../../web'.'/uploads/pdocs/'.$project->getId();
+						if(!file_exists($projectPath))
+						{
+							mkdir($projectPath);
+						}
+						$path=$projectPath.'/'.$ticket->getId();
+						if(!file_exists($path))
+						{
+							mkdir($path);
+						}
+						$filepath=$path."/".$filename;
+						if(!file_exists($filepath))
+						{
+							$files[$index]->move($path, $filename);
+							$doc=new ProjectDocument();
+							$doc->setName($filename);
+							$doc->setPath('/uploads/pdocs/'.$project->getId()."/".$ticket->getId()."/".$filename);
+							$doc->setTicket($ticket);
+							$ticket->addDocument($doc);
+							$em->persist($doc);
+							$em->flush();
+						}
+					}
 	                $project_id=$project->getId();
         			if($project_id<10){
         				$project_id='00'.$project_id;

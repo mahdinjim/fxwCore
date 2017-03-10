@@ -239,7 +239,7 @@ class EmailNotifierService
 	{
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($email)
 		->setBody($body,'text/html');
 		
@@ -261,7 +261,7 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -277,7 +277,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -307,7 +307,7 @@ class EmailNotifierService
 		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -323,7 +323,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -351,7 +351,7 @@ class EmailNotifierService
 		$subject="Ticket in production >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -367,7 +367,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -395,7 +395,7 @@ class EmailNotifierService
 		$subject="Ticket in QA >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -411,7 +411,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -441,7 +441,7 @@ class EmailNotifierService
 		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -457,7 +457,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -485,7 +485,7 @@ class EmailNotifierService
 		$subject="Ticket is closed >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -501,7 +501,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -527,7 +527,7 @@ class EmailNotifierService
 		$subject="Ticket bugs are solved >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -543,7 +543,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -569,7 +569,7 @@ class EmailNotifierService
 		$subject="Reminder: 1 day left for acceptance >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -585,7 +585,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -611,7 +611,7 @@ class EmailNotifierService
 		$subject="Redit ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -627,7 +627,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -653,7 +653,7 @@ class EmailNotifierService
 		$subject="Bug converted to ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 		->setTo($client_email)
 		->setBody(
 			$this->twig->render(
@@ -668,7 +668,7 @@ class EmailNotifierService
 			$client->setName($user->getName());
 			$message =\Swift_Message::newInstance()
 				->setSubject($subject)
-				->setFrom("bb8@flexwork.io")
+				->setFrom(array("flexy@flexwork.io"=>"flexwork"))
 				->setTo($user->getEmail())
 				->setBody(
 					$this->twig->render(
@@ -691,8 +691,9 @@ class EmailNotifierService
 		$subject="Welcome to flexwork";
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
-		->setFrom("bb8@flexwork.io")
-		->setTo(array($client_email,$keyaccount->getEmail()))
+		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
+		->setTo(array($client_email))
+		->setBcc($keyaccount->getEmail())
 		->setBody(
 			$this->twig->render(
 					'EmailTemplates/client/access.twig.html',

@@ -567,3 +567,27 @@ _unlinkpmtoolproject:
     path:     /private/project/unlinktool/{project_id}/{pmTool}
     defaults: { _controller: AcmtoolAppBundle:Project:unlinkProjectToPmTool }
     methods: [GET,OPTIONS]
+_getunbilledtickets:
+    path:     /private/super/invoice/list
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getAdminList }
+    methods: [GET,OPTIONS]
+_createinvoice:
+    path:     /private/super/invoice/new/{project_id}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:createInvoice }
+    methods: [GET,OPTIONS]
+_payinvoice:
+    path:     /private/super/invoice/pay/{invoiceId}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:markInvoiceasPaid }
+    methods: [GET,OPTIONS]
+_getAllinvoice:
+    path:     /private/invoice/list/{year}/{month}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getInvoiceList }
+    methods: [GET,OPTIONS]
+_getInvoiceDetail:
+    path:     /private/invoice/detail/{invoiceId}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getInvoiceDetails }
+    methods: [GET,OPTIONS]
+_getInvoiceReport:
+    path:     /private/invoice/report/{invoice}/{id}
+    defaults: { _controller: AcmtoolAppBundle:Invoice:getInvoiceReport }
+    methods: [GET,OPTIONS]

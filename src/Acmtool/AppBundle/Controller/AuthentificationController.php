@@ -9,6 +9,7 @@ use Symfony\Component\Httpfoundation\Response;
 use Acmtool\AppBundle\Entity\Admin;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\TeamMember;
+use Acmtool\AppBundle\Entity\KeyAccount;
 use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Customer;
 use Acmtool\AppBundle\Entity\CustomerUser;
@@ -51,7 +52,13 @@ class AuthentificationController extends Controller
                             $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
                             
                         elseif ($user instanceOf Customer) {
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"signed"=>true,"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
+                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"signed"=>true,"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),
+                                "keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),
+                                    "email"=>$user->getKeyaccount()->getEmail(),
+                                    "name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),
+                                    "photo"=>$user->getKeyaccount()->getPhoto(),
+                                    "tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber(),
+                                    "company_name"=>$user->getKeyaccount()->getCompanyname()));
                             $address=array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState());
                             $tools=[];
                             $i=0;
@@ -69,6 +76,9 @@ class AuthentificationController extends Controller
                         }
                         elseif ($user instanceOf TeamMember) {
                             $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
+                            if($user instanceOf KeyAccount)
+                                if($user->getCompanyname() != null)
+                                    $UserInfo["compnay_name"] = $user->getCompanyname();
                         }
                         $tokenInfo = array('token' => $token->getTokendig(),'experationDate'=>$token->getCreationdate()->add(new \DateInterval('PT'.ConstValues::PERIOD.'S')) );
                         $mess = array('user' => $UserInfo, 'token'=>$tokenInfo);

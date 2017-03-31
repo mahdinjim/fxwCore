@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Customer
  * @UniqueEntity(fields={"email"},message="This email is already used")
+ * @UniqueEntity(fields={"compnayDomain"},message="This client is already used")
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\CustomerRepository")
  */
@@ -180,6 +181,17 @@ class Customer implements UserInterface, \Serializable
      * @ORM\Column(name="billedFrom", type="string", length=20)
      */
     private $billedFrom;
+   /**
+    * @ORM\ManyToOne(targetEntity="Creds", inversedBy="refCustomers")
+    * @ORM\JoinColumn(name="referencer_id",referencedColumnName="id",onDelete="SET NULL")
+    */
+    private $referencedBy;
+     /**
+     * @var string
+     *
+     * @ORM\Column(name="compnayDomain", type="string")
+     */
+    private $compnayDomain;
     public function __construct()
     {
         $this->isActive = true;
@@ -897,5 +909,51 @@ class Customer implements UserInterface, \Serializable
     public function getBilledFrom()
     {
         return $this->billedFrom;
+    }
+
+    /**
+     * Set referencedBy
+     *
+     * @param \Acmtool\AppBundle\Entity\Creds $referencedBy
+     * @return Customer
+     */
+    public function setReferencedBy(\Acmtool\AppBundle\Entity\Creds $referencedBy = null)
+    {
+        $this->referencedBy = $referencedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get referencedBy
+     *
+     * @return \Acmtool\AppBundle\Entity\Creds 
+     */
+    public function getReferencedBy()
+    {
+        return $this->referencedBy;
+    }
+
+    /**
+     * Set compnayDomain
+     *
+     * @param string $compnayDomain
+     * @return Customer
+     */
+    public function setCompnayDomain($compnayDomain)
+    {
+        $this->compnayDomain = $compnayDomain;
+
+        return $this;
+    }
+
+    /**
+     * Get compnayDomain
+     *
+     * @return string 
+     */
+    public function getCompnayDomain()
+    {
+        return $this->compnayDomain;
     }
 }

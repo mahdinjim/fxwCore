@@ -52,7 +52,14 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
     * @ORM\OneToMany(targetEntity="Project", mappedBy="keyaccount",cascade={"remove"})
     */
     private $projects;
-
+    /**
+     * @ORM\Column(name="is_partner", type="boolean")
+     */
+    private $partner = false;
+    /**
+    * @ORM\Column(name="companyname", type="string", length=255, nullable=true)
+    */
+    private $companyname;
     public function __construct()
     {
         $this->isActive = true;
@@ -96,7 +103,10 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
      */
     public function getRoles()
     {
-        return array('ROLE_KEYACCOUNT');
+        if($this->isPartner())
+            return array('ROLE_KEYACCOUNT','ROLE_PARTNER');
+        else
+            return array('ROLE_KEYACCOUNT');
     }
 
     /**
@@ -221,5 +231,107 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
     public function getProjects()
     {
         return $this->projects;
+    }
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     * @return KeyAccount
+     */
+    public function setSalt($salt)
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
+    /**
+     * Set partner
+     *
+     * @param boolean $partner
+     * @return KeyAccount
+     */
+    public function setPartner($partner)
+    {
+        $this->partner = $partner;
+
+        return $this;
+    }
+
+    /**
+     * Get partner
+     *
+     * @return boolean 
+     */
+    public function isPartner()
+    {
+        return $this->partner;
+    }
+
+    /**
+     * Add customers
+     *
+     * @param \Acmtool\AppBundle\Entity\Customer $customers
+     * @return KeyAccount
+     */
+    public function addCustomer(\Acmtool\AppBundle\Entity\Customer $customers)
+    {
+        $this->customers[] = $customers;
+
+        return $this;
+    }
+
+    /**
+     * Remove customers
+     *
+     * @param \Acmtool\AppBundle\Entity\Customer $customers
+     */
+    public function removeCustomer(\Acmtool\AppBundle\Entity\Customer $customers)
+    {
+        $this->customers->removeElement($customers);
+    }
+
+    /**
+     * Get customers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCustomers()
+    {
+        return $this->customers;
+    }
+
+    /**
+     * Get partner
+     *
+     * @return boolean 
+     */
+    public function getPartner()
+    {
+        return $this->partner;
+    }
+
+    /**
+     * Set companyname
+     *
+     * @param string $companyname
+     * @return KeyAccount
+     */
+    public function setCompanyname($companyname)
+    {
+        $this->companyname = $companyname;
+
+        return $this;
+    }
+
+    /**
+     * Get companyname
+     *
+     * @return string 
+     */
+    public function getCompanyname()
+    {
+        return $this->companyname;
     }
 }

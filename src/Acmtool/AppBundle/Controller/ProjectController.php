@@ -1225,7 +1225,12 @@ class ProjectController extends Controller
             $mess=array();
             $i=0;
             foreach ($client->getProjects() as $key) {
-                $data=array("id"=>$key->getDisplayId(),"name"=>$key->getName(),"briefing"=>$key->getDescription(),"skills"=>$key->getProjectSkills(),"budget"=>$key->getBudget(),"signed"=>$key->getSignedContract(),"ticketcount"=>count($key->getTickets()),"creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'),"rate"=>$key->getRate(),"description"=>$key->getDescriptionContract());
+                $data=array("id"=>$key->getDisplayId(),
+                    "name"=>$key->getName(),"briefing"=>$key->getDescription(),
+                    "skills"=>$key->getProjectSkills(),"budget"=>$key->getBudget(),
+                    "signed"=>$key->getSignedContract(),"ticketcount"=>count($key->getTickets()),
+                    "creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'),
+                    "rate"=>$key->getRate(),"description"=>$key->getDescriptionContract());
                 if($key->getContractPrepared()===null)
                     $data["contractprepared"]=true;
                 else
@@ -1237,11 +1242,26 @@ class ProjectController extends Controller
                     $data["currency"]=$key->getOwner()->getCurrency();
                 else
                     $data["currency"]=ConstValues::DEFAULTCURRENCY;
-                $data["estimation"]=$key->getEstimation();
                 $data["period"]=$key->getPeriod();
                 $j=0;
                 $team=array();
-
+                $billedTime=0;
+                $estimatedTime=0;
+                $realtime=0;
+                foreach ($key->getTickets() as $ticket) {
+                    if($ticket->getStatus() == TicketStatus::DONE)
+                    {
+                        $estimatedTime += $ticket->getEstimation();
+                        $realtime += $ticket->getRealtime();
+                        if($ticket->getEstimation() > $ticket->getRealtime())
+                            $billedTime += $ticket->getRealtime();
+                        else
+                            $billedTime += $ticket->getEstimation();
+                    }
+                }
+                $data["realtime"] = $realtime;
+                $data["estimated"] = $estimatedTime;
+                $data["billedTime"] = $billedTime;
                 foreach ($key->getDevelopers() as $member) {
                     $memberdata=array("id"=>$member->getId(),"surname"=>$member->getSurname(),"name"=>$member->getName(),"email"=>$member->getEmail(),"photo"=>$member->getPhoto(),"role"=>Roles::Developer());
                     if($key->getTeamleader())
@@ -1294,9 +1314,13 @@ class ProjectController extends Controller
                     $j++;        
                 }  
                 $data["team"]=$team;
-                $mess[$i]=$data;
+                $mess['data'][$i]=$data;
                 $i++;
             }
+            if($client->getReferencedBy()->getId()==$client->getKeyaccount()->getCredentials()->getId())
+                $mess['isManaged']=true;
+            else
+                $mess['isManaged']=false;
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent(json_encode($mess));

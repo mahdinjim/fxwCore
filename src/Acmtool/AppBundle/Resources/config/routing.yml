@@ -182,6 +182,10 @@ _listkeyaccount:
     path:     /private/super/keyaccount/all/{page}
     defaults: { _controller: AcmtoolAppBundle:KeyAccount:List }
     methods: [GET,OPTIONS]
+_listpartners:
+    path:     /private/super/partner/all
+    defaults: { _controller: AcmtoolAppBundle:KeyAccount:PartnerList }
+    methods: [GET,OPTIONS]
 
 _detailskeyaccount:
     path:     /private/keyaccount/profile/{id}
@@ -368,7 +372,7 @@ _assignprojectbudget:
     defaults: { _controller: AcmtoolAppBundle:Project:assignBudget }
     methods: [POST,OPTIONS]
 _assignprojectrate:
-    path:     /private/super/project/rate
+    path:     /private/keyaccount/project/rate
     defaults: { _controller: AcmtoolAppBundle:Project:assignRate }
     methods: [POST,OPTIONS]
 _createTicket:
@@ -590,4 +594,24 @@ _getInvoiceDetail:
 _getInvoiceReport:
     path:     /private/invoice/report/{invoice}/{id}
     defaults: { _controller: AcmtoolAppBundle:Invoice:getInvoiceReport }
+    methods: [GET,OPTIONS]
+_paycommission:
+    path:     /private/super/commission/pay/{commission}
+    defaults: { _controller: AcmtoolAppBundle:Commission:payCommission }
+    methods: [GET,OPTIONS]
+_admincommission:
+    path:     /private/super/commission/all
+    defaults: { _controller: AcmtoolAppBundle:Commission:getAdminList }
+    methods: [GET,OPTIONS]
+_commissionlist:
+    path:     /private/keyaccount/commission/all/{year}/{month}
+    defaults: { _controller: AcmtoolAppBundle:Commission:getCommissionList }
+    methods: [GET,OPTIONS]
+_uploadcommissioninvoice:
+    path:     /private/keyaccount/commission/invoice/{commission}
+    defaults: { _controller: AcmtoolAppBundle:Commission:uploadInvoice }
+    methods: [POST,OPTIONS]
+_calculatecommission:
+    path:     /private/keyaccount/commission/calculate/{rate}/{hours}/{includePm}
+    defaults: { _controller: AcmtoolAppBundle:Commission:calculateCommission }
     methods: [GET,OPTIONS]

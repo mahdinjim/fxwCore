@@ -63,6 +63,14 @@ class Creds implements \Serializable
     */
     private $noNotifs;
     /**
+    * @ORM\OneToMany(targetEntity="Customer", mappedBy="referencedBy")
+    */
+    private $refCustomers; 
+    /**
+    * @ORM\OneToMany(targetEntity="Commission", mappedBy="owner")
+    */
+    private $commissions;
+    /**
      * Get id
      *
      * @return integer 
@@ -331,5 +339,38 @@ class Creds implements \Serializable
     public function getNoNotifs()
     {
         return $this->noNotifs;
+    }
+
+    /**
+     * Add refCustomers
+     *
+     * @param \Acmtool\AppBundle\Entity\Customer $refCustomers
+     * @return Creds
+     */
+    public function addRefCustomer(\Acmtool\AppBundle\Entity\Customer $refCustomers)
+    {
+        $this->refCustomers[] = $refCustomers;
+
+        return $this;
+    }
+
+    /**
+     * Remove refCustomers
+     *
+     * @param \Acmtool\AppBundle\Entity\Customer $refCustomers
+     */
+    public function removeRefCustomer(\Acmtool\AppBundle\Entity\Customer $refCustomers)
+    {
+        $this->refCustomers->removeElement($refCustomers);
+    }
+
+    /**
+     * Get refCustomers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRefCustomers()
+    {
+        return $this->refCustomers;
     }
 }

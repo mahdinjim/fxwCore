@@ -46,16 +46,15 @@ class TeamMember
     protected $language;
     /**
      * @var float
-     * @Assert\NotBlank(message="The hourrate field is required")
      * 
-     * @ORM\Column(name="hourrate", type="float", length=255)
+     * @ORM\Column(name="hourrate", type="float", length=255,nullable=true)
      */
     protected $hourrate;
     /**
      * @var integer
-     * @Assert\NotBlank(message="The level field is required")
      * 
-     * @ORM\Column(name="level", type="integer", length=255)
+     * 
+     * @ORM\Column(name="level", type="integer", length=255,nullable=true)
      */
     protected $level;
 

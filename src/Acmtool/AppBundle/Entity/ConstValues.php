@@ -48,5 +48,12 @@ abstract class ConstValues
 	const DEFAULTBILLEDFROM = "De";
 	const GERMANYCODE ="De";
 	const TURKEYCODE = "Tr";
+	const COMRATE1 = 7.5;
+	const COMRATE2 = 5;
+	const COMRATE3 = 2.5;
+	const MANGERATE = 7.5;
+	const HOURRANGE1 = 499;
+	const HOURRANGE2 = 999;
+
 
 }

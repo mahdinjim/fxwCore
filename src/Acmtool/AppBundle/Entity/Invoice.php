@@ -124,6 +124,10 @@ class Invoice
      */
     private $currency;
     /**
+    * @ORM\OneToMany(targetEntity="Commission", mappedBy="invoice")
+    */
+    private $commissions;
+    /**
      * Get id
      *
      * @return integer 
@@ -540,5 +544,38 @@ class Invoice
     public function getCurrency()
     {
         return $this->currency;
+    }
+
+    /**
+     * Add commissions
+     *
+     * @param \Acmtool\AppBundle\Entity\Commission $commissions
+     * @return Invoice
+     */
+    public function addCommission(\Acmtool\AppBundle\Entity\Commission $commissions)
+    {
+        $this->commissions[] = $commissions;
+
+        return $this;
+    }
+
+    /**
+     * Remove commissions
+     *
+     * @param \Acmtool\AppBundle\Entity\Commission $commissions
+     */
+    public function removeCommission(\Acmtool\AppBundle\Entity\Commission $commissions)
+    {
+        $this->commissions->removeElement($commissions);
+    }
+
+    /**
+     * Get commissions
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCommissions()
+    {
+        return $this->commissions;
     }
 }

@@ -7,6 +7,8 @@ use Symfony\Component\Httpfoundation\Response;
 use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\Invoice;
 use Acmtool\AppBundle\Entity\ConstValues;
+use Acmtool\AppBundle\Entity\Commission;
+use Acmtool\AppBundle\Entity\CumulativeHours;
 class InvoiceController extends Controller
 {
 	public function getAdminListAction()
@@ -292,11 +294,89 @@ class InvoiceController extends Controller
 			foreach ($invoice->getTickets() as $key) {
 				$key->setIsPayed(true);
 			}
+			$cumultiveHours = 0;
+			$client = $invoice->getClient();
+			$referer = $client->getReferencedBy();
+			if($referer != null)
+			{
+				$keyaccount = $client->getKeyAccount();
+				$cumultaives = $em->createQuery("SELECT c FROM AcmtoolAppBundle:CumulativeHours c WHERE c.customer=:client AND c.referer=:referer")
+					->setParameter("client",$client)
+					->setParameter("referer",$referer)
+					->getResult();
+				if(count($cumultaives) > 0)
+				{
+					$item = $cumultaives[0];
+					$cumultiveHours = $item->getTotalHours();
+					$item->setTotalHours($cumultiveHours + $invoice->getBt());
+				}
+				else
+				{
+					$cumultive  = new CumulativeHours();
+					$cumultive->setTotalHours($invoice->getBt());
+					$cumultive->setCustomer($client);
+					$cumultive->setReferer($referer);
+					$em->persist($cumultive);
+				}
+				$commission = new Commission();
+				$commission->setOwner($referer);
+				$today = new \DateTime();
+				$commission->setCreationDate($today);
+				$commission->setRange1Rate(ConstValues::COMRATE1);
+				$commission->setRange2Rate(ConstValues::COMRATE2);
+				$commission->setRange3Rate(ConstValues::COMRATE3);
+				$up = $invoice->getUp();
+				if($cumultiveHours <= ConstValues::HOURRANGE1)
+				{
+					if($cumultiveHours + $invoice->getBt() <= ConstValues::HOURRANGE1)
+					{
+						$commission->setRange1($invoice->getBt());
+					}
+					else
+					{
+						$range1Remains = ConstValues::HOURRANGE1 - $cumultiveHours;
+						$commission->setRange1($range1Remains);
+						$commission->setRange2($invoice->getBt()-$range1Remains);
+					}
+				}
+				elseif ($cumultiveHours<=ConstValues::HOURRANGE2) {
+					if($cumultiveHours + $invoice->getBt() <= ConstValues::HOURRANGE2)
+					{
+						$commission->setRange2($invoice->getBt());
+					}
+					else
+					{
+						$range2Remains = ConstValues::HOURRANGE2 - $cumultiveHours;
+						$commission->setRange2($range2Remains);
+						$commission->setRange3($invoice->getBt()-$range2Remains);
+					}
+				}
+				else
+				{
+					$commission->setRange3($invoice->getBt());
+				}
+				$commission->setRange1Amount($this->ComissionFormula($up,$commission->getRange1(),ConstValues::COMRATE1));
+				$commission->setRange2Ammount($this->ComissionFormula($up,$commission->getRange2(),ConstValues::COMRATE2));
+				$commission->setRange3Ammount($this->ComissionFormula($up,$commission->getRange3(),ConstValues::COMRATE3));
+				if($referer->getId() == $client->getKeyAccount()->getCredentials()->getId())
+				{
+					$commission->setManagementAmount($this->ComissionFormula($up,$invoice->getBt(),ConstValues::MANGERATE));
+					$commission->setRangePM(ConstValues::MANGERATE);
+
+				}
+				$commission->setInvoice($invoice);
+				$invoice->addCommission($commission);
+				$em->persist($commission);
+			}
 			$em->flush();
 			return new Response("Invoice marked as payed",200);
 		}
 		else
 			return new Response("Bad request",400);
+	}
+	private function ComissionFormula($up,$hours,$rate)
+	{
+		return ($up * $hours * $rate)/100;
 	}
 	private function createInvoiceItem($item)
 	{

@@ -10,7 +10,7 @@ use Acmtool\AppBundle\Entity\KeyAccount;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
 use Acmtool\AppBundle\Entity\ConstValues;
-
+use Acmtool\AppBundle\Entity\Roles;
 
 class KeyAccountController extends Controller
 {
@@ -46,15 +46,22 @@ class KeyAccountController extends Controller
                 $user->setEmail($json->{'email'});
                 $user->setName($json->{'name'});
                 $user->setSurname($json->{'surname'});
-                $user->setState($json->{"status"});
-                $user->setTitle($json->{'title'});
+                if(isset($json->{"status"}))
+                    $user->setState($json->{"status"});
+                if(isset($json->{"title"}))
+                    $user->setTitle($json->{'title'});
                 $user->setCity($json->{'city'});
                 $user->setCountry($json->{'country'});
                 $user->setPhonecode($json->{'phonecode'});
                 $user->setPhonenumber($json->{'phonenumber'});
                 $user->setLanguage($json->{'language'});
-                $user->setHourrate($json->{'hourate'});
+                if(isset($json->{"hourate"}))
+                    $user->setHourrate($json->{'hourate'});
                 $user->setLevel($json->{'level'});
+                if(isset($json->{"ispartner"}))
+                    $user->setPartner($json->{"ispartner"});
+                if(isset($json->{"companyname"}))
+                    $user->setCompanyname($json->{"companyname"});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -73,7 +80,7 @@ class KeyAccountController extends Controller
                 } else {
                     $em->persist($user);
                     $em->flush();
-                     if($json->{"dosend"})
+                    if($json->{"dosend"})
                         $this->get("acmtool_app.notifier.handler")->teamMemberAdded($json->{'name'},$json->{'email'},$json->{'password'});
                     $res=new Response();
                     $res->setStatusCode(200);
@@ -125,14 +132,21 @@ class KeyAccountController extends Controller
                         $user->setEmail($json->{'email'});
                         $user->setName($json->{'name'});
                         $user->setSurname($json->{'surname'});
-                        $user->setState($json->{"status"});
-                        $user->setTitle($json->{'title'});
+                        if(isset($json->{"status"}))
+                            $user->setState($json->{"status"});
+                        if(isset($json->{"title"}))
+                            $user->setTitle($json->{'title'});
                         $user->setCity($json->{'city'});
                         $user->setCountry($json->{'country'});
                         $user->setPhonecode($json->{'phonecode'});
                         $user->setPhonenumber($json->{'phonenumber'});
                         $user->setLanguage($json->{'language'});
-                        $user->setHourrate($json->{'hourate'});
+                        if(isset($json->{"hourate"}))
+                            $user->setHourrate($json->{'hourate'});
+                        if(isset($json->{"ispartner"}))
+                            $user->setPartner($json->{"ispartner"});
+                        if(isset($json->{"companyname"}))
+                            $user->setCompanyname($json->{"companyname"});
                         $user->setLevel($json->{'level'});
                         if(isset($json->{"description"}))
                         {
@@ -201,7 +215,7 @@ class KeyAccountController extends Controller
         ->getSingleScalarResult()/10);
         $start=ConstValues::COUNT*($page-1);
         $End=ConstValues::COUNT*$page;
-        $result=$em->createQuery('select t from AcmtoolAppBundle:KeyAccount t')
+        $result=$em->createQuery('select t from AcmtoolAppBundle:KeyAccount t WHERE t.partner=false')
                     ->setMaxResults(ConstValues::COUNT)
                     ->setFirstResult($start)
                     ->getResult();
@@ -218,6 +232,55 @@ class KeyAccountController extends Controller
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent(json_encode($messag));
+            return $res;
+        }
+        else
+        {
+            $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
+    }
+    public function PartnerListAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $result=$em->createQuery('select t from AcmtoolAppBundle:KeyAccount t WHERE t.partner=true')
+                    ->getResult();
+        $users=array();
+        if(count($result)>0)
+        {
+            $i=0;
+            foreach ($result as $user) {
+                $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),
+                    "surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),
+                    "city"=>$user->getCity(),"country"=>$user->getCountry(),
+                    "role"=>Roles::KeyAccount(),"username"=>$user->getUsername(),
+                    "phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber(),
+                    "language"=>$user->getLanguage(),"level"=>$user->getLevel());
+               
+                $managedProjectsCount=0;
+                $referencedProjectsCount=0;
+                $refCustomers = $user->getCredentials()->getRefCustomers();
+                $referencedClientsCount=count($refCustomers);
+                foreach ($refCustomers as $key) {
+                    $referencedProjectsCount+=count($key->getProjects());
+                    if($key->getKeyAccount()->getId()==$user->getId())
+                    {
+                        $managedProjectsCount+=count($key->getProjects());
+                    }
+                }
+                $users[$i]["totalClients"]=$referencedClientsCount;
+                $users[$i]["totalProjects"]=$referencedProjectsCount;
+                $users[$i]["totalManagedProjects"]=$referencedProjectsCount;
+                if($user->getCompanyname() != null)
+                {
+                     $users[$i]["companyname"] = $user->getCompanyname();
+                }
+                 $i++;
+            }
+            $res=new Response();
+            $res->setStatusCode(200);
+            $res->setContent(json_encode($users));
             return $res;
         }
         else

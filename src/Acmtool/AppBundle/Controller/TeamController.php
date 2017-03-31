@@ -19,13 +19,12 @@ class TeamController extends Controller
 	public function getAllTeamMmebersAction()
 	{
 		 $em = $this->getDoctrine()->getManager();
-		 $keyaccounts=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findAll();
+		 $keyaccounts=$em->createQuery('select t from AcmtoolAppBundle:KeyAccount t WHERE t.partner=false')->getResult();
 		 $users=array();
 		 $i=0;
          $date=new \DateTime("UTC");
          $month=$date->format("m");
-		 if($keyaccounts>0)
-		 {
+		 if(count($keyaccounts)>0)
             foreach ($keyaccounts as $user) {
                 $users[$i] = array('id'=>$user->getId(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"description"=>$user->getDescription(),"city"=>$user->getCity(),"country"=>$user->getCountry(),"role"=>Roles::KeyAccount(),"username"=>$user->getUsername(),"status"=>$user->getState(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber(),"language"=>$user->getLanguage(),"hourate"=>$user->getHourrate(),"level"=>$user->getLevel());
                 $users[$i]["projectcount"]=0;
@@ -34,8 +33,6 @@ class TeamController extends Controller
                 $i++;
 
             }
-            
-		 }
 		 //For this version we don't use teamleasder version but we keep it for later versions
 		 /*$teamleaders=$em->getRepository("AcmtoolAppBundle:TeamLeader")->findAll();
 		 if($teamleaders>0)

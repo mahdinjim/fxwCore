@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Httpfoundation\Response;
 use Acmtool\AppBundle\Entity\Customer;
+use Acmtool\AppBundle\Entity\KeyAccount;
 use Acmtool\AppBundle\Entity\Address;
 use Acmtool\AppBundle\Entity\Creds;
 use Acmtool\AppBundle\Entity\Titles;
@@ -14,6 +15,7 @@ use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\SupportedPmTools;
 use Acmtool\AppBundle\Entity\LinkedPmTools;
 Const TIMEZONE="Europe/Berlin";
+Const DEFAULTKEYACCOUNTEMAIL="fd@flexwork.io";
 class CustomerController extends Controller
 {
     public function CreateAction()
@@ -50,7 +52,6 @@ class CustomerController extends Controller
                 else
                     $keyaccount=$this->get('security.context')->getToken()->getUser();
                 $user=new Customer();
-                $user->setKeyAccount($keyaccount);
                 $creds=new Creds();
                 $creds->setLogin($json->{"login"});
                 $factory = $this->get('security.encoder_factory');
@@ -67,6 +68,24 @@ class CustomerController extends Controller
                 $user->setTelnumber($json->{'telnumber'});
                 if(isset($json->{'vat'}))
                     $user->setVat($json->{'vat'});
+                if(isset($json->{"createdByPartner"}))
+                    $user->setReferencedBy($keyaccount->getCredentials());
+                if(isset($json->{"managedbyPartner"}))
+                {
+                    if($json->{"managedbyPartner"})
+                    {
+                        $user->setKeyaccount($keyaccount);
+                    }
+                    else
+                    {
+                        $defaultkeyaccount=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findOneByEmail(DEFAULTKEYACCOUNTEMAIL);
+                        $user->setKeyaccount($defaultkeyaccount);
+                    }
+                }
+                else
+                {
+                     $user->setKeyAccount($keyaccount);
+                }
                 date_default_timezone_set('UTC');
                 $user->setDay(date('d'));
                 $user->setMonth(date("m"));
@@ -83,6 +102,8 @@ class CustomerController extends Controller
                     $user->setBilledFrom($json->{"billedfrom"});
                 else
                     $user->setBilledFrom(ConstValues::DEFAULTBILLEDFROM);
+                $domain = substr(strrchr($json->{"email"}, "@"), 1);
+                $user->setCompnayDomain($domain);
                 $format = 'Y-m-d';
                 $startingdate = new \DateTime('UTC');
                 $user->setStartingdate($startingdate);
@@ -162,6 +183,20 @@ class CustomerController extends Controller
                             $keyaccount=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findOneById($json->{"keyaccount_id"});
                             $user->setKeyaccount($keyaccount);
                         }
+                        if(isset($json->{"managedbyPartner"}))
+                        {
+                            if($json->{"managedbyPartner"})
+                            {
+                                $currentuser = $this->get('security.context')->getToken()->getUser();
+                                if($currentuser instanceOf KeyAccount)
+                                    $user->setKeyaccount($currentuser);
+                            }
+                            else
+                            {
+                                $defaultkeyaccount=$em->getRepository("AcmtoolAppBundle:KeyAccount")->findOneByEmail(DEFAULTKEYACCOUNTEMAIL);
+                                $user->setKeyaccount($defaultkeyaccount);
+                            }
+                        }
                         if($user->getCredentials()->getLogin()!=$json->{"login"})
                             $user->getCredentials()->setLogin($json->{"login"});
                         if(isset($json->{'password'}))
@@ -173,7 +208,11 @@ class CustomerController extends Controller
                         }
                         $oldEmail=$user->getEmail();
                         if($user->getEmail()!=$json->{'email'})
+                        {
                             $user->setEmail($json->{'email'});
+                            $domain = substr(strrchr($json->{"email"}, "@"), 1);
+                            $user->setCompnayDomain($domain);
+                        }
                         $user->setName($json->{'name'});
                          $user->setSurname($json->{'surname'});
                         if(isset($json->{'vat'}))
@@ -288,6 +327,7 @@ class CustomerController extends Controller
     {
 
         $em = $this->getDoctrine()->getManager();
+        $keyaccount = null;
         if($this->get('security.context')->isGranted("ROLE_ADMIN"))
         {
             $totalpages=ceil($em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:Customer t")
@@ -305,14 +345,35 @@ class CustomerController extends Controller
             $totalpages=ceil($em->getRepository("AcmtoolAppBundle:Customer")->getKeyAccountCustomersCount($keyaccount)/10);
             $start=ConstValues::COUNT*($page-1);
             $End=ConstValues::COUNT*$page;
-            $result=$em->getRepository("AcmtoolAppBundle:Customer")->getCustomersByKeyAccount($keyaccount,$start);
+            if($keyaccount->isPartner())
+                $result = $em->getRepository("AcmtoolAppBundle:Customer")->findByReferencedBy($keyaccount->getCredentials());
+            else
+                $result=$em->getRepository("AcmtoolAppBundle:Customer")->getCustomersByKeyAccount($keyaccount,$start);
         }
-        if(count($result)>0)
+        if(count($result)>0 || count($referencedClients) >0)
         {
             $users=array();
             $i=0;
             foreach ($result as $user) {
-                $users[$i] = array('id'=>$user->getId(),"active"=>$user->getIsActive(),"creationdate"=>date_format($user->getStartingdate(), 'Y-m-d'),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'logo'=>$user->getLogo(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),"companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),"telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),"projectNumber"=>count($user->getProjects()),"address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto()),"tax"=>$user->getTax(),"currency"=>$user->getCurrency(),"billedFrom"=>$user->getBilledFrom());
+                $users[$i] = array('id'=>$user->getId(),"active"=>$user->getIsActive(),
+                    "creationdate"=>date_format($user->getStartingdate(), 'Y-m-d'),
+                    'username' =>$user->getUsername(),'email'=>$user->getEmail(),
+                    'logo'=>$user->getLogo(),"name"=>$user->getName(),
+                    "surname"=>$user->getSurname(),"phonecode"=>$user->getPhonecode(),
+                    "companyname"=>$user->getCompanyName(),"vat"=>$user->getVat(),
+                    "telnumber"=>$user->getTelnumber(),"userNumber"=>count($user->getUsers()),
+                    "projectNumber"=>count($user->getProjects()),
+                    "address"=>array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState()),
+                    "keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto()),
+                    "tax"=>$user->getTax(),"currency"=>$user->getCurrency(),"billedFrom"=>$user->getBilledFrom());
+                if($keyaccount !=null)
+                {
+                    if($user->getKeyaccount()->getId()==$keyaccount->getId())
+                        $users[$i]['isManager']=true;
+                    else
+                        $users[$i]['isManager']=false;
+                }
+                
                 $ticketnumber=0;
                 foreach ($user->getProjects() as $key) {
                     $ticketnumber+=count($key->getTickets());

@@ -6,6 +6,14 @@
 		"git_user":"njimmahdi@gmail.com",
 		"git_password":"_a13021988",
 		"git_branch":"master"
+	},
+	"staging":{
+		"serverip":"139.59.143.222",
+		"ssh_username":"root",
+		"project_folder":"/var/www/abcd/staging/backend",
+		"git_user":"njimmahdi@gmail.com",
+		"git_password":"_a13021988",
+		"git_branch":"dev"
 	}
 	
 }

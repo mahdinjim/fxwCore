@@ -57,11 +57,14 @@ class KeyAccountController extends Controller
                 $user->setLanguage($json->{'language'});
                 if(isset($json->{"hourate"}))
                     $user->setHourrate($json->{'hourate'});
-                $user->setLevel($json->{'level'});
+                if(isset($json->{"level"}))
+                    $user->setLevel($json->{'level'});
                 if(isset($json->{"ispartner"}))
                     $user->setPartner($json->{"ispartner"});
                 if(isset($json->{"companyname"}))
                     $user->setCompanyname($json->{"companyname"});
+                if(isset($json->{"canmanage"}))
+                    $user->setCanmanage($json->{"canmanage"});
                 $validator = $this->get('validator');
                 $errorList = $validator->validate($user);
                 $crederrorlist=$validator->validate($creds);
@@ -147,7 +150,10 @@ class KeyAccountController extends Controller
                             $user->setPartner($json->{"ispartner"});
                         if(isset($json->{"companyname"}))
                             $user->setCompanyname($json->{"companyname"});
-                        $user->setLevel($json->{'level'});
+                        if(isset($json->{"level"}))
+                            $user->setLevel($json->{'level'});
+                         if(isset($json->{"canmanage"}))
+                            $user->setCanmanage($json->{"canmanage"});
                         if(isset($json->{"description"}))
                         {
                             $user->setDescription($json->{"description"});
@@ -256,7 +262,7 @@ class KeyAccountController extends Controller
                     "city"=>$user->getCity(),"country"=>$user->getCountry(),
                     "role"=>Roles::KeyAccount(),"username"=>$user->getUsername(),
                     "phonecode"=>$user->getPhonecode(),"phonenumber"=>$user->getPhonenumber(),
-                    "language"=>$user->getLanguage(),"level"=>$user->getLevel());
+                    "language"=>$user->getLanguage(),"canmanage"=>$user->getCanmanage());
                
                 $managedProjectsCount=0;
                 $referencedProjectsCount=0;

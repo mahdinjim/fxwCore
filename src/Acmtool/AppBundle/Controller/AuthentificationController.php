@@ -75,10 +75,20 @@ class AuthentificationController extends Controller
                            $this->get("acmtool_app.notifier.handler")->clientLoggedIn($user->getEmail());
                         }
                         elseif ($user instanceOf TeamMember) {
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
+                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),
+                                'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),
+                                "name"=>$user->getName(),"surname"=>$user->getSurname(),
+                                "photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),
+                                "title"=>$user->getTitle(),"city"=>$user->getCity(),"country"=>$user->getCountry(),
+                                "phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getPhonenumber(),
+                                "languages"=>$user->getLanguage());
                             if($user instanceOf KeyAccount)
                                 if($user->getCompanyname() != null)
+                                {
+                                    $UserInfo["canmanage"] = $user->getCanmanage();
                                     $UserInfo["compnay_name"] = $user->getCompanyname();
+                                }
+                                    
                         }
                         $tokenInfo = array('token' => $token->getTokendig(),'experationDate'=>$token->getCreationdate()->add(new \DateInterval('PT'.ConstValues::PERIOD.'S')) );
                         $mess = array('user' => $UserInfo, 'token'=>$tokenInfo);

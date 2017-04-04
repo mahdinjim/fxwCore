@@ -35,8 +35,12 @@
       <tr>
         <td style="height:50px;">
           <p>
+          {% if not isPartner %}
             <a href="{{link}}" target="_blank" class="fxwLink"><img src="http://img.fxw.io/email/plus-xs_2x.png" width="12" height="12" alt="&#187;" title="&#187;"> add team</a>
             <a href="{{link}}" target="_blank" class="fxwLink"><img src="http://img.fxw.io/email/plus-xs_2x.png" width="12" height="12" alt="&#187;" title="&#187;"> add rate</a></p>
+          {% else %}
+          <a href="{{link}}" target="_blank" class="fxwLink"><img src="http://img.fxw.io/email/plus-xs_2x.png" width="12" height="12" alt="&#187;" title="&#187;"> add rate</a></p>
+          {% endif %}
         </td>
       </tr>
       <tr style="height:50px;">

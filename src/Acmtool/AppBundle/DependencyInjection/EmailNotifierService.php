@@ -30,7 +30,7 @@ class EmailNotifierService
 				);
 		$this->sendEmail($email,$subject,$body);
 	}
-	public function notifyProjectCreated($email,$name,$client,$project,$creator){
+	public function notifyProjectCreated($email,$name,$client,$project,$creator,$isPartner=false){
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$subject="New project ".$project->getName()." created";
 		$date=$today->format("d.m.Y");
@@ -43,7 +43,8 @@ class EmailNotifierService
 						"name"=>$name,
 						"creator"=>$creator,
 						"link"=>$link,
-						"client_tel"=>$client->getPhonecode().$client->getTelnumber())
+						"client_tel"=>$client->getPhonecode().$client->getTelnumber(),
+						"isPartner"=>$isPartner)
 				);
 		$this->sendEmail($email,$subject,$body);
 	}

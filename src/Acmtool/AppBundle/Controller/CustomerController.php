@@ -72,7 +72,7 @@ class CustomerController extends Controller
                     $user->setReferencedBy($keyaccount->getCredentials());
                 if(isset($json->{"managedbyPartner"}))
                 {
-                    if($json->{"managedbyPartner"})
+                    if($json->{"managedbyPartner"} && $keyaccount->getCanmanage())
                     {
                         $user->setKeyaccount($keyaccount);
                     }
@@ -328,6 +328,7 @@ class CustomerController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $keyaccount = null;
+        $isPartner = false;
         if($this->get('security.context')->isGranted("ROLE_ADMIN"))
         {
             $totalpages=ceil($em->createQuery("SELECT COUNT(t) FROM AcmtoolAppBundle:Customer t")
@@ -346,7 +347,10 @@ class CustomerController extends Controller
             $start=ConstValues::COUNT*($page-1);
             $End=ConstValues::COUNT*$page;
             if($keyaccount->isPartner())
+            {
+                $isPartner = true;
                 $result = $em->getRepository("AcmtoolAppBundle:Customer")->findByReferencedBy($keyaccount->getCredentials());
+            }
             else
                 $result=$em->getRepository("AcmtoolAppBundle:Customer")->getCustomersByKeyAccount($keyaccount,$start);
         }
@@ -373,7 +377,14 @@ class CustomerController extends Controller
                     else
                         $users[$i]['isManager']=false;
                 }
-                
+                if(count($user->getProjects()) > 0 && $isPartner)
+                {
+                    $users[$i]['candelete']=false;
+                }
+                else
+                {
+                    $users[$i]['candelete']=true;
+                }
                 $ticketnumber=0;
                 foreach ($user->getProjects() as $key) {
                     $ticketnumber+=count($key->getTickets());

@@ -165,6 +165,7 @@ class ProjectController extends Controller
             $project->setDisplayid($displayid);
             $em->flush();
             $user=$this->get("security.context")->getToken()->getUser();
+            $isPartner = false;
             $this->get("acmtool_app.notifier.handler")->projectCreated($user,$project);
             $response=new Response('{"project_id":"'.$project->getDisplayId().'"}',200);
             return $response;

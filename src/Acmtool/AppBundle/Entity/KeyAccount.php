@@ -57,6 +57,10 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
      */
     private $partner = false;
     /**
+     * @ORM\Column(name="canmanage", type="boolean")
+     */
+    private $canmanage = false;
+    /**
     * @ORM\Column(name="companyname", type="string", length=255, nullable=true)
     */
     private $companyname;
@@ -333,5 +337,28 @@ class KeyAccount extends TeamMember implements UserInterface, \Serializable
     public function getCompanyname()
     {
         return $this->companyname;
+    }
+
+    /**
+     * Set canmanage
+     *
+     * @param boolean $canmanage
+     * @return KeyAccount
+     */
+    public function setCanmanage($canmanage)
+    {
+        $this->canmanage = $canmanage;
+
+        return $this;
+    }
+
+    /**
+     * Get canmanage
+     *
+     * @return boolean 
+     */
+    public function getCanmanage()
+    {
+        return $this->canmanage;
     }
 }

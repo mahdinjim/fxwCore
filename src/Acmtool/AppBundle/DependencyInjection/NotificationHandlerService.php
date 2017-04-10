@@ -83,10 +83,18 @@ class NotificationHandlerService
 		foreach ($admins as $key) {
 			$this->emailService->notifyProjectCreated($key->getEmail(),$key->getName(),$client,$project,$creator_name,false);
 		}
-		if($client->getReferencedBy()->getId() == $keyaccount->getCredentials()->getId())
-			$isPartner = true;
+		if($client->getReferencedBy() != null)
+		{
+			if($client->getReferencedBy()->getId() == $keyaccount->getCredentials()->getId())
+				$isPartner = true;
+			else
+				$isPartner = false;
+		}
 		else
+		{
 			$isPartner = false;
+		}
+		
 		$this->emailService->notifyProjectCreated($keyaccount->getEmail(),$keyaccount->getName(),$client,$project,$creator_name,$isPartner);
 		$attribute=array("lastProjectCreated"=>time());
 		$this->intercomService->addCustomAttribute($client->getEmail(),$attribute);

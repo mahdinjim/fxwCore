@@ -1318,10 +1318,16 @@ class ProjectController extends Controller
                 $mess['data'][$i]=$data;
                 $i++;
             }
-            if($client->getReferencedBy()->getId()==$client->getKeyaccount()->getCredentials()->getId())
-                $mess['isManaged']=true;
+            if($client->getReferencedBy() != null)
+            {
+                if($client->getReferencedBy()->getId()==$client->getKeyaccount()->getCredentials()->getId())
+                    $mess['isManaged']=true;
+                else
+                    $mess['isManaged']=false;
+            }
             else
-                $mess['isManaged']=false;
+                 $mess['isManaged']=false;
+            
             $res=new Response();
             $res->setStatusCode(200);
             $res->setContent(json_encode($mess));

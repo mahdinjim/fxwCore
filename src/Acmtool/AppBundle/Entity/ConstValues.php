@@ -11,7 +11,7 @@ abstract class ConstValues
 	const TLCREATED="TeamLeader created successfully";
 	const TLUPDATED="TeamLeader updated successfully";
 	const TLDELETED="TeamLeader deleted successfully";
-	const COUNT=50;
+	const COUNT=100;
 	const DEVCREATED="Developer created successfully";
 	const DEVUPDATED="Developer updated successfully";
 	const DEVDELETED="Developer deleted successfully";

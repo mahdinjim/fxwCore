@@ -43,7 +43,7 @@ class SlackMessaging implements IMessaging
 	{
 		$attachment = array();
 		$attachment[0]=array(
-			"fallback"=>"next action required by the user","color"=>"#5e5e5e","author_name"=>"flexy",
+			"fallback"=>"next action required by the user","color"=>"#18a689","author_name"=>"flexy",
 			"author_link"=>"https://app.fxw.io","author_icon"=>"https://app.fxw.io/img/flexy-login@2.png",
 			"title"=>$title,"title_link"=>$link,
 			"text"=>$actiontxt

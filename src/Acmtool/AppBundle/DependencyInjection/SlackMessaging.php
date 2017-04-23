@@ -29,7 +29,7 @@ class SlackMessaging implements IMessaging
 	public function sendMessage($text,$group,$client)
 	{
 		$text=urlencode($text);
-		$mess=json_decode(file_get_contents(self::Baseurl.self::sendmessage."token=".self::clienttoken."&channel=".$group."&username=".$client."&text=".$text));
+		$mess=json_decode(@file_get_contents(self::Baseurl.self::sendmessage."token=".self::clienttoken."&channel=".$group."&username=".$client."&text=".$text));
 		if($mess->{"ok"})
 		{
 			return $mess;
@@ -38,6 +38,19 @@ class SlackMessaging implements IMessaging
 		{
 			return json_decode('{"ok":false,"error":"'.$mess->{"error"}.'"}');
 		}
+	}
+	public function sendActionSlackMessage($title,$link,$pretext,$actiontxt,$group)
+	{
+		$attachment = array();
+		$attachment[0]=array(
+			"fallback"=>"next action required by the user","color"=>"#5e5e5e","author_name"=>"flexy",
+			"author_link"=>"https://app.fxw.io","author_icon"=>"https://app.fxw.io/img/flexy-login@2.png",
+			"title"=>$title,"title_link"=>$link,
+			"text"=>$actiontxt
+			);
+		$text =urlencode(json_encode($attachment));
+		$url = self::Baseurl.self::sendmessage."token=".self::clienttoken."&channel=".$group."&username=flexy&attachments=".$text."&text=".urlencode($pretext);
+		$mess=json_decode(file_get_contents($url));
 	}
 	public function deleteMessage($mess,$group)
 	{

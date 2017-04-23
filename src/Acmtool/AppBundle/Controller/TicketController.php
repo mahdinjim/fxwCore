@@ -95,7 +95,7 @@ class TicketController extends Controller
         			$displayid=$project_id.$ticketCount;
         			$ticket->setDiplayId($displayid);
         			$em->flush();
-	                //$this->get("acmtool_app.notifier.handler")->ticketCreated($ticket,$user);
+	                $this->get("acmtool_app.notifier.handler")->ticketCreated($ticket,$user);
 	                $response=new Response('Ticket created',200);
 	                return $response;
         		}

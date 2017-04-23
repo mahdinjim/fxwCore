@@ -30,7 +30,9 @@ except (IOError):
 #first step connect to ssh make sure you have a public/private key configured
 try:
 	s = pxssh.pxssh()
-	if not s.login (data[target]['serverip'],data[target]['ssh_username']):
+	s.force_password = True
+	password = getpass.getpass('password: ')
+	if not s.login (data[target]['serverip'],data[target]['ssh_username'],password):
 	    print "SSH session failed on login."
 	    exit()
 	else:

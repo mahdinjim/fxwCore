@@ -2,7 +2,7 @@
 namespace Acmtool\AppBundle\Entity;
 class ClientLinks
 {
-	static  $BASELINK="http://app.fxw.io/#/";
+	static  $BASELINK="https://app.fxw.io/#/";
 	static $PROJECT="pdetails/";
 	static $CLIENTPROJECTS="clientprojects/";
 	static $TICKETDETAILS="stories/";

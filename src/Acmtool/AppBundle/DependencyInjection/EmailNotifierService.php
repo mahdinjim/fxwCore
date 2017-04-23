@@ -12,12 +12,14 @@ class EmailNotifierService
 	private $doctrine;
 	private $router;
 	private $crfProvider;
-	function __construct($mailer,$twig,$doctrine,$router,$crfProvider) {
+	private $messaging;
+	function __construct($mailer,$twig,$doctrine,$router,$crfProvider,$messaging) {
 		$this->mailer = $mailer;
 		$this->twig=$twig;
 		$this->doctrine=$doctrine;
 		$this->router=$router;
 		$this->crfProvider=$crfProvider;
+		$this->messaging = $messaging->CreateChatProvider();
 	}
 	public function notifyAddedTeamMember($email,$password,$name)
 	{
@@ -47,6 +49,11 @@ class EmailNotifierService
 						"isPartner"=>$isPartner)
 				);
 		$this->sendEmail($email,$subject,$body);
+		if($project->getChannelid() != null)
+		{
+			$slackMessage = "Congratulations, your project ".$project->getName()." has been created, let us start by creating your <a href=".$link.">first ticket<a/>";
+			$this->messaging->sendMessage($slackMessage,$project->getChannelid(),"flexy");
+		}
 	}
 	public function notifyTicketCreated($email,$ticket,$client_name,$project,$name){
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
@@ -252,6 +259,7 @@ class EmailNotifierService
 		//step 2 create the action link
 		//step 3 pass tha variable to the twig 
 		//step 4 send email
+		//step 5 notify in slack
 		$client_email=$client->getEmail();
 		$client_name=$client->getName();
 		$ticket_id=$ticket->getDiplayId();
@@ -260,6 +268,12 @@ class EmailNotifierService
 		$subject="Start ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage("Start ".$ticket->getTitle(),
+				$link,'Your ticket "'.$ticket->getTitle()."' is created as draft",
+				"Start ticket",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -290,6 +304,7 @@ class EmailNotifierService
 				if($this->checkSendNotif($client->getCredentials(),$ticket->getProject()))
 					$isent=$this->mailer->send($message);
 			}
+		
 
 	}
 	public function notifyClientEstimatedTicket($client,$ticket)
@@ -306,6 +321,12 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketestimation",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage($subject,
+				$link,'Your ticket "'.$ticket->getTitle()."' is estimated as EST = ".$ticket->getEstimation()."h",
+				"Please confirm estimation",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -350,6 +371,12 @@ class EmailNotifierService
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
 		$subject="Ticket in production >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage("Follow your ticket progress",
+				"https://app.fxw.io",$subject,
+				"in progress",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -394,6 +421,12 @@ class EmailNotifierService
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
 		$subject="Ticket in QA >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage("Check ticket details",
+				"https://app.fxw.io",$subject,
+				"in QA",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -440,6 +473,12 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage($subject,
+				$link,"Your ticket ".$ticket->getTitle()." has been delivred with total production time ".$ticket->getRealtime().'h',
+				"please accept ticket",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -484,6 +523,10 @@ class EmailNotifierService
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
 		$subject="Ticket is closed >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendMessage($subject,$ticket->getProject()->getChannelid(),"flexy");
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -526,6 +569,12 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Ticket bugs are solved >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage("Accept ticket",
+				$link,$subject,
+				"please accept ticket",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -568,6 +617,12 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Reminder: 1 day left for acceptance >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage("Accept ticket",
+				$link,$subject,
+				"please accept ticket",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -652,6 +707,12 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_startticket",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Bug converted to ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
+		if($ticket->getProject()->getChannelid() != null)
+		{
+			$mess = $this->messaging->sendActionSlackMessage("Start ".$ticket->getTitle(),
+				$link,$subject." because ".$reason,
+				"Start ticket",$ticket->getProject()->getChannelid());
+		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
 		->setFrom(array("flexy@flexwork.io"=>"flexwork"))
@@ -745,6 +806,6 @@ class EmailNotifierService
 		else
 			return true;
 	}
-
+	
 
 }

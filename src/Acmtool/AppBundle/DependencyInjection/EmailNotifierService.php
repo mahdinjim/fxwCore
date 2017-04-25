@@ -49,11 +49,6 @@ class EmailNotifierService
 						"isPartner"=>$isPartner)
 				);
 		$this->sendEmail($email,$subject,$body);
-		if($project->getChannelid() != null)
-		{
-			$slackMessage = "Congratulations, your project ".$project->getName()." has been created, let us start by creating your <a href=".$link.">first ticket<a/>";
-			$this->messaging->sendMessage($slackMessage,$project->getChannelid(),"flexy");
-		}
 	}
 	public function notifyTicketCreated($email,$ticket,$client_name,$project,$name){
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
@@ -268,11 +263,13 @@ class EmailNotifierService
 		$subject="Start ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage("Start ".$ticket->getTitle(),
-				$link,'Your ticket "'.$ticket->getTitle()."' is created as draft",
-				"Start ticket",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("Congratulations this ticket is created",
+				"start ticket",$link2,$link,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -321,11 +318,13 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketestimation",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage($subject,
-				$link,'Your ticket "'.$ticket->getTitle()."' is estimated as EST = ".$ticket->getEstimation()."h",
-				"Please confirm estimation",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("This ticket is estimated as EST = ".$ticket->getEstimation().'h',
+				"please confirm estimation",$link2,$link,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -371,11 +370,13 @@ class EmailNotifierService
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
 		$subject="Ticket in production >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage("Follow your ticket progress",
-				"https://app.fxw.io",$subject,
-				"in progress",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("This ticket is in production",
+				"",$link2,null,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -421,11 +422,13 @@ class EmailNotifierService
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
 		$subject="Ticket in QA >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage("Check ticket details",
-				"https://app.fxw.io",$subject,
-				"in QA",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("The ticket is in QA",
+				"please confirm estimation",$link2,null,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -473,11 +476,13 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Confirm ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage($subject,
-				$link,"Your ticket ".$ticket->getTitle()." has been delivred with total production time ".$ticket->getRealtime().'h',
-				"please accept ticket",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("This ticket has been delivered with total production time ".$ticket->getRealtime().'h',
+				"please accept ticket",$link2,$link,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -523,9 +528,13 @@ class EmailNotifierService
 		$today=new \DateTime("NOW",new \DateTimeZone(TIMEZONE));
 		$date=$today->format("d.m.Y");
 		$subject="Ticket is closed >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendMessage($subject,$ticket->getProject()->getChannelid(),"flexy");
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("This ticket is closed",
+				"",$link2,null,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -569,11 +578,13 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Ticket bugs are solved >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage("Accept ticket",
-				$link,$subject,
-				"please accept ticket",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("All bugs of the ticket has been delivered",
+				"please accept ticket",$link2,$link,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -617,11 +628,13 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_acceptticketemail",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Reminder: 1 day left for acceptance >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage("Accept ticket",
-				$link,$subject,
-				"please accept ticket",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("Reminder: 1 day left for accepting this ticket ",
+				"please accept ticket",$link2,$link,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)
@@ -707,11 +720,13 @@ class EmailNotifierService
 		$date=$today->format("d.m.Y");
 		$link=$this->router->generate("_startticket",array('ticket_id' =>$ticket_id ,'token'=>$token->getTokendig()), UrlGeneratorInterface::ABSOLUTE_URL);
 		$subject="Bug converted to ticket >> ".$ticket->getTitle()." #".$ticket->getDiplayId();
-		if($ticket->getProject()->getChannelid() != null)
+		$project = $ticket->getProject();
+		if($project->getChannelid() != null)
 		{
-			$mess = $this->messaging->sendActionSlackMessage("Start ".$ticket->getTitle(),
-				$link,$subject." because ".$reason,
-				"Start ticket",$ticket->getProject()->getChannelid());
+			$ticket_name = "#".$ticket->getDiplayId()." ".$ticket->getTitle();
+			$link2=ClientLinks::getTicketDetailLink($project->getDisplayId(),$ticket->getDiplayId());
+			$mess = $this->messaging->sendActionSlackMessage("This bug has been transformed to ticket as draft, because ".$reason,
+				"please start ticket",$link2,$link,$ticket_name,$project->getChannelid());
 		}
 		$message =\Swift_Message::newInstance()
 		->setSubject($subject)

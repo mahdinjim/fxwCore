@@ -2,7 +2,7 @@
 namespace Acmtool\AppBundle\DependencyInjection;
 class SlackMessaging implements IMessaging
 {
-	const clienttoken="xoxp-9690007030-13891980720-41230371793-40f72d292f";
+	const clienttoken="xoxb-173669154016-g81SfEAZEBtpJ2tnsPpMoRuS";
 	const admintoken="xoxp-9690007030-9689729651-41046604725-f3b338f063";
 	const Baseurl="https://slack.com/api/";
 	const channelInfo="channels.info?";
@@ -15,6 +15,7 @@ class SlackMessaging implements IMessaging
 	const createchannel="channels.create?";
 	const invitechannel="channels.invite?";
 	const channellist="channels.list?";
+	const FLEXYID = "U53KP4J0G";
 	public function getChannelId($name)
 	{
 		$mess=json_decode(file_get_contents(self::Baseurl.self::channellist."token=".self::admintoken));
@@ -39,17 +40,26 @@ class SlackMessaging implements IMessaging
 			return json_decode('{"ok":false,"error":"'.$mess->{"error"}.'"}');
 		}
 	}
-	public function sendActionSlackMessage($title,$link,$pretext,$actiontxt,$group)
+	public function sendActionSlackMessage($text,$actiontxt,$link1,$link2,$ticketName,$group)
 	{
 		$attachment = array();
 		$attachment[0]=array(
-			"fallback"=>"next action required by the user","color"=>"#18a689","author_name"=>"flexy",
-			"author_link"=>"https://app.fxw.io","author_icon"=>"https://app.fxw.io/img/flexy-login@2.png",
-			"title"=>$title,"title_link"=>$link,
-			"text"=>$actiontxt
+			"fallback"=>"ticket url",
+			"color"=>"#dadfe9",
+			"title"=>$ticketName,"title_link"=>$link1,
+			"text"=>"see details"
 			);
-		$text =urlencode(json_encode($attachment));
-		$url = self::Baseurl.self::sendmessage."token=".self::clienttoken."&channel=".$group."&username=flexy&attachments=".$text."&text=".urlencode($pretext);
+		if($link2 != null)
+		{
+			$attachment[1]=array(
+				"fallback"=>"next action required by the user",
+				"color"=>"#1ab394",
+				"title"=>$actiontxt,"title_link"=>$link2
+			);
+		}
+		
+		$attachmentmsg =urlencode(json_encode($attachment));
+		$url = self::Baseurl.self::sendmessage."token=".self::clienttoken."&channel=".$group."&as_user=true&attachments=".$attachmentmsg."&text=".urlencode($text);
 		$mess=json_decode(file_get_contents($url));
 	}
 	public function deleteMessage($mess,$group)
@@ -159,11 +169,12 @@ class SlackMessaging implements IMessaging
 		if($mess->{"ok"})
 		{
 			$channel_id=$mess->{"channel"}->{"id"};
-			$mess2=json_decode(file_get_contents(self::Baseurl.self::invitechannel."token=".self::admintoken."&channel=".$channel_id."&user=U0DS7UUM6"));
+			$mess2=json_decode(file_get_contents(self::Baseurl.self::invitechannel."token=".self::admintoken."&channel=".$channel_id."&user=".self::FLEXYID));
 			if($mess2->{"ok"})
 			{
 				$data["result"]=true;
 				$data["id"]=$channel_id;
+
 			}
 			else
 			{

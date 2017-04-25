@@ -366,7 +366,39 @@ class ProjectController extends Controller
             foreach ($result as $key) {
                 if($key->getOwner()!=null)
                 {
-                    $projects[$i]=array("id"=>$key->getDisplayId(),"name"=>$key->getName(),"company"=>$key->getOwner()->getCompanyname());
+                    $totalTickets = count($key->getTickets());
+                    $esimatedH = 0;
+                    $realtimeH = 0;
+                    $billedTime = 0;
+                    $doneCount = 0;
+                    $draftCound = 0;
+
+                    foreach ($key->getTickets() as $ticket) {
+                        if($ticket->getStatus() == TicketStatus::DONE)
+                        {
+                            $doneCount ++;
+                            $realtimeH += $ticket->getRealtime();
+                            $esimatedH += $ticket->getEstimation();
+                            $billedTime += min($ticket->getRealtime(),$ticket->getEstimation());
+                        }
+                        if($ticket->getStatus() == TicketStatus::DRAFT)
+                        {
+                            $draftCound++;
+                        }
+                    }
+                    $inProgressCount = $totalTickets - ($draftCound+$doneCount);
+                    $projects[$i]=array("id"=>$key->getDisplayId(),
+                        "key"=>$key->getDisplayId(),
+                        "name"=>$key->getName(),
+                        "company"=>$key->getOwner()->getCompanyname(),
+                        "description"=>strip_tags($key->getDescription()),
+                        "skills"=>$key->getProjectSkills(),
+                        "doneCount"=>$doneCount,
+                        "draftCount"=>$draftCound,
+                        "inProgressCount"=>$inProgressCount,
+                        "billedTime"=>$billedTime,
+                        "realTime"=>$realtimeH,
+                        "estimated"=>$esimatedH);
                     if($key->getChannelid()!=null){
                         $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getDisplayId(),"newmessages"=>0);
                         $j++;

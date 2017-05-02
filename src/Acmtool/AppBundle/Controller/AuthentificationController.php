@@ -14,8 +14,10 @@ use Acmtool\AppBundle\Entity\ConstValues;
 use Acmtool\AppBundle\Entity\Customer;
 use Acmtool\AppBundle\Entity\CustomerUser;
 use Acmtool\AppBundle\Entity\Token;
+use Acmtool\AppBundle\Entity\DeviceToken;
 class AuthentificationController extends Controller
 {
+    private $authservice;
     public function ApiAuthentificationAction()
     {
        $request = $this->get('request');
@@ -27,98 +29,102 @@ class AuthentificationController extends Controller
         else
         {
             $json=$result['json'];
-            if(!(isset($json->{"grant_type"}) && isset($json->{"login"}) && isset($json->{"password"}) && isset($json->{"stayloggedin"})))
+            if(!isset($json->{"grant_type"}))
             {
                 $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;
             }
-            
-            $grantype=isset($json->{"grant_type"});
-            if($grantype=="password")
+            else
             {
-               
-                $username=$json->{"login"};
-                $user = $em->getRepository('AcmtoolAppBundle:Creds')->getUserByUsername($username);
-                if($user && $user->getIsActive())
+                $grantype = $json->{"grant_type"};
+                if($grantype == "password")
                 {
-                    $authservice=$this->get('acmtool_app.authentication');
-                    $password=$json->{"password"};
-                    $result=$authservice->Authentificate($user,$password,$json->{"stayloggedin"});
-                    if($result["auth"])
-                    {
-                        $token=$result["token"];
-                        if($user instanceOf Admin)
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
-                            
-                        elseif ($user instanceOf Customer) {
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"signed"=>true,"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),
-                                "keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),
-                                    "email"=>$user->getKeyaccount()->getEmail(),
-                                    "name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),
-                                    "photo"=>$user->getKeyaccount()->getPhoto(),
-                                    "tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber(),
-                                    "company_name"=>$user->getKeyaccount()->getCompanyname()));
-                            $address=array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState());
-                            $tools=[];
-                            $i=0;
-                            foreach ($user->getPmtools() as $key) {
-                                $tools[$i]=$key->getToolname();
-                            }
-                            $UserInfo['pmtools']=$tools;
-                            $UserInfo["address"]=$address;
-
-                            $this->get("acmtool_app.notifier.handler")->clientLoggedIn($user->getEmail());
-                        }
-                        elseif ($user instanceOf CustomerUser) {
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
-                           $this->get("acmtool_app.notifier.handler")->clientLoggedIn($user->getEmail());
-                        }
-                        elseif ($user instanceOf TeamMember) {
-                            $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),
-                                'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),
-                                "name"=>$user->getName(),"surname"=>$user->getSurname(),
-                                "photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),
-                                "title"=>$user->getTitle(),"city"=>$user->getCity(),"country"=>$user->getCountry(),
-                                "phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getPhonenumber(),
-                                "languages"=>$user->getLanguage());
-                            if($user instanceOf KeyAccount)
-                                if($user->getCompanyname() != null)
-                                {
-                                    $UserInfo["canmanage"] = $user->getCanmanage();
-                                    $UserInfo["compnay_name"] = $user->getCompanyname();
-                                }
-                                    
-                        }
-                        $tokenInfo = array('token' => $token->getTokendig(),'experationDate'=>$token->getCreationdate()->add(new \DateInterval('PT'.ConstValues::PERIOD.'S')) );
-                        $mess = array('user' => $UserInfo, 'token'=>$tokenInfo);
-                        $response = new Response(json_encode($mess), 200);
-                        $response->headers->set('Content-Type', 'application/json');
-                        return $response;
-                    }
-                    else
-                    {
-                        $response=new Response('{"errors":"'.$result["reason"].'"}',403);
-                        $response->headers->set('Content-Type', 'application/json');
-                        return $response;
-                    }
-
+                    $result = $this->webAuth($json);
+                }
+                elseif ($grantype == "mobileapp") {
+                    $result = $this->appAuth($json);
                 }
                 else
                 {
-                    $response=new Response('{"errors":"'.ConstValues::REASONWRONG.'"}',403);
+                    $response=new Response('{"err":"'.ConstValues::INVALIDREQUEST.'"}',400);
                     $response->headers->set('Content-Type', 'application/json');
                     return $response;
                 }
-                
-            }
-            else
-            {
-                $response=new Response('{"errors":"'.ConstValues::INVALIDREQUEST.'"}',400);
-                $response->headers->set('Content-Type', 'application/json');
-                return $response;
+                if($result["auth"])
+                {
+                    $token=$result["token"];
+                    $user = $result["user"];
+                    if($user instanceOf Admin)
+                        $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"title"=>$user->getTitle());
+                        
+                    elseif ($user instanceOf Customer) {
+                        $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'compnay_name'=>$user->getCompanyname(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"roles"=>$user->getRoles(),"signed"=>true,"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),
+                            "keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),
+                                "email"=>$user->getKeyaccount()->getEmail(),
+                                "name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),
+                                "photo"=>$user->getKeyaccount()->getPhoto(),
+                                "tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber(),
+                                "company_name"=>$user->getKeyaccount()->getCompanyname()));
+                        $address=array("address"=>$user->getAddress()->getAddress(),"zipcode"=>$user->getAddress()->getZipcode(),"city"=>$user->getAddress()->getCity(),"country"=>$user->getAddress()->getCountry(),"state"=>$user->getAddress()->getState());
+                        $tools=[];
+                        $i=0;
+                        foreach ($user->getPmtools() as $key) {
+                            $tools[$i]=$key->getToolname();
+                        }
+                        $UserInfo['pmtools']=$tools;
+                        $UserInfo["address"]=$address;
+
+                        $this->get("acmtool_app.notifier.handler")->clientLoggedIn($user->getEmail());
+                    }
+                    elseif ($user instanceOf CustomerUser) {
+                        $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),"name"=>$user->getName(),"surname"=>$user->getSurname(),"photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),"title"=>$user->getTitle(),"phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getTelnumber(),"keyaccount"=>array('id'=>$user->getKeyaccount()->getId(),"email"=>$user->getKeyaccount()->getEmail(),"name"=>$user->getKeyaccount()->getName(),"surname"=>$user->getKeyaccount()->getSurname(),"photo"=>$user->getKeyaccount()->getPhoto(),"tel"=>$user->getKeyaccount()->getPhonecode().' '.$user->getKeyaccount()->getPhonenumber()));
+                       $this->get("acmtool_app.notifier.handler")->clientLoggedIn($user->getEmail());
+                    }
+                    elseif ($user instanceOf TeamMember) {
+                        $UserInfo = array('id'=>$user->getId(),'username' =>$user->getUsername(),
+                            'email'=>$user->getEmail(),'photo'=>$user->getPhoto(),
+                            "name"=>$user->getName(),"surname"=>$user->getSurname(),
+                            "photo"=>$user->getPhoto(),"roles"=>$user->getRoles(),
+                            "title"=>$user->getTitle(),"city"=>$user->getCity(),"country"=>$user->getCountry(),
+                            "phonecode"=>$user->getPhonecode(),"telnumber"=>$user->getPhonenumber(),
+                            "languages"=>$user->getLanguage());
+                        if($user instanceOf KeyAccount)
+                            if($user->getCompanyname() != null)
+                            {
+                                $UserInfo["canmanage"] = $user->getCanmanage();
+                                $UserInfo["compnay_name"] = $user->getCompanyname();
+                            }
+                                
+                    }
+                    if($token instanceOf DeviceToken)
+                    {
+                        $tokenInfo=array('token'=>$token->getToken());
+                    }
+                    else
+                        $tokenInfo = array('token' => $token->getTokendig(),'experationDate'=>$token->getCreationdate()->add(new \DateInterval('PT'.ConstValues::PERIOD.'S')) );
+                    $mess = array('user' => $UserInfo, 'token'=>$tokenInfo);
+                    $response = new Response(json_encode($mess), 200);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;
+                }
+                else
+                {
+                    $response=new Response('{"errors":"'.$result["reason"].'"}',403);
+                    $response->headers->set('Content-Type', 'application/json');
+                    return $response;
+                }
+
             }
         }
+    }
+    public function appLogoutAction($token)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $deviceToken = $em->getRepository("AcmtoolAppBundle:DeviceToken")->findOneByToken($token);
+        $em->remove($deviceToken);
+        $em->flush();
+        return new Response('{"loggout":true}',200);
     }
     public function changePasswordAction()
     {
@@ -183,6 +189,79 @@ class AuthentificationController extends Controller
     public function isTokenExpiredAction()
     {
         return new Response('{"Expired":false}',200);
+    }
+    private function webAuth($json)
+    {
+        $this->authservice = $this->get('acmtool_app.authentication');
+        if(!(isset($json->{"login"}) && isset($json->{"password"}) && isset($json->{"stayloggedin"})))
+        {
+            $auth= array("auth" => false, "reason"=>ConstValues::INVALIDREQUEST);
+            return $auth;
+        }
+        else
+        {
+            $user = $this->getAuthUser($json->{"login"});
+            $password=$json->{"password"};
+            $resut= $this->authservice->Authentificate($user,$password,$json->{"stayloggedin"});
+            $resut["user"] = $user;
+            return $resut;
+        }
+    }
+    private function appAuth($json)
+    {
+        $this->authservice = $this->get('acmtool_app.authentication');
+        if(!(isset($json->{"login"}) && isset($json->{"password"}) && isset($json->{"os"})))
+        {
+            $auth= array("auth" => false, "reason"=>ConstValues::INVALIDREQUEST);
+            return $auth;
+        }
+        else
+        {
+            $os = "";
+            $user = $this->getAuthUser($json->{"login"});
+            if(($user instanceOf Customer) || ($user instanceOf CustomerUser))
+            {
+                 $password=$json->{"password"};
+                if(isset($json->{"os"}))
+                {
+                    $os = $json->{"os"};
+                }
+                $deviceToken = null;
+                if(isset($json->{"deviceToken"}))
+                {
+                    $deviceToken = $json->{"deviceToken"};
+                }
+                $deviceName = "anonymous";
+                if(isset($json->{"deviceName"}))
+                {
+                    $deviceName = $json->{"deviceName"};
+                }
+                $resut= $this->authservice->appAuuthetificate($user,$password,$os,$deviceToken,$deviceName);
+                $resut["user"] = $user;
+                return $resut;
+            }
+            else
+            {
+                $auth= array("auth" => false, "reason"=>"don't have access");
+                return $auth;
+            }
+           
+        }
+    }
+    private function getAuthUser($username)
+    {
+         $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('AcmtoolAppBundle:Creds')->getUserByUsername($username);
+        if($user && $user->getIsActive())
+        {
+            return $user;
+        }
+        else
+        {
+            $response=new Response('{"errors":"'.ConstValues::REASONWRONG.'"}',403);
+            $response->headers->set('Content-Type', 'application/json');
+            return $response;
+        }
     }
 
 }

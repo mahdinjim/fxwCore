@@ -18,7 +18,10 @@ class TicketController extends Controller
 	public function createAction()
 	{
 		$request = $this->get('request');
-		$message = $request->get("ticket");
+		if($request->get("ticket") != null)
+			$message = $request->get("ticket");
+		else
+			$message = $request->getContent();
 		$em = $this->getDoctrine()->getManager();
         $result = $this->get('acmtool_app.validation.json')->validate($message);
         if(!$result["valid"])
@@ -49,35 +52,39 @@ class TicketController extends Controller
                     $ticket->setDiplayId("-1");
         			$em->persist($ticket);
 	                $em->flush();
-	                $fileBag = $request->files;
-					$files=$fileBag->all();
-					for($i=0;$i<$json->{"fileCount"};$i++)
-					{
-						$index = "file".$i;
-						$filename=str_replace(' ', '', $files[$index]->getClientOriginalName());
-						$projectPath=__DIR__.'/../../../../web'.'/uploads/pdocs/'.$project->getId();
-						if(!file_exists($projectPath))
+	                if(isset($json->{"fileCount"}))
+	                {
+	                	$fileBag = $request->files;
+						$files=$fileBag->all();
+						for($i=0;$i<$json->{"fileCount"};$i++)
 						{
-							mkdir($projectPath);
+							$index = "file".$i;
+							$filename=str_replace(' ', '', $files[$index]->getClientOriginalName());
+							$projectPath=__DIR__.'/../../../../web'.'/uploads/pdocs/'.$project->getId();
+							if(!file_exists($projectPath))
+							{
+								mkdir($projectPath);
+							}
+							$path=$projectPath.'/'.$ticket->getId();
+							if(!file_exists($path))
+							{
+								mkdir($path);
+							}
+							$filepath=$path."/".$filename;
+							if(!file_exists($filepath))
+							{
+								$files[$index]->move($path, $filename);
+								$doc=new ProjectDocument();
+								$doc->setName($filename);
+								$doc->setPath('/uploads/pdocs/'.$project->getId()."/".$ticket->getId()."/".$filename);
+								$doc->setTicket($ticket);
+								$ticket->addDocument($doc);
+								$em->persist($doc);
+								$em->flush();
+							}
 						}
-						$path=$projectPath.'/'.$ticket->getId();
-						if(!file_exists($path))
-						{
-							mkdir($path);
-						}
-						$filepath=$path."/".$filename;
-						if(!file_exists($filepath))
-						{
-							$files[$index]->move($path, $filename);
-							$doc=new ProjectDocument();
-							$doc->setName($filename);
-							$doc->setPath('/uploads/pdocs/'.$project->getId()."/".$ticket->getId()."/".$filename);
-							$doc->setTicket($ticket);
-							$ticket->addDocument($doc);
-							$em->persist($doc);
-							$em->flush();
-						}
-					}
+	                }
+	                
 	                $project_id=$project->getId();
         			if($project_id<10){
         				$project_id='00'.$project_id;
@@ -184,7 +191,7 @@ class TicketController extends Controller
 		        $tasksnumber=count($key->getTasks());
 		        $finishedTasks=0;
 				foreach ($key->getTasks() as $task) {
-					$data=array("id"=>$task->getId(),"displayid"=>$task->getDisplayId(),"title"=>$task->getTitle(),"description"=>$task->getDescription(),"estimation"=>$task->getEstimation(),"realtime"=>$task->getRealtime(),"isstarted"=>$task->getIsStarted(),"finished"=>$task->getIsFinished());
+					$data=array("id"=>$task->getId(),"key"=>$task->getId(),"displayid"=>$task->getDisplayId(),"title"=>$task->getTitle(),"description"=>$task->getDescription(),"estimation"=>$task->getEstimation(),"realtime"=>$task->getRealtime(),"isstarted"=>$task->getIsStarted(),"finished"=>$task->getIsFinished());
 					$assignto=null;
 					if($task->getDeveloper()!=null)
                         $assignedto=array("id"=>$task->getDeveloper()->getId(),"name"=>$task->getDeveloper()->getName(),"surname"=>$task->getDeveloper()->getSurname(),"role"=>array("role"=>$developerrole["role"]));

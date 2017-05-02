@@ -6,6 +6,7 @@ class ApiToken extends AbstractToken
 {
 	
 	private $tokenDig;
+    private $type;
 	public function __construct(array $roles = array())
     {
         parent::__construct($roles);
@@ -18,7 +19,14 @@ class ApiToken extends AbstractToken
     {
         return '';
     }
-
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+    public function getType()
+    {
+        return $this->type;
+    }
     /**
      * Sets the value of tokenDig.
      *

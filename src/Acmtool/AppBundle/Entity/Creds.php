@@ -70,6 +70,10 @@ class Creds implements \Serializable
     * @ORM\OneToMany(targetEntity="Commission", mappedBy="owner")
     */
     private $commissions;
+      /**
+    * @ORM\OneToMany(targetEntity="DeviceToken", mappedBy="user")
+    */
+    private $devicetokens;
     /**
      * Get id
      *
@@ -372,5 +376,71 @@ class Creds implements \Serializable
     public function getRefCustomers()
     {
         return $this->refCustomers;
+    }
+
+    /**
+     * Add commissions
+     *
+     * @param \Acmtool\AppBundle\Entity\Commission $commissions
+     * @return Creds
+     */
+    public function addCommission(\Acmtool\AppBundle\Entity\Commission $commissions)
+    {
+        $this->commissions[] = $commissions;
+
+        return $this;
+    }
+
+    /**
+     * Remove commissions
+     *
+     * @param \Acmtool\AppBundle\Entity\Commission $commissions
+     */
+    public function removeCommission(\Acmtool\AppBundle\Entity\Commission $commissions)
+    {
+        $this->commissions->removeElement($commissions);
+    }
+
+    /**
+     * Get commissions
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getCommissions()
+    {
+        return $this->commissions;
+    }
+
+    /**
+     * Add devicetokens
+     *
+     * @param \Acmtool\AppBundle\Entity\DeviceToken $devicetokens
+     * @return Creds
+     */
+    public function addDevicetoken(\Acmtool\AppBundle\Entity\DeviceToken $devicetokens)
+    {
+        $this->devicetokens[] = $devicetokens;
+
+        return $this;
+    }
+
+    /**
+     * Remove devicetokens
+     *
+     * @param \Acmtool\AppBundle\Entity\DeviceToken $devicetokens
+     */
+    public function removeDevicetoken(\Acmtool\AppBundle\Entity\DeviceToken $devicetokens)
+    {
+        $this->devicetokens->removeElement($devicetokens);
+    }
+
+    /**
+     * Get devicetokens
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDevicetokens()
+    {
+        return $this->devicetokens;
     }
 }

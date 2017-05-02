@@ -5,6 +5,10 @@ acmtool_app_channelid:
     path:     /public/channelid/{name}
     defaults: { _controller: AcmtoolAppBundle:Default:channelId }
     methods:  [OPTIONS,GET]
+bug_app_report:
+    path:     /private/bug/app/report
+    defaults: { _controller: AcmtoolAppBundle:Default:reportAppBug }
+    methods:  [OPTIONS,POST]
 test_wsse:
     path:     /extern/debug
     defaults: { _controller: AcmtoolAppBundle:Default:testWsse }
@@ -31,6 +35,10 @@ _api_authentification:
     path:     /public/login
     defaults: { _controller: AcmtoolAppBundle:Authentification:ApiAuthentification }
     methods:  [OPTIONS,POST]
+_app_logout:
+    path:     /public/mobile/logout/{token}
+    defaults: { _controller: AcmtoolAppBundle:Authentification:appLogout }
+    methods:  [OPTIONS,GET]
 _api_logout:
     path:     /private/logout
     defaults: { _controller: AcmtoolAppBundle:Authentification:logout }

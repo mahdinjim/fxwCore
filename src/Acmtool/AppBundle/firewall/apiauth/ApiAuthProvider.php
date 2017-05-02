@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Acmtool\AppBundle\firewall\apiauth\ApiToken;
+use Acmtool\AppBundle\Entity\DeviceToken;
 use Acmtool\AppBundle\Entity\Customer;
 use Acmtool\AppBundle\Entity\CustomerUser;
 Const PERIOD=3600;
@@ -24,13 +25,23 @@ class ApiAuthProvider implements AuthenticationProviderInterface
     public function authenticate(TokenInterface $token)
     {
         $em=$this->doctrine->getEntityManager();
-        $apitoken = $em->getRepository('AcmtoolAppBundle:Token')->findOneBy(array('tokendig' => $token->getTokenDig() ));
+        if($token->getType() === "web")
+        {
+            $apitoken = $em->getRepository('AcmtoolAppBundle:Token')->findOneBy(array('tokendig' => $token->getTokenDig() ));
+            if($apitoken)
+                $user=$em->getRepository('AcmtoolAppBundle:Token')->findUserByToken($apitoken);
+        }
+        elseif ($token->getType() === "app") {
+             $apitoken = $em->getRepository('AcmtoolAppBundle:DeviceToken')->findOneBy(array('token' => $token->getTokenDig() ));
+             if($apitoken)
+                $user=$em->getRepository('AcmtoolAppBundle:Creds')->getUserByCreds($apitoken->getUser());
+        }
         
        
         if($apitoken && $this->validToken($apitoken))
         {
 
-            $user=$em->getRepository('AcmtoolAppBundle:Token')->findUserByToken($apitoken);
+            
             if($user && $user->getIsActive())
             {
                 $authenticatedToken=new ApiToken($user->getRoles());
@@ -51,6 +62,10 @@ class ApiAuthProvider implements AuthenticationProviderInterface
     {
         if($apitoken)
         {
+            if($apitoken instanceof DeviceToken)
+            {
+                return true;
+            }
             date_default_timezone_set(TIMEZONE);
             $expireDate=$apitoken->getCreationdate()->add(new \DateInterval('PT'.PERIOD.'S'));
 

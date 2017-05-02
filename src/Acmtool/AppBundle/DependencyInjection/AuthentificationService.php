@@ -1,6 +1,7 @@
 <?php
 namespace Acmtool\AppBundle\DependencyInjection;
 use Acmtool\AppBundle\Entity\Token;
+use Acmtool\AppBundle\Entity\DeviceToken;
 use Acmtool\AppBundle\Entity\ConstValues;
 
 class AuthentificationService
@@ -65,6 +66,50 @@ class AuthentificationService
 			return $result;
 		}
 	}
+    public function appAuuthetificate($user,$password,$os,$phoneid=null,$phoneName)
+    {
+        $result=[];
+        $username=$user->getUsername();
+        $em=$this->doctrine->getManager();
+        if($username && $password)
+        {
+            $encoder = $this->factory->getEncoder($user->getCredentials());
+            $bool = ($encoder->isPasswordValid($user->getPassword(),$password,$user->getSalt())) ? true : false;
+            if($bool)
+            {
+               $token=new DeviceToken();
+               $today =new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE));
+                $token->setToken($this->generateToken($user,$today));
+                $userroles=$user->getRoles();
+                $token->setUser($user->getCredentials());
+                if($phoneid != null)
+                {
+                    $token->setDeviceid($phoneid);
+                }
+                $token->setDevicename($phoneName);
+                $token->setOs($os);
+                $user->getCredentials()->addDevicetoken($token);
+                $em->persist($token);
+                $em->flush();
+                $result["auth"]=true;
+                $result["token"]=$token;
+                return $result;
+
+            }
+            else
+            {
+                $result["auth"]=false;
+                $result["reason"]=ConstValues::REASONWRONG;
+                return $result;
+            }
+        }
+        else
+        {
+            $result["auth"]=false;
+            $result["reason"]=ConstValues::REASONMISSING;
+            return $result;
+        }
+    }
 	private function istokenExpired($token)
 	{
 		if($token){

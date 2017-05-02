@@ -391,14 +391,15 @@ class ProjectController extends Controller
                         "key"=>$key->getDisplayId(),
                         "name"=>$key->getName(),
                         "company"=>$key->getOwner()->getCompanyname(),
-                        "description"=>strip_tags($key->getDescription()),
+                        "description"=>$key->getDescription(),
                         "skills"=>$key->getProjectSkills(),
                         "doneCount"=>$doneCount,
                         "draftCount"=>$draftCound,
                         "inProgressCount"=>$inProgressCount,
                         "billedTime"=>$billedTime,
                         "realTime"=>$realtimeH,
-                        "estimated"=>$esimatedH);
+                        "estimated"=>$esimatedH,
+                        "creationdate"=>date_format($key->getStartingdate(), 'Y-m-d'));
                     if($key->getChannelid()!=null){
                         $channels[$j]=array("id"=>$key->getChannelid(),"name"=>$key->getName(),"project_id"=>$key->getDisplayId(),"newmessages"=>0);
                         $j++;

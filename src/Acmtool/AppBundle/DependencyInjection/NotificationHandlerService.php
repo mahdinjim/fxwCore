@@ -9,11 +9,13 @@ class NotificationHandlerService
 	private $emailService;
 	private $em;
 	private $intercomService;
-	function __construct($doctrine,$emailService,$intercomService) {
+	private $pushNotifier;
+	function __construct($doctrine,$emailService,$intercomService,$pushNotifier) {
 		$this->doctrine = $doctrine;
 		$this->emailService = $emailService;
 		$this->intercomService = $intercomService;
 		$this->em=$this->doctrine->getEntityManager();
+		$this->pushNotifier = $pushNotifier;
 	}
 	//update intercom last login info
 	public function clientLoggedIn($client_email)
@@ -181,6 +183,7 @@ class NotificationHandlerService
 	}
 	//log ticket estimated
 	//send email to client to accept estimation
+	//send push notification
 	public function ticketEstimated($ticket,$creator)
 	{
 		$project=$ticket->getProject();
@@ -196,6 +199,7 @@ class NotificationHandlerService
 		$this->em->persist($log);
 		$this->em->flush();
 		$this->emailService->notifyClientEstimatedTicket($client,$ticket);
+		$this->pushNotifier->sendNotification($client,$ticket->getTitle()." estimated (".$ticket->getEstimation()."h)");
 	}
 	//send email to client explaining that ticket in draft now
 	//log ticket estimation rejected
@@ -260,6 +264,7 @@ class NotificationHandlerService
 		foreach ($members as $key) {
 			$this->emailService->notifyTicketinProduction($key->getEmail(),$ticket,$client->getCompanyname(),$project,$key->getName());
 		}
+		$this->pushNotifier->sendNotification($client,$ticket->getTitle()." in production");
 	}
 	//log that the ticket is in QA
 	//inform teamleader that ticket in QA
@@ -284,7 +289,7 @@ class NotificationHandlerService
 			$teamleader=$this->em->getRepository("AcmtoolAppBundle:Creds")->getUserByCreds($project->getTeamleader());
 			$this->emailService->notifyTicketinQA($teamleader->getEmail(),$ticket,$client->getCompanyname(),$project,$teamleader->getName());
 		}
-
+		$this->pushNotifier->sendNotification($client,$ticket->getTitle()." in QA");
 	}
 	//log that ticket delivred
 	//inform client about ticket delivred
@@ -303,6 +308,7 @@ class NotificationHandlerService
 		$this->em->persist($log);
 		$this->em->flush();
 		$this->emailService->notifyClientTicketDelivred($client,$ticket);
+		$this->pushNotifier->sendNotification($client,$ticket->getTitle()." delivred, please accept it");
 	}
 	//log ticket accepted
 	//inform teamleader ticket accepted
@@ -341,6 +347,7 @@ class NotificationHandlerService
 		$project=$ticket->getProject();
 		$client=$project->getOwner();
 		$this->emailService->notifyClientReminder($client,$ticket);
+		$this->pushNotifier->sendNotification($client,"remainder: ".$ticket->getTitle()." will be closed in one day");
 	}
 	//log story created
 	public function storyCreated($ticket,$creator,$story)
@@ -525,6 +532,7 @@ class NotificationHandlerService
 		$project=$ticket->getProject();
 		$client=$project->getOwner();
 		$this->emailService->notifyClientBugsDone($client,$ticket);
+		$this->pushNotifier->sendNotification($client,"all bugs of ticket ".$ticket->getTitle()." are solved and delivred");
 	}
 	public function assignedToStory($ticket,$creator,$teamMember,$story)
 	{

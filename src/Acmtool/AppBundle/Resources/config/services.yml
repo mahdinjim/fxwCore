@@ -13,6 +13,7 @@ parameters:
     acmtool_app.intercom.service.class: Acmtool\AppBundle\DependencyInjection\IntercomService
     acmtool_app.wsse.provider.class: Acmtool\AppBundle\firewall\wsseauth\WsseProvider
     acmtool_app.wsse.listener.class: Acmtool\AppBundle\firewall\wsseauth\WsseListener
+    acmtool_app.pushnotif.class: Acmtool\AppBundle\DependencyInjection\MobilePushNotificationService
 services:
 #    acmtool_app.example:
 #        class: %acmtool_app.example.class%
@@ -29,6 +30,9 @@ services:
      arguments: [@doctrine, @security.encoder_factory,@form.csrf_provider]
     acmtool_app.validation.json:
      class:  '%acmtool_app.validation.json.class%'
+    acmtool_app.pushnotif:
+     class:  '%acmtool_app.pushnotif.class%'
+     arguments: ['@doctrine']
     acmtool_app.email.notifier:
      class: '%acmtoo_app.email.notifier.class%'
      arguments: ['@mailer','@twig','@doctrine','@router','@form.csrf_provider','@acmtool_app.messaging']
@@ -50,7 +54,7 @@ services:
      arguments: [@security.context, @security.authentication.manager]
     acmtool_app.notifier.handler:
      class: '%acmtool_app.notifier.handler.class%'
-     arguments: [@doctrine, @acmtool_app.email.notifier, @acmtool_app.intercom]
+     arguments: [@doctrine, @acmtool_app.email.notifier, @acmtool_app.intercom,'@acmtool_app.pushnotif']
     acmtool_app.intercom:
      class: '%acmtool_app.intercom.service.class%'
     wsse.security.authentication.provider:

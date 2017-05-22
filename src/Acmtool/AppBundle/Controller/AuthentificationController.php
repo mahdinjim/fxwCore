@@ -201,10 +201,19 @@ class AuthentificationController extends Controller
         else
         {
             $user = $this->getAuthUser($json->{"login"});
-            $password=$json->{"password"};
-            $resut= $this->authservice->Authentificate($user,$password,$json->{"stayloggedin"});
-            $resut["user"] = $user;
-            return $resut;
+            if($user)
+            {
+                $password=$json->{"password"};
+                $resut= $this->authservice->Authentificate($user,$password,$json->{"stayloggedin"});
+                $resut["user"] = $user;
+                return $resut;
+            }
+            else
+            {
+                $auth= array("auth" => false, "reason"=>"please verify your credentials");
+                return $auth;
+            }
+            
         }
     }
     private function appAuth($json)
@@ -219,32 +228,41 @@ class AuthentificationController extends Controller
         {
             $os = "";
             $user = $this->getAuthUser($json->{"login"});
-            if(($user instanceOf Customer) || ($user instanceOf CustomerUser))
+            if($user)
             {
-                 $password=$json->{"password"};
-                if(isset($json->{"os"}))
+                if(($user instanceOf Customer) || ($user instanceOf CustomerUser))
                 {
-                    $os = $json->{"os"};
+                     $password=$json->{"password"};
+                    if(isset($json->{"os"}))
+                    {
+                        $os = $json->{"os"};
+                    }
+                    $deviceToken = null;
+                    if(isset($json->{"deviceToken"}))
+                    {
+                        $deviceToken = $json->{"deviceToken"};
+                    }
+                    $deviceName = "anonymous";
+                    if(isset($json->{"deviceName"}))
+                    {
+                        $deviceName = $json->{"deviceName"};
+                    }
+                    $resut= $this->authservice->appAuuthetificate($user,$password,$os,$deviceToken,$deviceName);
+                    $resut["user"] = $user;
+                    return $resut;
                 }
-                $deviceToken = null;
-                if(isset($json->{"deviceToken"}))
+                else
                 {
-                    $deviceToken = $json->{"deviceToken"};
+                    $auth= array("auth" => false, "reason"=>"don't have access");
+                    return $auth;
                 }
-                $deviceName = "anonymous";
-                if(isset($json->{"deviceName"}))
-                {
-                    $deviceName = $json->{"deviceName"};
-                }
-                $resut= $this->authservice->appAuuthetificate($user,$password,$os,$deviceToken,$deviceName);
-                $resut["user"] = $user;
-                return $resut;
             }
             else
             {
-                $auth= array("auth" => false, "reason"=>"don't have access");
+                $auth= array("auth" => false, "reason"=>"user don't exist");
                 return $auth;
             }
+            
            
         }
     }
@@ -258,9 +276,7 @@ class AuthentificationController extends Controller
         }
         else
         {
-            $response=new Response('{"errors":"'.ConstValues::REASONWRONG.'"}',403);
-            $response->headers->set('Content-Type', 'application/json');
-            return $response;
+            return false;
         }
     }
 

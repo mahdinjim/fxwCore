@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Customer
  * @UniqueEntity(fields={"email"},message="This email is already used")
- * @UniqueEntity(fields={"compnayDomain"},message="This client is already used")
+ * 
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Acmtool\AppBundle\Entity\CustomerRepository")
  */

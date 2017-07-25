@@ -47,11 +47,16 @@ class InvoiceController extends Controller
 					$currency = $key->getOwner()->getCurrency();
 				else
 					$currency = ConstValues::DEFAULTCURRENCY;
+				$totalAmmount=0;
+				$rate=0;
 				if($key->getRate() != null)
+				{
 					$totalAmmount = $key->getRate() * $bt;
+					$rate=$key->getRate();
+				}
 				$invoiceItem = array("project_id"=>$key->getDisplayId(),"project_name"=>$key->getName(),
 					"company_name"=>$key->getOwner()->getCompanyname(),"estimation"=>$est,"billed_time"=>$bt,
-					"realtime"=>$rt,"ammount"=>$totalAmmount,"creation_date"=>date_format($firstDate, 'Y-m-d'),"currency"=>$currency);
+					"realtime"=>$rt,"ammount"=>$totalAmmount,"creation_date"=>date_format($firstDate, 'Y-m-d'),"currency"=>$currency,"rate"=>$rate);
 				$unbilledTicket[$i] = $invoiceItem;
 				$i++;
 			}
@@ -390,7 +395,7 @@ class InvoiceController extends Controller
 			$billedFrom = ConstValues::DEFAULTBILLEDFROM;
 		return array("id"=>$item->getDisplayId(),"project_id"=>$item->getProject()->getDisplayId(),"project_name"=>$item->getProject()->getName(),
 			"company_name"=>$item->getClient()->getCompanyname(),"billed_time"=>$item->getBt(),"ammount"=>$item->getAmount(),
-			"creation_date"=>date_format($item->getCreationDate(), 'Y-m-d'),"currency"=>$currency,"billedFrom"=>$billedFrom);
+			"creation_date"=>date_format($item->getCreationDate(), 'Y-m-d'),"currency"=>$currency,"billedFrom"=>$billedFrom,"rate"=>$item->getUp());
 	}
 	public function createInvoiceAction($project_id)
 	{

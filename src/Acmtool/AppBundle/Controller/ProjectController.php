@@ -613,6 +613,12 @@ class ProjectController extends Controller
                 $tickets[$i]["billed"]=false;
                 $tickets[$i]["payed"]=false;
                 $tickets[$i]["bugopen"]=$key->getBugopen();
+                if($key->getClosingdate()!=null && $key->getStatus()!=TicketStatus::DONE)
+                {
+                    $now = new \DateTime('UTC');
+                    $interval = $now->diff($key->getClosingdate());
+                    $tickets[$i]["remaining"]=$interval->format('%R%a days');
+                }
                 if($key->getIsPayed())
                 {
                     $tickets[$i]["payed"]=true;

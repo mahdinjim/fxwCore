@@ -613,6 +613,10 @@ class ProjectController extends Controller
                 $tickets[$i]["billed"]=false;
                 $tickets[$i]["payed"]=false;
                 $tickets[$i]["bugopen"]=$key->getBugopen();
+                if($key->getClosingdate()!=null)
+                {
+                    
+                }
                 if($key->getIsPayed())
                 {
                     $tickets[$i]["payed"]=true;

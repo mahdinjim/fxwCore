@@ -38,6 +38,16 @@ class TicketController extends Controller
         		else
                 	$project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$json->{"project_id"});
         		if($project){
+        			if(!$this->get('security.context')->isGranted("ROLE_ADMIN") && !$this->get("security.context")->isGranted("ROLE_CUSTOMER")
+        				&& !$this->get("security.context")->isGranted("ROLE_CUSER") && !$this->get("security.context")->isGranted("ROLE_KEYACCOUNT"))
+        			{
+        				if($user->getCredentials()->getId() != $project->getTeamleader()->getId())
+        				{
+        					$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.' no project "}',400);
+			                $response->headers->set('Content-Type', 'application/json');
+			                return $response;
+        				}
+        			}
         			$ticket=new Ticket();
         			$ticket->setProject($project);
         			$ticket->setDescription($json->{"description"});
@@ -108,7 +118,7 @@ class TicketController extends Controller
         		}
         		else
         		{
-        			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.' no project Ò"}',400);
+        			$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.' no project "}',400);
 	                $response->headers->set('Content-Type', 'application/json');
 	                return $response;
         		}     		
@@ -427,6 +437,16 @@ class TicketController extends Controller
         $project=$em->getRepository("AcmtoolAppBundle:Project")->getProjectByLoggedUser($user,$ticket->getProject()->getDisplayId());
 		if($ticket && $project)
 		{
+			if(!$this->get('security.context')->isGranted("ROLE_ADMIN") && !$this->get("security.context")->isGranted("ROLE_CUSTOMER")
+        				&& !$this->get("security.context")->isGranted("ROLE_CUSER") && !$this->get("security.context")->isGranted("ROLE_KEYACCOUNT"))
+			{
+				if($user->getCredentials()->getId() != $project->getTeamleader()->getId())
+				{
+					$response=new Response('{"error":"'.ConstValues::INVALIDREQUEST.' no project "}',400);
+	                $response->headers->set('Content-Type', 'application/json');
+	                return $response;
+				}
+			}
 			$ticket->setStatus(TicketStatus::ESTIMATION);
 			$ticket->setStarteddate(new \DateTime("UTC"));
 			$em->flush();

@@ -25,7 +25,7 @@ monolog:
 assetic:
     use_controller: true
 swiftmailer:
-    disable_delivery: false
+    disable_delivery: true
     port: %mailer_port%
 #swiftmailer:
 #    delivery_address: me@example.com

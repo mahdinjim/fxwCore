@@ -387,6 +387,10 @@ _createTicket:
     path:     /private/project/ticket/create
     defaults: { _controller: AcmtoolAppBundle:Ticket:create }
     methods: [POST,OPTIONS]
+_createTicketMobile:
+    path:     /private/project/restricted/ticket/create
+    defaults: { _controller: AcmtoolAppBundle:Ticket:create }
+    methods: [POST,OPTIONS]
 _botcreateTicket:
     path:     /extern/ticket/create
     defaults: { _controller: AcmtoolAppBundle:Ticket:create }
@@ -401,6 +405,10 @@ _gettickelist:
     methods: [GET,OPTIONS]
 _startestimation:
     path:     /private/project/ticket/startestipamtion/{ticket_id}
+    defaults: { _controller: AcmtoolAppBundle:Ticket:startEstimation }
+    methods: [GET,OPTIONS]
+_startestimationMobile:
+    path:     /private/project/restricted/ticket/startestipamtion/{ticket_id}
     defaults: { _controller: AcmtoolAppBundle:Ticket:startEstimation }
     methods: [GET,OPTIONS]
 _acceptestimation:

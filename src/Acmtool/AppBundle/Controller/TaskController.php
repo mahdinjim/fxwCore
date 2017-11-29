@@ -14,7 +14,10 @@ use Acmtool\AppBundle\Entity\TicketStatus;
 use Acmtool\AppBundle\Entity\Realtime;
 use Acmtool\AppBundle\Entity\WorkedHours;
 use Acmtool\AppBundle\Entity\Ticket;
-
+use Acmtool\AppBundle\Entity\Developer;
+use Acmtool\AppBundle\Entity\Designer;
+use Acmtool\AppBundle\Entity\Tester;
+use Acmtool\AppBundle\Entity\SystemAdmin;
 class TaskController extends Controller
 {
 	public function createAction()
@@ -86,6 +89,22 @@ class TaskController extends Controller
                             $task->setSysadmin($assigned);
 
                         }  
+                    }
+                    else
+                    {
+                        if($user instanceof Developer)
+                        {
+                            $task->setDeveloper($user);
+                        }
+                        elseif ($user instanceof Tester) {
+                            $task->setTester($user);
+                        }
+                        elseif ($user instanceof Designer) {
+                            $task->setDesigner($user);
+                        }
+                        elseif ($user instanceof SystemAdmin) {
+                            $task->setSysadmin($user);
+                        }
                     }
         			
         			$task->setIsStarted(false);

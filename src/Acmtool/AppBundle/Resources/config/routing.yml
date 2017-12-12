@@ -631,3 +631,7 @@ _calculatecommission:
     path:     /private/keyaccount/commission/calculate/{rate}/{hours}/{includePm}
     defaults: { _controller: AcmtoolAppBundle:Commission:calculateCommission }
     methods: [GET,OPTIONS]
+_ranktickets:
+    path:     /private/restricted/ticket/prio
+    defaults: { _controller: AcmtoolAppBundle:Ticket:resortTicket }
+    methods: [POST,OPTIONS]

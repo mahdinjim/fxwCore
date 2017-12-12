@@ -561,14 +561,37 @@ class ProjectController extends Controller
             $mess['docs']=$dosc;
             $tickets=array();
             $i=0;
-
-            foreach ($project->getTickets() as $key) {
+            $sortedTickets = $this->get("acmtool_app.sorting")->sortTickets($project->getTickets());
+            foreach ($sortedTickets as $key) {
                 $tickets[$i]=array("id"=>$key->getDiplayId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
                     "status"=>$key->getStatus(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
                 if($key->getStatus()==TicketStatus::REJECT)
                 {
                     $tickets[$i]["rejectionmessage"]=$key->getRejectionmessage();
+                }
+                if($key->getStartedBy()!=null)
+                {
+                    $tickets[$i]["startedBy"]=$key->getStartedBy();
+                    $tickets[$i]["startedDate"]=date_format($key->getStarteddate(), 'Y-m-d');
+                }
+                if($key->getConfirmedBy()!=null)
+                {
+                    $tickets[$i]["confirmedBy"]=$key->getConfirmedBy();
+                    $tickets[$i]["confirmDate"]=date_format($key->getEstimateconfirmedddate(), 'Y-m-d');
+                }
+                if($key->getAcceptedBy()!=null)
+                {
+                    $tickets[$i]["accptedBy"]=$key->getAcceptedBy();
+                    $tickets[$i]["acceptDate"]=date_format($key->getFinisheddate(), 'Y-m-d');
+                }
+                if($key->getPrio())
+                {
+                    $tickets[$i]["rank"]=$key->getPrio();
+                }
+                else
+                {
+                    $tickets[$i]["rank"]=$i+1;
                 }
                 $tasks=array();
                 $j=0;

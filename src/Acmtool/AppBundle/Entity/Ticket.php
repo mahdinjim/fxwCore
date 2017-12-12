@@ -98,6 +98,24 @@ class Ticket
     /**
      * @var string
      * 
+     * @ORM\Column(name="startedBy", type="string", length=250,nullable=true)
+     */
+    private $startedBy;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="confirmedBy", type="string", length=250,nullable=true)
+     */
+    private $confirmedBy;
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="acceptedBy", type="string", length=250,nullable=true)
+     */
+    private $acceptedBy;
+    /**
+     * @var string
+     * 
      * @ORM\Column(name="rejectionmessage", type="text", length=2000,nullable=true)
      */
     private $rejectionmessage;
@@ -202,6 +220,12 @@ class Ticket
     * @ORM\JoinColumn(name="invoice_id",referencedColumnName="id",onDelete="SET NULL")
     */
     private $invoice;
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="prio", type="integer",nullable=true)
+     */
+    private $prio;
     /**
      * Get id
      *
@@ -936,5 +960,97 @@ class Ticket
     public function getInvoice()
     {
         return $this->invoice;
+    }
+
+    /**
+     * Set prio
+     *
+     * @param integer $prio
+     * @return Ticket
+     */
+    public function setPrio($prio)
+    {
+        $this->prio = $prio;
+
+        return $this;
+    }
+
+    /**
+     * Get prio
+     *
+     * @return integer 
+     */
+    public function getPrio()
+    {
+        return $this->prio;
+    }
+
+    /**
+     * Set startedBy
+     *
+     * @param string $startedBy
+     * @return Ticket
+     */
+    public function setStartedBy($startedBy)
+    {
+        $this->startedBy = $startedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get startedBy
+     *
+     * @return string 
+     */
+    public function getStartedBy()
+    {
+        return $this->startedBy;
+    }
+
+    /**
+     * Set confirmedBy
+     *
+     * @param string $confirmedBy
+     * @return Ticket
+     */
+    public function setConfirmedBy($confirmedBy)
+    {
+        $this->confirmedBy = $confirmedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get confirmedBy
+     *
+     * @return string 
+     */
+    public function getConfirmedBy()
+    {
+        return $this->confirmedBy;
+    }
+
+    /**
+     * Set acceptedBy
+     *
+     * @param string $acceptedBy
+     * @return Ticket
+     */
+    public function setAcceptedBy($acceptedBy)
+    {
+        $this->acceptedBy = $acceptedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get acceptedBy
+     *
+     * @return string 
+     */
+    public function getAcceptedBy()
+    {
+        return $this->acceptedBy;
     }
 }

@@ -109,6 +109,7 @@ class TicketController extends Controller
         			elseif ($ticketCount>=10 && $ticketCount<100) {
         				$ticketCount="0".$ticketCount;
         			}
+        			$ticket->setPrio($ticketCount+1);
         			$displayid=$project_id.$ticketCount;
         			$ticket->setDiplayId($displayid);
         			$em->flush();
@@ -184,13 +185,29 @@ class TicketController extends Controller
 		{
 			$i=0;
 			$tickets=array();
-            foreach ($project->getTickets() as $key) {
+			$sortedTickets = $this->get("acmtool_app.sorting")->sortTickets($project->getTickets());
+            foreach ($sortedTickets as $key) {
                 $tickets[$i]=array("id"=>$key->getDiplayId(),"displayId"=>$key->getDiplayId(),
                     "title"=>$key->getTitle(),"estimation"=>$key->getEstimation(),
                     "status"=>$key->getStatus(),"description"=>$key->getDescription(),"createdby"=>$key->getCreatedBy(),"creationdate"=>date_format($key->getCreationdate(), 'Y-m-d'),"realtime"=>$key->getRealtime());
                 if($key->getStatus()==TicketStatus::REJECT)
                 {
                 	$tickets[$i]["rejectionmessage"]=$key->getRejectionmessage();
+                }
+                if($key->getStartedBy()!=null)
+                {
+                	$tickets[$i]["startedBy"]=$key->getStartedBy();
+                	$tickets[$i]["startedDate"]=date_format($key->getStarteddate(), 'Y-m-d');
+                }
+                if($key->getConfirmedBy()!=null)
+                {
+                	$tickets[$i]["confirmedBy"]=$key->getConfirmedBy();
+                	$tickets[$i]["confirmDate"]=date_format($key->getEstimateconfirmedddate(), 'Y-m-d');
+                }
+                if($key->getAcceptedBy()!=null)
+                {
+                	$tickets[$i]["accptedBy"]=$key->getAcceptedBy();
+                	$tickets[$i]["acceptDate"]=date_format($key->getFinisheddate(), 'Y-m-d');
                 }
                 $tasks=array();
 				$j=0;
@@ -449,6 +466,7 @@ class TicketController extends Controller
 			}
 			$ticket->setStatus(TicketStatus::ESTIMATION);
 			$ticket->setStarteddate(new \DateTime("UTC"));
+			$ticket->setStartedBy($user->getName()." ".$user->getSurname());
 			$em->flush();
 			$this->get("acmtool_app.notifier.handler")->ticketStarted($ticket,$user);
 			$res=new Response();
@@ -473,6 +491,7 @@ class TicketController extends Controller
 		{
 			$ticket->setStatus(TicketStatus::WAITING);
 			$ticket->setEstimateconfirmedddate(new \DateTime("UTC"));
+			$ticket->setConfirmedBy($user->getName()." ".$user->getSurname());
 			$em->flush();
 			$emails=array();
             $this->get("acmtool_app.notifier.handler")->ticketEstimationAcepted($ticket,$user);
@@ -520,6 +539,7 @@ class TicketController extends Controller
 		{
 			$ticket->setStatus(TicketStatus::DONE);
 			$ticket->setFinisheddate(new \DateTime("UTC"));
+			$ticket->setAcceptedBy($user->getName()." ".$user->getSurname());
 			$em->flush();
 			$this->get("acmtool_app.notifier.handler")->ticketAccepted($ticket,$user);
 			$res=new Response();
@@ -734,5 +754,28 @@ class TicketController extends Controller
             $response->headers->set('Content-Type', 'application/json');
             return $response;
 		}
+	}
+	public function resortTicketAction()
+	{
+		$em = $this->getDoctrine()->getManager();
+		$request = $this->get('request');
+		$message = $request->getContent();
+		$result = $this->get('acmtool_app.validation.json')->validate($message);
+		if(!$result["valid"])
+            return $result['response'];
+        else
+        {
+        	$json=$result['json'];
+        	$tickets = $json->{"tickets"};
+        	foreach ($tickets as $key) {
+        		$ticket=$em->getRepository("AcmtoolAppBundle:Ticket")->findOneByDiplayId($key->{"id"});
+        		$ticket->setPrio($key->{"prio"});
+        	}
+        	$em->flush();
+        	$res=new Response();
+	        $res->setStatusCode(200);
+	        $res->setContent("tickets ordered");
+	        return $res;
+        }
 	}
 }

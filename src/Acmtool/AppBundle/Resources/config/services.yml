@@ -14,6 +14,7 @@ parameters:
     acmtool_app.wsse.provider.class: Acmtool\AppBundle\firewall\wsseauth\WsseProvider
     acmtool_app.wsse.listener.class: Acmtool\AppBundle\firewall\wsseauth\WsseListener
     acmtool_app.pushnotif.class: Acmtool\AppBundle\DependencyInjection\MobilePushNotificationService
+    acmtool_app.sort.class: Acmtool\AppBundle\DependencyInjection\SortingService
 services:
 #    acmtool_app.example:
 #        class: %acmtool_app.example.class%
@@ -43,6 +44,8 @@ services:
              -  { name: kernel.event_listener, event: kernel.response, method: onResponse }
     acmtool_app.messaging:
       class: '%acmtoo_app.chat.class%'
+    acmtool_app.sorting:
+      class: '%acmtool_app.sort.class%'
     acmtool_app.hasher:
      class:  '%acmtool_app.hasher.class%'
      arguments: [ @form.csrf_provider]

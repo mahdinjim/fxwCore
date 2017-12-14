@@ -596,14 +596,16 @@ class TaskController extends Controller
 						$done=false;
 				}
 			}
+            $em->flush();
 			if($done && $ticket->getStatus()==TicketStatus::PRODUCTION)
 			{
 				$ticket->setStatus(TicketStatus::TESTING);
 				$ticket->setTestingdate(new \DateTime("UTC"));
-                $this->get("acmtool_app.notifier.handler")->ticketinQA($ticket,$user);
+                $em->flush();
+                
 			}
 			$mess=array("done"=>$done);
-			$em->flush();
+			
             $name=$this->get('security.context')->getToken()->getUser()->getName();
             $surname=$this->get('security.context')->getToken()->getUser()->getSurname();
             $project_name=$task->getTicket()->getProject()->getName();
@@ -611,6 +613,10 @@ class TaskController extends Controller
             if($project->getTeamleader())
                 $this->get("acmtool_app.notifier.handler")->storyFinished($ticket,$user,$task);
 	        $response=new Response(json_encode($mess),200);
+            if($done && $ticket->getStatus()==TicketStatus::PRODUCTION)
+            {
+                $this->get("acmtool_app.notifier.handler")->ticketinQA($ticket,$user);
+            }
 		    return $response;
 
 		}

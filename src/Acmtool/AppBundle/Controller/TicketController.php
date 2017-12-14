@@ -739,8 +739,9 @@ class TicketController extends Controller
         		$today =new \DateTime("NOW",  new \DateTimeZone(ConstValues::TIMEZONE));
                 $ticket->setClosingdate($today->add(new \DateInterval('P3D')));
                 $ticket->setBugopen(false);
-                $this->get("acmtool_app.email.notifier")->notifyClientBugsDone($project->getOwner(),$ticket);
                 $em->flush();
+                $this->get("acmtool_app.email.notifier")->notifyClientBugsDone($project->getOwner(),$ticket);
+                
         	}
         	$res=new Response();
 	        $res->setStatusCode(200);

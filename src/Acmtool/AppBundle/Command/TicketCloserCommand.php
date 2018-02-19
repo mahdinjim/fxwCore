@@ -40,8 +40,8 @@ class TicketCloserCommand extends ContainerAwareCommand
     		$notifDate=$key->getClosingdate()->sub(new \DateInterval("P1D"));
     		if(($today >= $notifDate) && !$key->getClosenotif())
     		{
-    			$this->getContainer()->get("acmtool_app.notifier.handler")->ticketWillclose($key);
-    			$key->setClosenotif(true);
+    			//$this->getContainer()->get("acmtool_app.notifier.handler")->ticketWillclose($key);
+    			//$key->setClosenotif(true);
     			$em->flush();
     		}
     	}
